@@ -1,0 +1,31 @@
+{
+    "name": "surf/rd-mesh",
+    "description": "Enhanced federated sharing between Research Drive instances",
+    "type": "project",
+    "license": "MIT",
+    "config": {
+        "platform": {
+            "php": "7.4"
+        }
+    },
+    "authors": [
+        {
+            "name": "Antoon Prins"
+        }
+    ],
+    "require": {
+        "ext-mbstring": "*",
+        "laminas/laminas-diactoros": "^2.4",
+        "psr/http-factory": "^1.0",
+        "psr/http-message": "^1.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "overtrue/phplint": "^2.0",
+        "owncloud/coding-standard": "^5.0.0"
+    },
+    "scripts": {
+        "cs:check": "php-cs-fixer fix --dry-run --diff",
+        "cs:fix": "php-cs-fixer fix"
+    }
+}

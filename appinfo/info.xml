@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<info>
+    <!-- Mandatory fields -->
+    <id>rd-mesh</id>
+    <name>Research Drive Mesh App</name>
+    <description>Research Drive Mesh App</description>
+    <version>0.1</version>
+    <licence>mit</licence>
+    <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
+<!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
+    <category>Integration.</category>
+    <summary>Enhanced federated sharing between Research Drive instances.</summary>
+    <types>
+        <filesystem/>
+    </types>
+
+<!-- 
+    <documentation>
+	<user>https://doc.owncloud.com/webui/next/classic_ui/pim/index.html</user>
+        <admin>https://doc.owncloud.com/server/latest/admin_manual/configuration_server/occ_command.html?highlight=contact#dav-commands</admin>
+        <developer>https://github.com/owncloud/contacts/blob/master/README.md</developer>
+    </documentation>
+ -->
+
+    <author>Antoon Prins</author>
+    <namespace>RDMesh</namespace>
+    <website>https://git.ia.surfsara.nl/online-storage/rd-mesh-app</website>
+    <bugs>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/-/issues</bugs>
+    <repository type="git">https://git.ia.surfsara.nl/online-storage/rd-mesh-app.git</repository>
+
+    <dependencies>
+        <owncloud min-version="10" max-version="13"/>
+    </dependencies>
+
+</info>
