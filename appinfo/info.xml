@@ -14,13 +14,13 @@
         <filesystem/>
     </types>
 
-<!-- 
+
     <documentation>
-	<user>https://doc.owncloud.com/webui/next/classic_ui/pim/index.html</user>
-        <admin>https://doc.owncloud.com/server/latest/admin_manual/configuration_server/occ_command.html?highlight=contact#dav-commands</admin>
-        <developer>https://github.com/owncloud/contacts/blob/master/README.md</developer>
+    	<user>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</user>
+        <admin>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</admin>
+        <developer>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</developer>
     </documentation>
- -->
+
 
     <author>Antoon Prins</author>
     <namespace>RDMesh</namespace>

@@ -5,7 +5,8 @@
 
 namespace OCA\RDMesh\AppInfo;
 
-use OCA\RDMesh\Controller\PageController;
+use OCA\RDMesh\Controller\InvitationController;
+use OCA\RDMesh\Controller\MeshRegistryController;
 use OCP\AppFramework\App;
 
 class RDMesh extends App {
@@ -15,8 +16,15 @@ class RDMesh extends App {
     {
         parent::__construct(self::APP_NAME);
         $container = $this->getContainer();
-        $container->registerService('PageController', function($c) {
-            return new PageController(
+        $container->registerService('InvitationController', function($c) {
+            return new InvitationController(
+                $c->query('AppName'), 
+                $c->query('Request')
+            );
+        });
+
+        $container->registerService('MeshRegistryController', function($c) {
+            return new MeshRegistryController(
                 $c->query('AppName'), 
                 $c->query('Request')
             );
