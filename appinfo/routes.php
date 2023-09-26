@@ -13,7 +13,7 @@ return [
 		['name' => 'mesh_registry#forward_invite', 'url' => '/registry/forward-invite', 'verb' => 'GET'],
 
 		// OCM - Open Cloud Mesh protocol
-		/* @FIXME change to POST */
+		/* FIXME change to POST */
 		['name' => 'ocm#invite_accepted', 'url' => '/ocm/invite-accepted', 'verb' => 'GET'],
 	]
 ];

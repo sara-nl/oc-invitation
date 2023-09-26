@@ -29,8 +29,8 @@ class MeshRegistryController extends Controller {
         $wayfList = [];
         foreach ($trustedServers as $i => $server) {
             $host = parse_url($server['url'], PHP_URL_HOST);
-            // @TODO: check if the server supports the invitation workflow
-            // ...
+            // TODO check if the server supports the invitation workflow
+            // 
             $appName = $this->appName;
             $acceptInviteEndpoint = trim(RDMeshService::ENDPOINT_HANDLE_INVITE, '/');
             $senderDomain = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
@@ -49,7 +49,7 @@ class MeshRegistryController extends Controller {
      * @PublicPage
      */
     public function forwardInvite() {
-        // TODO: delegate to the WAYF page controller
+        /* TODO delegate to a WAYF page controller */
         return [
             'WAYF' => 'To continue, please choose your provider from the list and follow instructions.',
             'please choose' => $this->getWAYF(),

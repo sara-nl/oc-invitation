@@ -30,6 +30,11 @@ class OcmController extends Controller {
         if ($recipientToken == "") {
             return ['error' => 'recipient token missing'];
         }
+        /** 
+         * TODO At this point we should persist the recipient token and we can start sharing.
+         * TODO the recipient already has the sender's token, consider '/invite-accepted' to be required to accept shares from the recipient.
+         */
+
         return ['message' => "You have accepted the invitation from $token. Your token ($recipientToken) has been send to $token. You can now begin sharing content with each other."];
     }
 }

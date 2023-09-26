@@ -50,6 +50,9 @@ class InvitationController extends Controller {
         $tokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
 
         $invitationLink = "$forwardInviteEndpoint?$domainKey=$domainValue&$tokenKey=$tokenValue";
+
+        /* TODO send an email with the invitation link to the receiver */
+
         return [
             'message' => 'This invite will be send to ' . $email,
             'inviteLink' => $invitationLink,
@@ -62,10 +65,13 @@ class InvitationController extends Controller {
      */
     public function handleInvite() {
         \OC::$server->getLogger()->debug(' --- handling invite ---');
+
         $token = RDMeshService::PARAM_NAME_TOKEN;
         $tokenValue = $this->request->getParam(RDMeshService::PARAM_NAME_TOKEN);
         $senderDomain = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
         $senderDomainValue = $this->request->getParam(RDMeshService::PARAM_NAME_SENDER_DOMAIN);
+
+        /* @TODO do checks: sender domain, ... */
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
@@ -96,7 +102,8 @@ class InvitationController extends Controller {
 
         $manager->notify($notification);
 
-        /* @FIXME until the notification works redirect the assumed 'accept' to acceptInvite */
+        /* @FIXME when the notification works remove this redirect and handle the notification action accept/reject links */
+
         return $this->acceptInvite();
     }
 
@@ -105,7 +112,7 @@ class InvitationController extends Controller {
      * 
      */
     public function acceptInvite() {
-        /* @FIXME Build a POST containing sender and receiver token */
+        /* FIXME Build a POST containing sender and receiver token */
 
         $senderDomain = $this->request->getParam(RDMeshService::PARAM_NAME_SENDER_DOMAIN, "");
         if($senderDomain == "") {
@@ -117,6 +124,9 @@ class InvitationController extends Controller {
         if($tokenValue == "") {
             return ['error' => 'sender token missing'];
         }
+
+        /* TODO persist the invitation (sender token, domain) */
+
         $recipientToken = RDMeshService::PARAM_NAME_RECIPIENT_TOKEN;
         $recipientTokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
         $acceptInviteURL = "$fullInviteAcceptedEndpointURL?$token=$tokenValue&$recipientToken=$recipientTokenValue";
