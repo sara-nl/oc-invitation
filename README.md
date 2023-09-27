@@ -10,4 +10,4 @@
 
 ---
 ### Invitation Workflow
- ![Invitation Workflow](https://git.ia.surfsara.nl/online-storage/rd-mesh-app/-/blob/main/InvitationWorkflow.png "Invitation Workflow") 
+ [Invitation Workflow](https://git.ia.surfsara.nl/online-storage/rd-mesh-app/-/blob/main/InvitationWorkflow.png "Invitation Workflow") 
