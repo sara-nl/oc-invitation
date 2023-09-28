@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 
  */
@@ -8,70 +9,73 @@ namespace OCA\RDMesh\Controller;
 use DateTime;
 use OCA\RDMesh\Service\RDMeshService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Utility\ITimeFactory;
 use OCP\IRequest;
 use OCP\IUserSession;
 
-class InvitationController extends Controller {
+class InvitationController extends Controller
+{
 
     private RDMeshService $rdMeshService;
     private IUserSession $userSession;
     private ITimeFactory $timeFactory;
+    private MeshRegistryController $meshRegistry;
 
     public function __construct(
-            $appName, 
-            IRequest $request, 
-            IUserSession $userSession, 
-            ITimeFactory $timeFactory,
-            RDMeshService $rdMeshService) {
+        $appName,
+        IRequest $request,
+        IUserSession $userSession,
+        ITimeFactory $timeFactory,
+        RDMeshService $rdMeshService,
+        MeshRegistryController $meshRegistry
+    ) {
         parent::__construct($appName, $request);
         $this->userSession = $userSession;
         $this->timeFactory = $timeFactory;
         $this->rdMeshService = $rdMeshService;
+        $this->meshRegistry = $meshRegistry;
     }
 
     /**
-	 * @NoCSRFRequired
+     * Generates an invite
+     * 
+     * @NoCSRFRequired
      */
-    public function generateInvite($email) {
-        if ("" == $email) {
-            return ['message' => 'You must provide the email address of the intended receiver of the invite.'];
+    public function generateInvite(string $email = '')
+    {
+        \OC::$server->getLogger()->debug('generateInvite from email ' . $this->request->getParam(RDMeshService::PARAM_NAME_EMAIL));
+        if ('' == $email) {
+            return new DataResponse(
+                ['message' => 'You must provide the email address of the intended receiver of the invite.'],
+                Http::STATUS_NOT_FOUND
+            );
         }
 
-        // the forward invite endpoint
-        $forwardInviteEndpoint = $this->rdMeshService->getFullForwardInviteEndpoint();
-
-        // request the domain from the mesh registry service
-        $domainKey = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
-        $domainValue = $this->rdMeshService->getDomain();
-
-        // the token is the federated ID of the session user
-        $tokenKey = RDMeshService::PARAM_NAME_TOKEN;
-        $tokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
-
-        $invitationLink = "$forwardInviteEndpoint?$domainKey=$domainValue&$tokenKey=$tokenValue";
 
         /* TODO send an email with the invitation link to the receiver */
+        $inviteLink = $this->rdMeshService->inviteLink();
 
-        return [
-            'message' => 'This invite will be send to ' . $email,
-            'inviteLink' => $invitationLink,
-        ];
+        return new DataResponse(
+            [
+                'message' => 'This invite will be send to ' . $email,
+                'inviteLink' => $inviteLink,
+            ],
+            Http::STATUS_OK
+        );
     }
 
     /**
      * Handle the invite by giving the option to accept or reject it.
+     * 
      * @NoCSRFRequired
      */
-    public function handleInvite() {
-        \OC::$server->getLogger()->debug(' --- handling invite ---');
+    public function handleInvite(string $token = '', string $senderDomain = '')
+    {
+        \OC::$server->getLogger()->debug(" handleInvite : $token, $senderDomain");
 
-        $token = RDMeshService::PARAM_NAME_TOKEN;
-        $tokenValue = $this->request->getParam(RDMeshService::PARAM_NAME_TOKEN);
-        $senderDomain = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
-        $senderDomainValue = $this->request->getParam(RDMeshService::PARAM_NAME_SENDER_DOMAIN);
-
-        /* @TODO do checks: sender domain, ... */
+        /* @TODO do checks: token, sender domain, ... */
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
@@ -86,7 +90,7 @@ class InvitationController extends Controller {
         $rejectAction
             ->setLabel('reject')
             ->setLink('reject', 'DELETE');
-        
+
         $user = $this->userSession->getUser();
         $time = $this->timeFactory->getTime();
         $datetime = new DateTime();
@@ -104,33 +108,44 @@ class InvitationController extends Controller {
 
         /* @FIXME when the notification works remove this redirect and handle the notification action accept/reject links */
 
-        return $this->acceptInvite();
+        return $this->acceptInvite($token, $senderDomain);
     }
 
     /**
      * Save the invite and respond to the inviter through an /invite-accepted POST.
      * 
+     * @return DataResponse
      */
-    public function acceptInvite() {
+    public function acceptInvite(string $token = '', string $senderDomain = '')
+    {
         /* FIXME Build a POST containing sender and receiver token */
 
-        $senderDomain = $this->request->getParam(RDMeshService::PARAM_NAME_SENDER_DOMAIN, "");
-        if($senderDomain == "") {
-            return ['error' => 'sender domain missing'];
+        $tokenParam = RDMeshService::PARAM_NAME_TOKEN;
+        if ($token == '') {
+            return new DataResponse(
+                ['error' => 'sender token missing'],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+
+        if ($senderDomain == '') {
+            return new DataResponse(
+                ['error' => 'sender domain missing'],
+                Http::STATUS_NOT_FOUND
+            );
         }
         $fullInviteAcceptedEndpointURL = $this->rdMeshService->getFullInviteAcceptedEndpointURL($senderDomain);
-        $token = RDMeshService::PARAM_NAME_TOKEN;
-        $tokenValue = $this->request->getParam(RDMeshService::PARAM_NAME_TOKEN, "");
-        if($tokenValue == "") {
-            return ['error' => 'sender token missing'];
-        }
 
         /* TODO persist the invitation (sender token, domain) */
 
-        $recipientToken = RDMeshService::PARAM_NAME_RECIPIENT_TOKEN;
+        $recipientTokenParam = RDMeshService::PARAM_NAME_RECIPIENT_TOKEN;
         $recipientTokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
-        $acceptInviteURL = "$fullInviteAcceptedEndpointURL?$token=$tokenValue&$recipientToken=$recipientTokenValue";
-       
-        return ['message' =>"Follow the accept invite URL to accept the invite from $tokenValue", 'inviteAcceptedURL' => $acceptInviteURL];
+
+        $acceptInviteURL = "$fullInviteAcceptedEndpointURL?$tokenParam=$token&$recipientTokenParam=$recipientTokenValue";
+
+        return new DataResponse(
+            ['message' => "Follow the accept invite URL to accept the invite from $token", 'acceptInviteURL' => $acceptInviteURL],
+            Http::STATUS_OK
+        );
     }
 }

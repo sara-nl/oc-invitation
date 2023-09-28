@@ -10,6 +10,7 @@ return [
 		['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'POST'],
 
 		// bespoke API - mesh registry
+		['name' => 'registry#invite_link', 'url' => '/invite-link', 'verb' => 'GET'],
 		['name' => 'mesh_registry#forward_invite', 'url' => '/registry/forward-invite', 'verb' => 'GET'],
 
 		// OCM - Open Cloud Mesh protocol

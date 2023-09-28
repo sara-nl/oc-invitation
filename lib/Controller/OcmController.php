@@ -1,4 +1,5 @@
 <?php
+
 /**
  * OCM controller
  */
@@ -7,34 +8,48 @@ namespace OCA\RDMesh\Controller;
 
 use OCA\RDMesh\Service\RDMeshService;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
-class OcmController extends Controller {
+class OcmController extends Controller
+{
 
-    public function __construct($appName, IRequest $request) {
+    public function __construct($appName, IRequest $request)
+    {
         parent::__construct($appName, $request);
     }
 
     /**
      * Inform the sender of a share that it has been accepted by the receiver.
      * 
+     * FIXME: use method parameters
+
      * @NoCSRFRequired
      * @PublicPage
      */
-    public function inviteAccepted() {
-        $token = $this->request->getParam(RDMeshService::PARAM_NAME_TOKEN, "");
-        if ($token == "") {
-            return ['error' => 'sender token missing'];
+    public function inviteAccepted(string $token = '', string $recipientToken = '')
+    {
+        if ($token == '') {
+            return new DataResponse(
+                ['error' => 'sender token missing'],
+                Http::STATUS_NOT_FOUND
+            );
         }
-        $recipientToken = $this->request->getParam(RDMeshService::PARAM_NAME_RECIPIENT_TOKEN, "");
-        if ($recipientToken == "") {
-            return ['error' => 'recipient token missing'];
+        if ($recipientToken == '') {
+            return new DataResponse(
+                ['error' => 'recipient token missing'], 
+                Http::STATUS_NOT_FOUND
+            );
         }
         /** 
          * TODO At this point we should persist the recipient token and we can start sharing.
          * TODO the recipient already has the sender's token, consider '/invite-accepted' to be required to accept shares from the recipient.
          */
 
-        return ['message' => "You have accepted the invitation from $token. Your token ($recipientToken) has been send to $token. You can now begin sharing content with each other."];
+        return new DataResponse(
+            ['message' => "You have accepted the invitation from $token. Your token ($recipientToken) has been send to $token. You can now begin sharing content with each other."],
+            Http::STATUS_OK
+        );
     }
 }
