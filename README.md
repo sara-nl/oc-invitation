@@ -3,12 +3,11 @@
 ---
 ### Enhanced federated sharing between Research Drive instances.
 ---
-<br>
 
 #### Features
 * [Implements an invitation workflow](#invitation-workflow)
 * Implements a federated IDs address book
----
+
 #### Development
 * [How to build the app](#build-the-app)
 ---
