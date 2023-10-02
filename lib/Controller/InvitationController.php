@@ -7,35 +7,26 @@
 namespace OCA\RDMesh\Controller;
 
 use DateTime;
-use OCA\RDMesh\Service\RDMeshService;
+use OC;
+use OCA\RDMesh\Service\MeshService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
-use OCP\AppFramework\Utility\ITimeFactory;
+use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IRequest;
-use OCP\IUserSession;
 
 class InvitationController extends Controller
 {
 
-    private RDMeshService $rdMeshService;
-    private IUserSession $userSession;
-    private ITimeFactory $timeFactory;
-    private MeshRegistryController $meshRegistry;
+    private MeshService $meshService;
 
     public function __construct(
         $appName,
         IRequest $request,
-        IUserSession $userSession,
-        ITimeFactory $timeFactory,
-        RDMeshService $rdMeshService,
-        MeshRegistryController $meshRegistry
+        MeshService $meshService
     ) {
         parent::__construct($appName, $request);
-        $this->userSession = $userSession;
-        $this->timeFactory = $timeFactory;
-        $this->rdMeshService = $rdMeshService;
-        $this->meshRegistry = $meshRegistry;
+        $this->meshService = $meshService;
     }
 
     /**
@@ -45,7 +36,7 @@ class InvitationController extends Controller
      */
     public function generateInvite(string $email = '')
     {
-        \OC::$server->getLogger()->debug('generateInvite from email ' . $this->request->getParam(RDMeshService::PARAM_NAME_EMAIL));
+        \OC::$server->getLogger()->debug('generateInvite from email ' . $this->request->getParam(MeshService::PARAM_NAME_EMAIL));
         if ('' == $email) {
             return new DataResponse(
                 ['message' => 'You must provide the email address of the intended receiver of the invite.'],
@@ -54,8 +45,8 @@ class InvitationController extends Controller
         }
 
 
-        /* TODO send an email with the invitation link to the receiver */
-        $inviteLink = $this->rdMeshService->inviteLink();
+        /* TODO: send an email with the invitation link to the receiver */
+        $inviteLink = $this->meshService->inviteLink();
 
         return new DataResponse(
             [
@@ -75,40 +66,33 @@ class InvitationController extends Controller
     {
         \OC::$server->getLogger()->debug(" handleInvite : $token, $senderDomain");
 
-        /* @TODO do checks: token, sender domain, ... */
+        /* TODO: do checks: token, sender domain, ... */
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
-        // $notification->setMessage("$tokenValue from $senderDomainValue wants to share data with you, please click accept to accept the invitation. Or reject to decline.");
 
         $acceptAction = $notification->createAction();
-        $acceptInviteEndpointURL = $this->rdMeshService->getFullAcceptInviteEndpointURL();
         $acceptAction
             ->setLabel('accept')
-            ->setLink($acceptInviteEndpointURL, 'POST');
-        $rejectAction = $notification->createAction();
-        $rejectAction
-            ->setLabel('reject')
-            ->setLink('reject', 'DELETE');
+            ->setLink('/apps/rd-mesh/invitation/accept-invite', 'POST');
 
-        $user = $this->userSession->getUser();
-        $time = $this->timeFactory->getTime();
-        $datetime = new DateTime();
-        $datetime->setTimestamp($time);
-        $notification
-            ->setApp($this->appName)
-            ->setUser($user->getUID())
-            ->setDateTime($datetime)
-            ->setObject($this->appName, dechex($time))
-            ->setSubject('invitation', ['parameters'])
+        $declineAction = $notification->createAction();
+        $declineAction->setLabel('decline')
+            ->setLink('/apps/rd-mesh/invitation/decline-invite', 'DELETE');
+
+        $notification->setApp('notification-invite')
+            /* the user that has received the invite is logged in at this point */
+            ->setUser(OC::$server->getUserSession()->getUser()->getUID())
+            ->setDateTime(new DateTime())
+            ->setObject('federatedId', 'sjonnie@rd-2.nl')
+            ->setSubject('invitation', ['sjonnie@rd-2.nl'])
             ->addAction($acceptAction)
-            ->addAction($rejectAction);
+            ->addAction($declineAction);
 
         $manager->notify($notification);
 
-        /* @FIXME when the notification works remove this redirect and handle the notification action accept/reject links */
-
-        return $this->acceptInvite($token, $senderDomain);
+        $urlGenerator = \OC::$server->getURLGenerator();
+        return new RedirectResponse($urlGenerator->linkToRoute('files.view.index'));
     }
 
     /**
@@ -118,9 +102,9 @@ class InvitationController extends Controller
      */
     public function acceptInvite(string $token = '', string $senderDomain = '')
     {
-        /* FIXME Build a POST containing sender and receiver token */
+        /* FIXME: Build a POST containing sender and receiver token */
 
-        $tokenParam = RDMeshService::PARAM_NAME_TOKEN;
+        $tokenParam = MeshService::PARAM_NAME_TOKEN;
         if ($token == '') {
             return new DataResponse(
                 ['error' => 'sender token missing'],
@@ -134,11 +118,11 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
-        $fullInviteAcceptedEndpointURL = $this->rdMeshService->getFullInviteAcceptedEndpointURL($senderDomain);
+        $fullInviteAcceptedEndpointURL = $this->meshService->getFullInviteAcceptedEndpointURL($senderDomain);
 
-        /* TODO persist the invitation (sender token, domain) */
+        /* TODO: persist the invitation (sender token, domain) */
 
-        $recipientTokenParam = RDMeshService::PARAM_NAME_RECIPIENT_TOKEN;
+        $recipientTokenParam = MeshService::PARAM_NAME_RECIPIENT_TOKEN;
         $recipientTokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
 
         $acceptInviteURL = "$fullInviteAcceptedEndpointURL?$tokenParam=$token&$recipientTokenParam=$recipientTokenValue";
