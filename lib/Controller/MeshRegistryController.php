@@ -5,11 +5,12 @@
  * Endpoints:
  *      /get-domain
  *      /forward-invite
+ * 
  */
 
 namespace OCA\RDMesh\Controller;
 
-use OCA\RDMesh\Service\RDMeshService;
+use OCA\RDMesh\Service\MeshService;
 use OCA\Federation\TrustedServers;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -38,12 +39,12 @@ class MeshRegistryController extends Controller
         $wayfList = [];
         foreach ($trustedServers as $i => $server) {
             $host = parse_url($server['url'], PHP_URL_HOST);
-            // TODO check if the server supports new DataResponse([$invitationLink], Http::STATUS_OK);orkflow
+            // TODO: check if the server supports new DataResponse([$invitationLink], Http::STATUS_OK);orkflow
             // 
             $appName = $this->appName;
-            $acceptInviteEndpoint = trim(RDMeshService::ENDPOINT_HANDLE_INVITE, '/');
-            $tokenParam = RDMeshService::PARAM_NAME_TOKEN;
-            $senderDomainParam = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
+            $acceptInviteEndpoint = trim(MeshService::ENDPOINT_HANDLE_INVITE, '/');
+            $tokenParam = MeshService::PARAM_NAME_TOKEN;
+            $senderDomainParam = MeshService::PARAM_NAME_SENDER_DOMAIN;
             $link = "https://$host/apps/$appName/$acceptInviteEndpoint?$tokenParam=$token&$senderDomainParam=$senderDomain";
             $wayfList[$i] = $link;
         }
@@ -72,7 +73,7 @@ class MeshRegistryController extends Controller
             );
         }
 
-        /* TODO delegate to a WAYF page controller */
+        /* TODO: delegate to a WAYF page controller */
         $wayf = $this->getWAYF($token, $senderDomain);
 
         return new DataResponse(

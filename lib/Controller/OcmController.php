@@ -6,7 +6,6 @@
 
 namespace OCA\RDMesh\Controller;
 
-use OCA\RDMesh\Service\RDMeshService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;

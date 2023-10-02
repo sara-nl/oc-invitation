@@ -5,8 +5,8 @@
 
 namespace OCA\RDMesh\AppInfo;
 
-use OCA\RDMesh\Notifier\RDMeshNotifier;
-use OCA\RDMesh\Service\RDMeshService;
+use OCA\RDMesh\Service\MeshService;
+use OCA\RDMesh\Service\Notifier;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 
@@ -18,8 +18,8 @@ class RDMesh extends App {
 
         // instantiate the application configuration service
         $container = $this->getContainer();
-        $container->registerService('RDMeshService', function(IContainer $c) {
-            return new RDMeshService(
+        $container->registerService('MeshService', function(IContainer $c) {
+            return new MeshService(
                 self::APP_NAME,
                 $c->query('Config'),
             );
@@ -28,19 +28,19 @@ class RDMesh extends App {
             return $c->query('ServerContainer')->getConfig();
         });
 
-        $server = $container->getServer();
-        $manager = $server->getNotificationManager();
-        $manager->registerNotifier(function() use ($manager) {
-            \OC::$server->getLogger()->debug(' --- registerNotifier ---');
-          return new RDMeshNotifier(self::APP_NAME, \OC::$server->getL10NFactory());
-        }, function () {
-            $l = \OC::$server->getL10N('rd-mesh');
-            return [
-                'id' => 'rd-mesh',
-                'name' => $l->t('Science Mesh'),
-            ];
-        });
-        
+        $manager = \OC::$server->getNotificationManager();
+        $manager->registerNotifier(
+            function() {
+                return new Notifier(\OC::$server->getL10NFactory());
+            }, 
+            function() {
+                return [
+                    'id' => 'notification',
+                    'name' => 'notification name'
+                ];
+            }
+        );
+                
         // All route controllers are registered automatically through owncloud's 'Automatic Dependency Assembly'
 
     }

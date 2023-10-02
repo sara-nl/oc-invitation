@@ -4,7 +4,7 @@ namespace OCA\RDMesh\Service;
 
 use OCP\IConfig;
 
-class RDMeshService
+class MeshService
 {
 
     private $config;
@@ -78,11 +78,11 @@ class RDMeshService
         $forwardInviteEndpoint = $this->getFullForwardInviteEndpoint();
 
         // request the domain from the mesh registry service
-        $domainKey = RDMeshService::PARAM_NAME_SENDER_DOMAIN;
+        $domainKey = MeshService::PARAM_NAME_SENDER_DOMAIN;
         $domainValue = $this->getDomain();
 
         // the token is the federated ID of the session user
-        $tokenKey = RDMeshService::PARAM_NAME_TOKEN;
+        $tokenKey = MeshService::PARAM_NAME_TOKEN;
         $tokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
 
         $inviteLink = "$forwardInviteEndpoint?$domainKey=$domainValue&$tokenKey=$tokenValue";
