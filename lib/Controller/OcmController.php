@@ -23,7 +23,7 @@ class OcmController extends Controller
      * Inform the sender of a share that it has been accepted by the receiver.
      * 
      * FIXME: use method parameters
-
+     * 
      * @NoCSRFRequired
      * @PublicPage
      */

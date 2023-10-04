@@ -11,44 +11,22 @@
 namespace OCA\RDMesh\Controller;
 
 use OCA\RDMesh\Service\MeshService;
-use OCA\Federation\TrustedServers;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IRequest;
 
 class MeshRegistryController extends Controller
 {
 
-    private TrustedServers $trustedServers;
+    private MeshService $meshService;
 
 
-    public function __construct($appName, IRequest $request, TrustedServers $trustedServers)
+    public function __construct($appName, IRequest $request, MeshService $meshService)
     {
         parent::__construct($appName, $request);
-        $this->trustedServers = $trustedServers;
-    }
-
-    /**
-     * Returns the WAYF page.
-     */
-    private function getWAYF(string $token, string $senderDomain)
-    {
-        // get the mesh
-        $trustedServers = $this->trustedServers->getServers();
-        $wayfList = [];
-        foreach ($trustedServers as $i => $server) {
-            $host = parse_url($server['url'], PHP_URL_HOST);
-            // TODO: check if the server supports new DataResponse([$invitationLink], Http::STATUS_OK);orkflow
-            // 
-            $appName = $this->appName;
-            $acceptInviteEndpoint = trim(MeshService::ENDPOINT_HANDLE_INVITE, '/');
-            $tokenParam = MeshService::PARAM_NAME_TOKEN;
-            $senderDomainParam = MeshService::PARAM_NAME_SENDER_DOMAIN;
-            $link = "https://$host/apps/$appName/$acceptInviteEndpoint?$tokenParam=$token&$senderDomainParam=$senderDomain";
-            $wayfList[$i] = $link;
-        }
-        return $wayfList;
+        $this->meshService = $meshService;
     }
 
     /**
@@ -57,31 +35,33 @@ class MeshRegistryController extends Controller
      * @NoCSRFRequired
      * @PublicPage
      */
-    public function forwardInvite(string $token = '', string $senderDomain = '')
+    public function forwardInvite(string $token = '', string $senderDomain = '', string $senderEmail = '')
     {
         if ($token == '') {
             return new DataResponse(
-                ['error' => 'sender token missing'],
+                ['error' => 'token missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
-
         if ($senderDomain == '') {
             return new DataResponse(
                 ['error' => 'sender domain missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
+        if ($senderEmail == '') {
+            return new DataResponse(
+                ['error' => 'sender email missing'],
+                Http::STATUS_NOT_FOUND
+            );
+        }
 
-        /* TODO: delegate to a WAYF page controller */
-        $wayf = $this->getWAYF($token, $senderDomain);
-
-        return new DataResponse(
-            [
-                'WAYF' => 'To continue, please choose your provider from the list and follow instructions.',
-                'please choose' => $wayf,
-            ],
-            Http::STATUS_OK
-        );
+        $urlGenerator = \OC::$server->getURLGenerator();
+        $params = [
+            MeshService::PARAM_NAME_TOKEN => $token, 
+            MeshService::PARAM_NAME_SENDER_DOMAIN => $senderDomain,
+            MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail,
+        ];
+        return new RedirectResponse($urlGenerator->linkToRoute($this->meshService->getWayfPageRoute(), $params));
     }
 }

@@ -14,6 +14,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\IRequest;
+use Ramsey\Uuid\Uuid;
 
 class InvitationController extends Controller
 {
@@ -31,22 +32,33 @@ class InvitationController extends Controller
 
     /**
      * Generates an invite
-     * 
+
+     * @NoAdminRequired
      * @NoCSRFRequired
      */
     public function generateInvite(string $email = '')
     {
-        \OC::$server->getLogger()->debug('generateInvite from email ' . $this->request->getParam(MeshService::PARAM_NAME_EMAIL));
         if ('' == $email) {
             return new DataResponse(
-                ['message' => 'You must provide the email address of the intended receiver of the invite.'],
+                ['message' => 'You must provide the senderEmail address of the intended receiver of the invite.'],
                 Http::STATUS_NOT_FOUND
             );
         }
 
+        // generate the token
+        // TODO: persist this token
+        $token = Uuid::uuid4();
 
-        /* TODO: send an email with the invitation link to the receiver */
-        $inviteLink = $this->meshService->inviteLink();
+        // add the necessary parameters to the link
+        $params = [
+            MeshService::PARAM_NAME_TOKEN => $token,
+            MeshService::PARAM_NAME_SENDER_DOMAIN => $this->meshService->getDomain(),
+            MeshService::PARAM_NAME_SENDER_EMAIL => \OC::$server->getUserSession()->getUser()->getEmailAddress(),
+        ];
+
+        $inviteLink = $this->meshService->inviteLink($params);
+
+        // TODO: send an email with the invitation link to the receiver ($email)
 
         return new DataResponse(
             [
@@ -60,13 +72,13 @@ class InvitationController extends Controller
     /**
      * Handle the invite by giving the option to accept or reject it.
      * 
+     * @NoAdminRequired
      * @NoCSRFRequired
      */
-    public function handleInvite(string $token = '', string $senderDomain = '')
+    public function handleInvite(string $token = '', string $senderDomain = '', string $senderEmail = '')
     {
-        \OC::$server->getLogger()->debug(" handleInvite : $token, $senderDomain");
 
-        /* TODO: do checks: token, sender domain, ... */
+        /* TODO: do checks: token, sender domain, sender email, ... */
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
@@ -84,8 +96,12 @@ class InvitationController extends Controller
             /* the user that has received the invite is logged in at this point */
             ->setUser(OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
-            ->setObject('federatedId', 'sjonnie@rd-2.nl')
-            ->setSubject('invitation', ['sjonnie@rd-2.nl'])
+            // FIXME: find out on what object actually means
+            ->setObject('senderDomain', $senderDomain)
+            ->setSubject('invitation', [
+                MeshService::PARAM_NAME_TOKEN => $token, 
+                MeshService::PARAM_NAME_SENDER_DOMAIN => $senderDomain,
+                MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail])
             ->addAction($acceptAction)
             ->addAction($declineAction);
 
@@ -98,6 +114,7 @@ class InvitationController extends Controller
     /**
      * Save the invite and respond to the inviter through an /invite-accepted POST.
      * 
+     * @NoAdminRequired
      * @return DataResponse
      */
     public function acceptInvite(string $token = '', string $senderDomain = '')
