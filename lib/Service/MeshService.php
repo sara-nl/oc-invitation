@@ -14,11 +14,13 @@ class MeshService
     public const ENDPOINT_ACCEPT_INVITE = '/accept-invite';
     public const ENDPOINT_HANDLE_INVITE = '/handle-invite';
     public const ENDPOINT_INVITE_ACCEPTED = '/ocm/invite-accepted';
+    private const ROUTE_PAGE_WAYF = 'page.wayf';
     public const PARAM_NAME_SENDER_DOMAIN = 'senderDomain';
     public const PARAM_NAME_RECIPIENT_DOMAIN = 'recipientDomain';
     public const PARAM_NAME_TOKEN = 'token';
     public const PARAM_NAME_RECIPIENT_TOKEN = 'recipientToken';
     public const PARAM_NAME_EMAIL = 'email';
+    public const PARAM_NAME_SENDER_EMAIL = 'senderEmail';
 
     public function __construct($appName, IConfig $config)
     {
@@ -40,11 +42,22 @@ class MeshService
     }
 
     /**
-     * Returns the full 'https://...host.../forward-invite' endpoint URL of this EFSS instance.
      * 
      * @return string
      */
-    public function getFullAcceptInviteEndpointURL()
+    public function getWayfPageRoute(): string
+    {
+        $appName = $this->appName;
+        $wayfPageEndpoint = self::ROUTE_PAGE_WAYF;
+        return "$appName.$wayfPageEndpoint";
+    }
+
+    /**
+     * Returns the full 'https://...host.../forward-invite' endpoint URL of this EFSS instance.
+     * 
+     * @return string the full /accept-invite endpoint URL
+     */
+    public function getFullAcceptInviteEndpointURL(): string
     {
         $host = $this->getDomain();
         $appName = $this->appName;
@@ -55,9 +68,10 @@ class MeshService
     /**
      * Returns the full 'https://...host.../invite-accepted' endpoint URL of this EFSS instance.
      * 
-     * @return string
+     * @param string $senderHost the host of the sender of the invitation
+     * @return string the full /invite-accepted endpoint URL
      */
-    public function getFullInviteAcceptedEndpointURL(string $senderHost = "")
+    public function getFullInviteAcceptedEndpointURL(string $senderHost = ""): string
     {
         if ($senderHost == "") {
             return ['error' => 'unable to build full intive-accepted endpoint URL, senderHost not specified'];
@@ -68,40 +82,39 @@ class MeshService
     }
 
     /**
-     * Returns an invite link.
+     * Returns the invite link with the specified parameters.
      * 
-     * @return string
+     * @param array the parameters to include in the link
+     * @return string the invite link
      */
-    public function inviteLink()
+    public function inviteLink(array $params): string
     {
         // the forward invite endpoint
         $forwardInviteEndpoint = $this->getFullForwardInviteEndpoint();
 
-        // request the domain from the mesh registry service
-        $domainKey = MeshService::PARAM_NAME_SENDER_DOMAIN;
-        $domainValue = $this->getDomain();
+        $parameters = '';
+        foreach ($params as $key => $value) {
+            $parameters .= "&$key=$value";
+        }
+        $parameters = trim($parameters, "&");
 
-        // the token is the federated ID of the session user
-        $tokenKey = MeshService::PARAM_NAME_TOKEN;
-        $tokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
-
-        $inviteLink = "$forwardInviteEndpoint?$domainKey=$domainValue&$tokenKey=$tokenValue";
+        $inviteLink = "$forwardInviteEndpoint?$parameters";
         return $inviteLink;
     }
 
     /**
      * Returns the domain of this mesh node as configured.
      * 
-     * @return string
+     * @return string the domain
      */
-    public function getDomain()
+    public function getDomain(): string
     {
         $domain = $this->getAppValue('domain');
         return $domain;
     }
 
     /**
-     * Returns the value of the specified application key
+     * Returns the value of the specified application key.
      * 
      * @return mixed
      */
@@ -111,9 +124,9 @@ class MeshService
     }
 
     /**
-     * Sets the value of the specified application key
+     * Sets the value of the specified application key.
      */
-    public function setAppValue($key, $value)
+    public function setAppValue($key, $value): void
     {
         $this->config->setAppValue($this->appName, $key, $value);
     }
