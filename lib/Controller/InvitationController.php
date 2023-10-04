@@ -40,7 +40,7 @@ class InvitationController extends Controller
     {
         if ('' == $email) {
             return new DataResponse(
-                ['message' => 'You must provide the senderEmail address of the intended receiver of the invite.'],
+                ['message' => 'You must provide the email address of the intended receiver of the invite.'],
                 Http::STATUS_NOT_FOUND
             );
         }
