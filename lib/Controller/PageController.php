@@ -27,8 +27,12 @@ class PageController extends Controller
     * 
     * @NoCSRFRequired
     * @PublicPage
+     * @param string $token the token
+     * @param string $senderDomain the domain of the sender
+     * @param string $senderEmail the email of the sender
+     * @return void
     */
-   public function wayf(string $token, string $senderDomain, string $senderEmail)
+   public function wayf(string $token, string $senderDomain, string $senderEmail): void
    {
 
       echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';

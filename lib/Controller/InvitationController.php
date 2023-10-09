@@ -8,6 +8,7 @@ namespace OCA\RDMesh\Controller;
 
 use DateTime;
 use OC;
+use OCA\RDMesh\HttpClient;
 use OCA\RDMesh\Service\MeshService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -31,12 +32,14 @@ class InvitationController extends Controller
     }
 
     /**
-     * Generates an invite
+     * Generates an invite and sends it to the specified email address.
 
      * @NoAdminRequired
      * @NoCSRFRequired
+     * @param string email the email address to send the invite to
+     * @return DataResponse the result
      */
-    public function generateInvite(string $email = '')
+    public function generateInvite(string $email = ''): DataResponse
     {
         if ('' == $email) {
             return new DataResponse(
@@ -74,11 +77,16 @@ class InvitationController extends Controller
      * 
      * @NoAdminRequired
      * @NoCSRFRequired
+     * @param string $token the token
+     * @param string $senderDomain the domain of the sender
+     * @param string $senderEmail the email of the sender
+     * @return RedirectResponse
      */
-    public function handleInvite(string $token = '', string $senderDomain = '', string $senderEmail = '')
+    public function handleInvite(string $token = '', string $senderDomain = '', string $senderEmail = ''): RedirectResponse
     {
 
-        /* TODO: do checks: token, sender domain, sender email, ... */
+        // TODO: do checks: token, sender domain, sender email, ...
+        // TODO: persist invite
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
@@ -86,11 +94,11 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink('/apps/rd-mesh/invitation/accept-invite', 'POST');
+            ->setLink("/apps/rd-mesh/accept-invite?token=$token", 'GET');
 
         $declineAction = $notification->createAction();
         $declineAction->setLabel('decline')
-            ->setLink('/apps/rd-mesh/invitation/decline-invite', 'DELETE');
+            ->setLink('/apps/rd-mesh/decline-invite', 'DELETE');
 
         $notification->setApp('notification-invite')
             /* the user that has received the invite is logged in at this point */
@@ -99,9 +107,10 @@ class InvitationController extends Controller
             // FIXME: find out on what object actually means
             ->setObject('senderDomain', $senderDomain)
             ->setSubject('invitation', [
-                MeshService::PARAM_NAME_TOKEN => $token, 
+                MeshService::PARAM_NAME_TOKEN => $token,
                 MeshService::PARAM_NAME_SENDER_DOMAIN => $senderDomain,
-                MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail])
+                MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail
+            ])
             ->addAction($acceptAction)
             ->addAction($declineAction);
 
@@ -112,16 +121,19 @@ class InvitationController extends Controller
     }
 
     /**
-     * Save the invite and respond to the inviter through an /invite-accepted POST.
+     * Notify the inviter that we accept the invite.
+     * The response should contain the inviter's info which we will persist together with the invite.
+     * And at that point the invitation has successfully completed.
      * 
      * @NoAdminRequired
+     * @NoCSRFRequired
+     * @param string $token the token
      * @return DataResponse
      */
-    public function acceptInvite(string $token = '', string $senderDomain = '')
+    public function acceptInvite(string $token = ''): DataResponse
     {
-        /* FIXME: Build a POST containing sender and receiver token */
+        \OC::$server->getLogger()->debug(" - acceptInvite - " . $token);
 
-        $tokenParam = MeshService::PARAM_NAME_TOKEN;
         if ($token == '') {
             return new DataResponse(
                 ['error' => 'sender token missing'],
@@ -129,24 +141,28 @@ class InvitationController extends Controller
             );
         }
 
-        if ($senderDomain == '') {
+        // TODO: retrieve invite from db
+        $dummySenderDomain = "rd-1.nl";
+
+        $params = [
+            MeshService::PARAM_NAME_RECIPIENT_PROVIDER => $this->meshService->getDomain(),
+            MeshService::PARAM_NAME_TOKEN => $token,
+            MeshService::PARAM_NAME_USER_ID => \OC::$server->getUserSession()->getUser()->getCloudId(),
+            MeshService::PARAM_NAME_EMAIL => \OC::$server->getUserSession()->getUser()->getEMailAddress(),
+            MeshService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
+        ];
+        $url = $this->meshService->getFullInviteAcceptedEndpointURL($dummySenderDomain);
+        $httpClient = new HttpClient();
+        $response = $httpClient->curlPost($url, $params);
+        if ($response['success'] == true) {
             return new DataResponse(
-                ['error' => 'sender domain missing'],
-                Http::STATUS_NOT_FOUND
+                $response,
+                Http::STATUS_OK
             );
         }
-        $fullInviteAcceptedEndpointURL = $this->meshService->getFullInviteAcceptedEndpointURL($senderDomain);
-
-        /* TODO: persist the invitation (sender token, domain) */
-
-        $recipientTokenParam = MeshService::PARAM_NAME_RECIPIENT_TOKEN;
-        $recipientTokenValue = \OC::$server->getUserSession()->getUser()->getCloudId();
-
-        $acceptInviteURL = "$fullInviteAcceptedEndpointURL?$tokenParam=$token&$recipientTokenParam=$recipientTokenValue";
-
         return new DataResponse(
-            ['message' => "Follow the accept invite URL to accept the invite from $token", 'acceptInviteURL' => $acceptInviteURL],
-            Http::STATUS_OK
+            $response,
+            Http::STATUS_NOT_FOUND
         );
     }
 }

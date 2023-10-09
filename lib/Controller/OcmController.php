@@ -26,28 +26,63 @@ class OcmController extends Controller
      * 
      * @NoCSRFRequired
      * @PublicPage
+     * @param string $recipientProvider
+     * @param string $token the invite token
+     * @param string $userID the recipient cloud ID
+     * @param string $email the recipient email
+     * @param string $name the recipient name
+     * @return DataResponse
      */
-    public function inviteAccepted(string $token = '', string $recipientToken = '')
-    {
+    public function inviteAccepted(
+        string $recipientProvider = '',
+        string $token = '',
+        string $userID = '',
+        string $email = '',
+        string $name = ''
+    ): DataResponse {
+        if ($recipientProvider == '') {
+            return new DataResponse(
+                ['error' => 'recipient provider missing'],
+                Http::STATUS_NOT_FOUND
+            );
+        }
         if ($token == '') {
             return new DataResponse(
                 ['error' => 'sender token missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
-        if ($recipientToken == '') {
+        if ($userID == '') {
             return new DataResponse(
-                ['error' => 'recipient token missing'], 
+                ['error' => 'recipient user ID missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
-        /** 
-         * TODO At this point we should persist the recipient token and we can start sharing.
-         * TODO the recipient already has the sender's token, consider '/invite-accepted' to be required to accept shares from the recipient.
-         */
+        if ($email == '') {
+            return new DataResponse(
+                ['error' => 'recipient email missing'],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+        if ($name == '') {
+            return new DataResponse(
+                ['error' => 'recipient name missing'],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+
+        // TODO: verify/persist token, recipient cloud ID, provider, email, name
+        // FIXME: retrieve user info from the db based using the token as reference
+        $dummyCloudID = 'maikel@rd-1.nl';
+        $dummyEmailAddress = 'maikel@rd-1.nl';
+        $dummyDisplayName = 'Maikel';
 
         return new DataResponse(
-            ['message' => "You have accepted the invitation from $token. Your token ($recipientToken) has been send to $token. You can now begin sharing content with each other."],
+            [
+                'userID' => $dummyCloudID,
+                'email' => $dummyEmailAddress,
+                'name' => $dummyDisplayName,
+            ],
             Http::STATUS_OK
         );
     }

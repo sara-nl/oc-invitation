@@ -16,11 +16,14 @@ class MeshService
     public const ENDPOINT_INVITE_ACCEPTED = '/ocm/invite-accepted';
     private const ROUTE_PAGE_WAYF = 'page.wayf';
     public const PARAM_NAME_SENDER_DOMAIN = 'senderDomain';
+    public const PARAM_NAME_RECIPIENT_PROVIDER = 'recipientProvider';
     public const PARAM_NAME_RECIPIENT_DOMAIN = 'recipientDomain';
     public const PARAM_NAME_TOKEN = 'token';
+    public const PARAM_NAME_USER_ID = 'userID';
     public const PARAM_NAME_RECIPIENT_TOKEN = 'recipientToken';
     public const PARAM_NAME_EMAIL = 'email';
     public const PARAM_NAME_SENDER_EMAIL = 'senderEmail';
+    public const PARAM_NAME_NAME = 'name';
 
     public function __construct($appName, IConfig $config)
     {
@@ -53,7 +56,7 @@ class MeshService
     }
 
     /**
-     * Returns the full 'https://...host.../forward-invite' endpoint URL of this EFSS instance.
+     * Returns the full 'https://...host.../accept-invite' endpoint URL of this EFSS instance.
      * 
      * @return string the full /accept-invite endpoint URL
      */
@@ -77,8 +80,8 @@ class MeshService
             return ['error' => 'unable to build full intive-accepted endpoint URL, senderHost not specified'];
         }
         $appName = $this->appName;
-        $acceptInviteEndpoint = trim(self::ENDPOINT_INVITE_ACCEPTED, "/");
-        return "https://$senderHost/apps/$appName/$acceptInviteEndpoint";
+        $inviteAcceptedEndpoint = trim(self::ENDPOINT_INVITE_ACCEPTED, "/");
+        return "https://$senderHost/apps/$appName/$inviteAcceptedEndpoint";
     }
 
     /**

@@ -15,6 +15,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
+use OCP\AppFramework\Http\Response;
 use OCP\IRequest;
 
 class MeshRegistryController extends Controller
@@ -34,8 +35,13 @@ class MeshRegistryController extends Controller
 
      * @NoCSRFRequired
      * @PublicPage
+     * @param string $token the token
+     * @param string $senderDomain the domain of the sender
+     * @param string $senderEmail the email of the sender
+     * TODO: check the response type
+     * @return Response
      */
-    public function forwardInvite(string $token = '', string $senderDomain = '', string $senderEmail = '')
+    public function forwardInvite(string $token = '', string $senderDomain = '', string $senderEmail = ''): Response
     {
         if ($token == '') {
             return new DataResponse(
