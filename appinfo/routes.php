@@ -7,7 +7,8 @@ return [
 		// bespoke API - invites
 		['name' => 'invitation#generate_invite', 'url' => '/generate-invite', 'verb' => 'GET'],
 		['name' => 'invitation#handle_invite', 'url' => '/handle-invite', 'verb' => 'GET'],
-		['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'POST'],
+		// TODO: change method to POST ...? How to create a notification POST action ?!
+		['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'GET'],
 
 		// bespoke API - mesh registry
 		['name' => 'registry#invite_link', 'url' => '/invite-link', 'verb' => 'GET'],
@@ -17,7 +18,7 @@ return [
 
 		// OCM - Open Cloud Mesh protocol
 		/* FIXME change to POST */
-		['name' => 'ocm#invite_accepted', 'url' => '/ocm/invite-accepted', 'verb' => 'GET'],
+		['name' => 'ocm#invite_accepted', 'url' => '/ocm/invite-accepted', 'verb' => 'POST'],
 
 		// private API
 		['name' => 'page#wayf', 'url' => '/page/wayf', 'verb' => 'GET'],
