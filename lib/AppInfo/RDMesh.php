@@ -6,7 +6,9 @@
 
 namespace OCA\RDMesh\AppInfo;
 
+use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Service\InvitationNotifier;
+use OCA\RDMesh\Service\InvitationService;
 use OCA\RDMesh\Service\MeshService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
@@ -27,6 +29,16 @@ class RDMesh extends App
                 return new MeshService(
                     self::APP_NAME,
                     $c->query('Config'),
+                );
+            }
+        );
+        $container->registerService(
+            'InvitationService',
+            function () {
+                return new InvitationService(
+                    new InvitationMapper(
+                        \OC::$server->getDatabaseConnection()
+                    )
                 );
             }
         );

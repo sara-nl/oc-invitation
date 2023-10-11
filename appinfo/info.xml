@@ -4,7 +4,8 @@
     <id>rd-mesh</id>
     <name>Research Drive Mesh App</name>
     <description>Research Drive Mesh App</description>
-    <version>0.1</version>
+    <version>0.001</version>
+    <!-- TODO: check licence-->
     <licence>mit</licence>
     <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
 <!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
@@ -31,5 +32,8 @@
     <dependencies>
         <owncloud min-version="10" max-version="13"/>
     </dependencies>
+
+    <!-- FIXME: uncomment when migration works -->
+    <!-- <use-migrations>true</use-migrations> -->
 
 </info>

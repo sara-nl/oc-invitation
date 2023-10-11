@@ -11,6 +11,11 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\IRequest;
 
+/**
+ * Class OcmController.
+ * Enhances the existing federatedfilesharing app with the ocm endpoint '/invite-accepted'
+ * 
+ */
 class OcmController extends Controller
 {
 
@@ -20,7 +25,7 @@ class OcmController extends Controller
     }
 
     /**
-     * Inform the sender of a share that it has been accepted by the receiver.
+     * Inform the sender of the invite that it has been accepted by the recipient.
      * 
      * FIXME: use method parameters
      * 
@@ -71,8 +76,7 @@ class OcmController extends Controller
             );
         }
 
-        // TODO: verify/persist token, recipient cloud ID, provider, email, name
-        // FIXME: retrieve user info from the db based using the token as reference
+        // FIXME: retrieve user info from the db based using the token as reference and do the necessary checks
         $dummyCloudID = 'maikel@rd-1.nl';
         $dummyEmailAddress = 'maikel@rd-1.nl';
         $dummyDisplayName = 'Maikel';

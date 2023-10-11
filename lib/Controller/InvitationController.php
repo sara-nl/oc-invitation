@@ -8,7 +8,9 @@ namespace OCA\RDMesh\Controller;
 
 use DateTime;
 use OC;
+use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\HttpClient;
+use OCA\RDMesh\Service\InvitationService;
 use OCA\RDMesh\Service\MeshService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -21,14 +23,17 @@ class InvitationController extends Controller
 {
 
     private MeshService $meshService;
+    private InvitationService $invitationService;
 
     public function __construct(
         $appName,
         IRequest $request,
-        MeshService $meshService
+        MeshService $meshService,
+        InvitationService $invitationService
     ) {
         parent::__construct($appName, $request);
         $this->meshService = $meshService;
+        $this->invitationService = $invitationService;
     }
 
     /**
@@ -43,25 +48,35 @@ class InvitationController extends Controller
     {
         if ('' == $email) {
             return new DataResponse(
-                ['message' => 'You must provide the email address of the intended receiver of the invite.'],
+                ['message' => 'You must provide the email address of the intended recipient of the invite.'],
                 Http::STATUS_NOT_FOUND
             );
         }
 
         // generate the token
-        // TODO: persist this token
         $token = Uuid::uuid4();
 
         // add the necessary parameters to the link
+        // TODO: decide what parameters actually must/can be (savely) send
         $params = [
             MeshService::PARAM_NAME_TOKEN => $token,
-            MeshService::PARAM_NAME_SENDER_DOMAIN => $this->meshService->getDomain(),
-            MeshService::PARAM_NAME_SENDER_EMAIL => \OC::$server->getUserSession()->getUser()->getEmailAddress(),
+            MeshService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshService->getDomain(),
         ];
 
         $inviteLink = $this->meshService->inviteLink($params);
 
-        // TODO: send an email with the invitation link to the receiver ($email)
+        // persist the invite
+        $invitation = new Invitation();
+        $invitation->setToken($token);
+        $invitation->setProviderDomain($this->meshService->getDomain());
+        $invitation->setSenderCloudId(OC::$server->getUserSession()->getUser()->getCloudId());
+        $invitation->setTimestamp(time());
+        $invitation->setStatus(Invitation::STATUS_OPEN);
+        $this->invitationService->insert($invitation);
+
+        // TODO: send an email with the invitation link to the recipient ($email)
+        //       note that the status of the invitation should change to 'invalid' in case of failure
+        //       we may even consider starting with status 'new' and change this after the email has been send
 
         return new DataResponse(
             [
@@ -82,7 +97,7 @@ class InvitationController extends Controller
      * @param string $senderEmail the email of the sender
      * @return RedirectResponse
      */
-    public function handleInvite(string $token = '', string $senderDomain = '', string $senderEmail = ''): RedirectResponse
+    public function handleInvite(string $token = '', string $providerDomain = ''): RedirectResponse
     {
 
         // TODO: do checks: token, sender domain, sender email, ...
@@ -105,11 +120,10 @@ class InvitationController extends Controller
             ->setUser(OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
             // FIXME: find out on what object actually means
-            ->setObject('senderDomain', $senderDomain)
+            ->setObject('providerDomain', $providerDomain)
             ->setSubject('invitation', [
                 MeshService::PARAM_NAME_TOKEN => $token,
-                MeshService::PARAM_NAME_SENDER_DOMAIN => $senderDomain,
-                MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail
+                MeshService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
             ])
             ->addAction($acceptAction)
             ->addAction($declineAction);

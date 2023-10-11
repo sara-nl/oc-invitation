@@ -27,17 +27,16 @@ class PageController extends Controller
     * 
     * @NoCSRFRequired
     * @PublicPage
-     * @param string $token the token
-     * @param string $senderDomain the domain of the sender
-     * @param string $senderEmail the email of the sender
-     * @return void
+    * @param string $token the token
+    * @param string $providerDomain the domain of the sender
+    * @return void
     */
-   public function wayf(string $token, string $senderDomain, string $senderEmail): void
+   public function wayf(string $token, string $providerDomain): void
    {
 
       echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
       // TODO: retrieve the mesh servers info from the db
-      foreach ($this->getWAYFURLs($token, $senderDomain, $senderEmail) as $i => $url) {
+      foreach ($this->getWAYFURLs($token, $providerDomain) as $i => $url) {
          echo print_r("<a href=\"$url\">$url</a>", true) . '</html>';
       }
       echo '</html>';
@@ -48,23 +47,22 @@ class PageController extends Controller
    /**
     * Returns the WAYF URLs.
     */
-   private function getWAYFURLs(string $token, string $senderDomain, string $senderEmail): array
+   private function getWAYFURLs(string $token, string $providerDomain): array
    {
       // get the mesh
       $trustedServers = $this->trustedServers->getServers();
       $wayfList = [];
       foreach ($trustedServers as $i => $server) {
 
-         // FIXME: request the full owncloud root url, ie. the part before /apps/
-         //                     |
-         //                     v
+         // TODO: we assume that the trusted server domain is the full owncloud root url, ie. the part before /apps/
+         //
          //        +----------------------------+
          //        |                            |
          //        https://owncloud.mydomain.org/apps/rd-mesh/...
          //
-         // TODO: We must fully figure out how to deal with domains, hosts, and designing the request functions for these.
+         // TODO: We must figure out how to deal with domains, hosts, and designing the request functions for these.
          //       plus if required the configuration of these.
-
+         
          $host = parse_url($server['url'], PHP_URL_HOST);
 
          // TODO: check if the server supports the invitation workflow
@@ -72,9 +70,8 @@ class PageController extends Controller
          $appName = $this->appName;
          $handleInviteEndpoint = trim(MeshService::ENDPOINT_HANDLE_INVITE, '/');
          $tokenParam = MeshService::PARAM_NAME_TOKEN;
-         $senderDomainParam = MeshService::PARAM_NAME_SENDER_DOMAIN;
-         $senderEmailParam = MeshService::PARAM_NAME_SENDER_EMAIL;
-         $link = "https://$host/apps/$appName/$handleInviteEndpoint?$tokenParam=$token&$senderDomainParam=$senderDomain&$senderEmailParam=$senderEmail";
+         $providerDomainParam = MeshService::PARAM_NAME_PROVIDER_DOMAIN;
+         $link = "https://$host/apps/$appName/$handleInviteEndpoint?$tokenParam=$token&$providerDomainParam=$providerDomain";
          $wayfList[$i] = $link;
       }
 
