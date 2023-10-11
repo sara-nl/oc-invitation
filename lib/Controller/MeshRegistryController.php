@@ -41,7 +41,7 @@ class MeshRegistryController extends Controller
      * TODO: check the response type
      * @return Response
      */
-    public function forwardInvite(string $token = '', string $senderDomain = '', string $senderEmail = ''): Response
+    public function forwardInvite(string $token = '', string $providerDomain = ''): Response
     {
         if ($token == '') {
             return new DataResponse(
@@ -49,24 +49,17 @@ class MeshRegistryController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
-        if ($senderDomain == '') {
+        if ($providerDomain == '') {
             return new DataResponse(
-                ['error' => 'sender domain missing'],
-                Http::STATUS_NOT_FOUND
-            );
-        }
-        if ($senderEmail == '') {
-            return new DataResponse(
-                ['error' => 'sender email missing'],
+                ['error' => 'provider domain missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
 
         $urlGenerator = \OC::$server->getURLGenerator();
         $params = [
-            MeshService::PARAM_NAME_TOKEN => $token, 
-            MeshService::PARAM_NAME_SENDER_DOMAIN => $senderDomain,
-            MeshService::PARAM_NAME_SENDER_EMAIL => $senderEmail,
+            MeshService::PARAM_NAME_TOKEN => $token,
+            MeshService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
         ];
         return new RedirectResponse($urlGenerator->linkToRoute($this->meshService->getWayfPageRoute(), $params));
     }
