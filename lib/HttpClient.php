@@ -2,6 +2,7 @@
 
 namespace OCA\RDMesh;
 
+use OCA\RDMesh\AppInfo\RDMesh;
 use OCP\AppFramework\Http;
 
 class HttpClient
@@ -40,7 +41,7 @@ class HttpClient
             if ($message == '') {
                 $message .= 'no error info';
             }
-            \OC::$server->getLogger()->error("curlPost error: " . $message);
+            \OC::$server->getLogger()->error("curlPost error: " . $message, ['app' => RDMesh::APP_NAME]);
             return ['message' => $message, 'success' => false];
         } else {
             return ['response' => $output, 'success' => true];

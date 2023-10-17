@@ -6,6 +6,10 @@
 
 namespace OCA\RDMesh\Controller;
 
+use OCA\RDMesh\Db\Schema;
+use OCA\RDMesh\Federation\Invitation;
+use OCA\RDMesh\Service\InvitationService;
+use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -18,10 +22,12 @@ use OCP\IRequest;
  */
 class OcmController extends Controller
 {
+    private InvitationService $invitationService;
 
-    public function __construct($appName, IRequest $request)
+    public function __construct($appName, IRequest $request, InvitationService $invitationService)
     {
         parent::__construct($appName, $request);
+        $this->invitationService = $invitationService;
     }
 
     /**
@@ -31,7 +37,7 @@ class OcmController extends Controller
      * 
      * @NoCSRFRequired
      * @PublicPage
-     * @param string $recipientProvider
+     * @param string $recipientProvider maps to recipient_domain in the Invitation entity
      * @param string $token the invite token
      * @param string $userID the recipient cloud ID
      * @param string $email the recipient email
@@ -76,16 +82,41 @@ class OcmController extends Controller
             );
         }
 
-        // FIXME: retrieve user info from the db based using the token as reference and do the necessary checks
-        $dummyCloudID = 'maikel@rd-1.nl';
-        $dummyEmailAddress = 'maikel@rd-1.nl';
-        $dummyDisplayName = 'Maikel';
+        $invitation = null;
+        try {
+            $invitation = $this->invitationService->findByToken($token);
+        } catch (NotFoundException $e) {
+            return new DataResponse(
+                ['error' => '/invite-accepted failed', 'message' => $e->getMessage()],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+
+        // update the invitation with the receiver's info
+        $updateResult = $this->invitationService->update([
+            'id' => $invitation->getId(),
+            Schema::Invitation_recipient_domain => $recipientProvider,
+            Schema::Invitation_recipient_cloud_id => $userID,
+            Schema::Invitation_recipient_email => $email,
+            Schema::Invitation_recipient_name => $name,
+            Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
+        ]);
+        if ($updateResult == false) {
+            return new DataResponse(
+                [
+                    'message' => 'Failed to handle /invite-accepted'
+                ],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+
+        // TODO: at this point a notification could/should be created to inform the sender that the invite has been accepted. 
 
         return new DataResponse(
             [
-                'userID' => $dummyCloudID,
-                'email' => $dummyEmailAddress,
-                'name' => $dummyDisplayName,
+                'userID' => $invitation->getSenderCloudId(),
+                'email' => $invitation->getSenderEmail(),
+                'name' => $invitation->getSenderName(),
             ],
             Http::STATUS_OK
         );
