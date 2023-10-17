@@ -13,12 +13,10 @@ class InvitationNotifier implements INotifier
 {
 
     protected $factory;
-    private MeshService $meshService;
 
-    public function __construct(\OCP\L10N\IFactory $factory, MeshService $meshService)
+    public function __construct(\OCP\L10N\IFactory $factory)
     {
         $this->factory = $factory;
-        $this->meshService = $meshService;
     }
 
     /**

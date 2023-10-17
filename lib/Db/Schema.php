@@ -17,7 +17,11 @@ class Schema
     public const Invitation_provider_domain = 'provider_domain';
     public const Invitation_recipient_domain = 'recipient_domain';
     public const Invitation_sender_cloud_id = 'sender_cloud_id';
+    public const Invitation_sender_email = 'sender_email';
+    public const Invitation_sender_name = 'sender_name';
     public const Invitation_recipient_cloud_id = 'recipient_cloud_id';
+    public const Invitation_recipient_email = 'recipient_email';
+    public const Invitation_recipient_name = 'recipient_name';
     public const Invitation_timestamp = 'timestamp';
     public const Invitation_status = 'status';
 }

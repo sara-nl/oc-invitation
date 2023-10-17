@@ -9,7 +9,11 @@ CREATE TABLE `oc_mesh_invitations` (
   `provider_domain` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT '',
   `recipient_domain` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT '',
   `sender_cloud_id` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
+  `sender_email` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
+  `sender_name` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
   `recipient_cloud_id` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
+  `recipient_email` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
+  `recipient_name` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
   `timestamp` int(11) NOT NULL DEFAULT 0,
   `status` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT ''
 ) ENGINE='InnoDB' COLLATE 'utf8mb4_bin';
