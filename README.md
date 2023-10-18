@@ -17,7 +17,7 @@ This app gives an enhanced federated sharing user experience by implementing an 
 * [How to build the app](#build-the-app)
 ---
 ### Invitation Workflow
-![Invitation Workflow](InvitationWorkflow.png "Invitation Workflow") 
+![Invitation Workflow](invitation-flow-user-info-exchange.png "Invitation Workflow") 
 
 ### Build the app
 ```$ make appstore```
