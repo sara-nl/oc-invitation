@@ -42,16 +42,35 @@ class InvitationService
      * 
      * @param string $token
      * @return Invitation
-     * @throws NotFoundException in case the invitation could not be found
+     * @throws ServiceException in case the invitation could not be returned
      */
     public function findByToken(string $token): Invitation
     {
-        $invitation = $this->mapper->findByToken($token);
-        if (isset($invitation)) {
-            return $invitation;
+        try {
+            $invitation = $this->mapper->findByToken($token);
+            if (isset($invitation)) {
+                return $invitation;
+            }
+        } catch (Exception $e) {
+            $this->logger->error("An exception occurred trying to retrieve the Invitation with token '$token'. Error message: " . $e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            throw new ServiceException('Invitation not found');
         }
-        $this->logger->debug("Invitation with token=$token not found.", ['app' => RDMesh::APP_NAME]);
-        throw new NotFoundException('Invitation not found');
+    }
+
+    /**
+     * Returns all invitations matching the specified criteria.
+     * 
+     * @param array $criteria
+     * @return array
+     */
+    public function findAll(array $criteria): array
+    {
+        try {
+            return $this->mapper->findAll($criteria);
+        } catch (Exception $e) {
+            $this->logger->error('findAll failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            throw new ServiceException('Unable to find all invitations for the specified criteria.');
+        }
     }
 
     /**

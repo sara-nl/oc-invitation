@@ -2,6 +2,8 @@
 
 namespace OCA\RDMesh\Federation;
 
+use JsonSerializable;
+use OCA\RDMesh\Db\Schema;
 use OCP\AppFramework\Db\Entity;
 
 /**
@@ -30,7 +32,7 @@ use OCP\AppFramework\Db\Entity;
  * @method string getStatus()
  * @method void setStatus(string $status)
  */
-class Invitation extends Entity
+class Invitation extends Entity implements JsonSerializable
 {
     protected $token;
     protected $providerDomain;
@@ -49,4 +51,22 @@ class Invitation extends Entity
     public const STATUS_ACCEPTED = 'accepted';
     public const STATUS_DECLINED = 'declined';
     public const STATUS_INVALID = 'invalid';
+
+    public function jsonSerialize()
+    {
+        return [
+            'id' => $this->id,
+            $this->columnToProperty(Schema::Invitation_token) => $this->token,
+            $this->columnToProperty(Schema::Invitation_provider_domain) => $this->providerDomain,
+            $this->columnToProperty(Schema::Invitation_recipient_domain) => $this->recipientDomain,
+            $this->columnToProperty(Schema::Invitation_sender_cloud_id) => $this->senderCloudId,
+            $this->columnToProperty(Schema::Invitation_sender_email) => $this->senderEmail,
+            $this->columnToProperty(Schema::Invitation_sender_name) => $this->senderName,
+            $this->columnToProperty(Schema::Invitation_recipient_cloud_id) => $this->recipientCloudId,
+            $this->columnToProperty(Schema::Invitation_recipient_email) => $this->recipientEmail,
+            $this->columnToProperty(Schema::Invitation_recipient_name) => $this->recipientName,
+            $this->columnToProperty(Schema::Invitation_timestamp) => $this->timestamp,
+            $this->columnToProperty(Schema::Invitation_status) => $this->status,
+        ];
+    }
 }

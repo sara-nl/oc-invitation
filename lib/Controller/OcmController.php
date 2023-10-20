@@ -9,10 +9,11 @@ namespace OCA\RDMesh\Controller;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\RDMesh\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
+use OCP\ILogger;
 use OCP\IRequest;
 
 /**
@@ -23,11 +24,13 @@ use OCP\IRequest;
 class OcmController extends Controller
 {
     private InvitationService $invitationService;
+    private ILogger $logger;
 
     public function __construct($appName, IRequest $request, InvitationService $invitationService)
     {
         parent::__construct($appName, $request);
         $this->invitationService = $invitationService;
+        $this->logger = \OC::$server->getLogger();
     }
 
     /**
@@ -85,7 +88,19 @@ class OcmController extends Controller
         $invitation = null;
         try {
             $invitation = $this->invitationService->findByToken($token);
-        } catch (NotFoundException $e) {
+            // check if the receiver has not already accepted a previous invitation
+            $existingInvitations = $this->invitationService->findAll([
+                Schema::Invitation_sender_cloud_id => $invitation->getSenderCloudId(),
+                Schema::Invitation_recipient_cloud_id => $userID,
+                Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
+            ]);
+            if (count($existingInvitations) > 0) {
+                return new DataResponse(
+                    ['error' => '/invite-accepted failed', 'message' => 'An accepted invitation already exists.'],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
+        } catch (ServiceException $e) {
             return new DataResponse(
                 ['error' => '/invite-accepted failed', 'message' => $e->getMessage()],
                 Http::STATUS_NOT_FOUND
