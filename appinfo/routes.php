@@ -14,6 +14,7 @@ return [
 		['name' => 'invitation#find', 'url' => '/find-invitation', 'verb' => 'GET'],
 		['name' => 'invitation#find_by_token', 'url' => '/find-invitation-by-token', 'verb' => 'GET'],
 		['name' => 'invitation#update', 'url' => '/update-invitation', 'verb' => 'GET'],
+		['name' => 'invitation#find_all', 'url' => '/find-all-invitations', 'verb' => 'GET'],
 
 		// bespoke API - mesh registry
 		['name' => 'registry#invite_link', 'url' => '/invite-link', 'verb' => 'GET'],

@@ -62,6 +62,7 @@ class InvitationController extends Controller
             );
         }
         if ($senderName == '') {
+            // FIXME: decide whether the user's _display_name_ should be used here
             return new DataResponse(
                 ['message' => 'You must provide your name in order to generate an invite.'],
                 Http::STATUS_NOT_FOUND
@@ -159,6 +160,7 @@ class InvitationController extends Controller
             ->setLink("/apps/rd-mesh/accept-invite?token=$token", 'GET');
 
         $declineAction = $notification->createAction();
+        // TODO: implement /decline-invite
         $declineAction->setLabel('decline')
             ->setLink('/apps/rd-mesh/decline-invite', 'DELETE');
 
@@ -209,7 +211,7 @@ class InvitationController extends Controller
             );
         }
 
-$recipientDomain = $this->meshService->getDomain();
+        $recipientDomain = $this->meshService->getDomain();
         $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
         $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
         $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
@@ -254,7 +256,7 @@ $recipientDomain = $this->meshService->getDomain();
         if ($updateResult == false) {
             $logMessage = "Failed to handle /accept-invite (invitation with token=$token could not be updated).";
         }
-        
+
         if ($updateResult == true && $inviteAccepted == true) {
             return new DataResponse(
                 [],
@@ -304,7 +306,7 @@ $recipientDomain = $this->meshService->getDomain();
             try {
                 $invitation = $this->invitationService->find($id);
                 return new DataResponse(
-                    ['invitation' => print_r($invitation, true)],
+                    ['invitation' => $invitation],
                     Http::STATUS_OK,
                 );
             } catch (NotFoundException $e) {
@@ -318,6 +320,31 @@ $recipientDomain = $this->meshService->getDomain();
             ['error' => 'id is required'],
             Http::STATUS_NOT_FOUND,
         );
+    }
+
+    /**
+     * 
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     */
+    public function findAll(string $fields): DataResponse
+    {
+        try {
+            $fieldsAndValues = json_decode($fields, true);
+            // $this->logger->debug(' - findAll params: ' . print_r($fieldsAndValues, true));
+            $invitations = $this->invitationService->findAll($fieldsAndValues);
+            return new DataResponse(
+                [
+                    'invitations' => $invitations,
+                ],
+                Http::STATUS_OK
+            );
+        } catch (Exception $e) {
+            return new DataResponse(
+                ['error' => 'An error has occurred.'],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
     }
 
     /**
