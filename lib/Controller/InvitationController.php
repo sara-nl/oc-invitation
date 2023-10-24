@@ -20,6 +20,7 @@ use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
+use OCP\AppFramework\Http\TemplateResponse;
 use OCP\ILogger;
 use OCP\IRequest;
 use Ramsey\Uuid\Uuid;
@@ -41,6 +42,26 @@ class InvitationController extends Controller
         $this->meshService = $meshService;
         $this->invitationService = $invitationService;
         $this->logger = \OC::$server->getLogger();
+    }
+
+    /**
+     * 
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     * @return TemplateResponse
+     */
+    public function index(): TemplateResponse
+    {
+        $invitations = [];
+        array_push($invitations, [
+            'id' => 1,
+            'recipientName' => 'Sjonnie',
+        ]);
+        array_push($invitations, [
+            'id' => 2,
+            'recipientName' => 'Pipo',
+        ]);
+        return new TemplateResponse($this->appName, 'invitation.index', ['invitations' => $invitations]);
     }
 
     /**

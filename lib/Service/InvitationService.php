@@ -7,8 +7,10 @@ use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCP\ILogger;
+use OCP\Share;
+use OCP\Share\IRemoteShareesSearch;
 
-class InvitationService
+class InvitationService implements IRemoteShareesSearch
 {
 
     private InvitationMapper $mapper;
@@ -98,5 +100,33 @@ class InvitationService
     public function update(array $fieldsAndValues): bool
     {
         return $this->mapper->updateInvitation($fieldsAndValues);
+    }
+
+    /**
+     * Return the identifier of this provider.
+     * @param string search string for autocomplete
+     * @return array[] this function should return an array
+     * where each element is an associative array, containing:
+     * - label: a string to display as label
+     * - value: an associative array containing:
+     *   - shareType: int, to be used as share type
+     *   - shareWith: string, identifying the sharee
+     *   - server (optional): string, URL of the server, e.g.
+     * https://github.com/owncloud/core/blob/v10.12.0-beta.1/apps/files_sharing/lib/Controller/ShareesController.php#L421
+     *
+     * @since 10.12.0
+     */
+    public function search($search): array
+    {
+        $result = [];
+        // TODO: implement the actual search
+        array_push($result, [
+            'label' => 'Sjonnie (domain: rd-2.nl)',         // TODO: display at least the invitation name + eg. the recipient domain
+            'value' => [
+                'shareType' => Share::SHARE_TYPE_REMOTE,    // this is a federated share by definition
+                'shareWith' => 'sjonnie@rd-2.nl',           // the cloud ID
+            ]
+        ]);
+        return $result;
     }
 }
