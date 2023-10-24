@@ -26,9 +26,7 @@ class HttpClient
         curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params, JSON_PRETTY_PRINT));
         $output = json_decode(curl_exec($ch));
-        // \OC::$server->getLogger()->debug("curlPost output: " . print_r($output, true));
         $info = curl_getinfo($ch);
-        // \OC::$server->getLogger()->debug(print_r($info, true));
         curl_close($ch);
         if ($output == false || $info['http_code'] != Http::STATUS_OK) {
             $message = '';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * 
  */
@@ -9,6 +10,7 @@ return [
 		['name' => 'invitation#handle_invite', 'url' => '/handle-invite', 'verb' => 'GET'],
 		// TODO: change method to POST ...? How to create a notification POST action ?!
 		['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'GET'],
+		['name' => 'invitation#index', 'url' => '/index', 'verb' => 'GET'],
 
 		// TODO: remove these test endpoints
 		['name' => 'invitation#find', 'url' => '/find-invitation', 'verb' => 'GET'],

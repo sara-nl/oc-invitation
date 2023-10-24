@@ -1,0 +1,31 @@
+div#rd-mesh-invitation {
+    margin-top: 1em;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+div.invites div .accepted, div.invites div .open {
+    margin-top: 1em;
+    padding: .2em;
+    border: 1px solid lightblue;
+}
+
+div.invites div.accepted {
+    background-color: aliceblue;
+}
+
+div.invites h2 {
+    margin-left: .3em;
+    font-weight: bold;
+}
+
+div.create {
+    border-bottom: 1px solid lightgray;
+    margin-left: .1em;
+    margin-bottom: 1em;
+}
+
+div.create h2 {
+    margin-left: .2em;
+    font-weight: bold;
+}

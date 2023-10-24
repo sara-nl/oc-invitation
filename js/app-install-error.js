@@ -1,0 +1,1 @@
+alert('The Invitation Workflow app requires installment of: Federated File Sharing app, Notifications app');
