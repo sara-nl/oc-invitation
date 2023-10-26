@@ -9,6 +9,7 @@ namespace OCA\RDMesh\Controller;
 use DateTime;
 use Exception;
 use OC;
+use OC\Mail\Mailer;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
@@ -114,6 +115,16 @@ class InvitationController extends Controller
 
         // TODO: send an email with the invitation link to the recipient ($email)
         //       note that the status of the invitation should change to 'invalid' in case of failure
+        // $mailer = \OC::$server->getMailer();
+        // $message = $mailer->createMessage();
+        // $message->setSubject('Your Subject');
+        // $message->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
+        // $message->setTo(array('recipient@domain.org' => 'Recipient'));
+        // $message->setBody('The message text');
+        // $mailer->send($message);
+        // $mailer = new Mailer();
+
+        // This message can then be passed to send() of \OC\Mail\Mailer
 
         // when all's well set status and persist
         $invitation->setStatus(Invitation::STATUS_OPEN);
@@ -170,6 +181,7 @@ class InvitationController extends Controller
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
+        // TODO: handle unique constraint exception on token; inserting same token twice throws exception
         $this->invitationService->insert($invitation);
 
         $manager = \OC::$server->getNotificationManager();
@@ -185,12 +197,11 @@ class InvitationController extends Controller
         $declineAction->setLabel('decline')
             ->setLink('/apps/rd-mesh/decline-invite', 'DELETE');
 
-        $notification->setApp('notification-invite')
+        $notification->setApp(RDMesh::APP_NAME)
             // the user that has received the invite is logged in at this point
-            ->setUser(OC::$server->getUserSession()->getUser()->getUID())
+            ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
-            // FIXME: find out on what object actually means
-            ->setObject('providerDomain', $providerDomain)
+            ->setObject(MeshService::PARAM_NAME_TOKEN, $token)
             ->setSubject('invitation', [
                 MeshService::PARAM_NAME_TOKEN => $token,
                 MeshService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
@@ -243,28 +254,27 @@ class InvitationController extends Controller
             MeshService::PARAM_NAME_EMAIL => $recipientEmail,
             MeshService::PARAM_NAME_NAME => $recipientName,
         ];
+
         $url = $this->meshService->getFullInviteAcceptedEndpointURL($invitation->getProviderDomain());
         $httpClient = new HttpClient();
         $response = $httpClient->curlPost($url, $params);
-
-        $logMessage = '';
-        $inviteAccepted = true;
-
-        if ($response['success'] == false) {
-            $inviteAccepted = false;
-            $logMessage = 'Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true);
-        }
-
         $resArray = (array)$response['response'];
-        if ($this->verifiedInviteAcceptedResponse($resArray) == false) {
-            $inviteAccepted = false;
-            $logMessage = 'Failed to accept the invitation: /invite-accepted response is invalid.';
+
+        if (
+            $response['success'] == false
+            || $this->verifiedInviteAcceptedResponse($resArray) == false
+        ) {
+            $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => RDMesh::APP_NAME]);
+            return new DataResponse(
+                ['error' => 'Failed to accept the invitation'],
+                Http::STATUS_NOT_FOUND
+            );
         }
 
         // all's well, update the invitation
         $updateResult = $this->invitationService->update(
             [
-                'id' => $invitation->getId(),
+                Schema::id => $invitation->getId(),
                 Schema::Invitation_recipient_domain => $recipientDomain,
                 Schema::Invitation_recipient_email => $recipientEmail,
                 Schema::Invitation_recipient_name => $recipientName,
@@ -275,20 +285,30 @@ class InvitationController extends Controller
             ]
         );
         if ($updateResult == false) {
-            $logMessage = "Failed to handle /accept-invite (invitation with token=$token could not be updated).";
-        }
-
-        if ($updateResult == true && $inviteAccepted == true) {
+            $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
-                [],
-                Http::STATUS_OK
+                ['error' => 'Failed to accept the invitation'],
+                Http::STATUS_NOT_FOUND
             );
         }
 
-        $this->logger->error($logMessage, ['app' => RDMesh::APP_NAME]);
+        try {
+            // finally remove the notification
+            $manager = \OC::$server->getNotificationManager();
+            $notification = $manager->createNotification();
+            $notification
+                ->setApp(RDMesh::APP_NAME)
+                ->setUser(OC::$server->getUserSession()->getUser()->getUID())
+                ->setObject(MeshService::PARAM_NAME_TOKEN, $token);
+            $manager->markProcessed($notification);
+        } catch (Exception $e) {
+            // invitation has already successfully been accepted; we only log this exception
+            $this->logger->error("Unable to remove notification for app '" . RDMesh::APP_NAME . "' user '" . OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => RDMesh::APP_NAME]);
+        }
+
         return new DataResponse(
-            ['error' => 'Failed to accept the invitation'],
-            Http::STATUS_NOT_FOUND
+            [],
+            Http::STATUS_OK
         );
     }
 

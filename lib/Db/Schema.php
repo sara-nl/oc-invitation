@@ -9,9 +9,9 @@ namespace OCA\RDMesh\Db;
 class Schema
 {
     public const id = 'id';
+
     /* Invitation table name */
     public const Table_Invitations = 'mesh_invitations';
-    
     /* Invitation table fields */
     public const Invitation_token = 'token';
     public const Invitation_provider_domain = 'provider_domain';
@@ -24,4 +24,14 @@ class Schema
     public const Invitation_recipient_name = 'recipient_name';
     public const Invitation_timestamp = 'timestamp';
     public const Invitation_status = 'status';
+
+    /* Remote Users view name */
+    public const Table_RemoteUsers = 'mesh_view_remote_users';
+    /* Remote Users view fields */
+    public const RemoteUser_invitation_id = 'invitation_id';
+    public const RemoteUser_user_cloud_id = 'user_cloud_id';
+    public const RemoteUser_user_name = 'user_name';
+    public const RemoteUser_remote_user_cloud_id = 'remote_user_cloud_id';
+    public const RemoteUser_remote_user_name = 'remote_user_name';
+
 }

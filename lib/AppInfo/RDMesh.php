@@ -7,6 +7,7 @@
 namespace OCA\RDMesh\AppInfo;
 
 use OCA\RDMesh\Federation\InvitationMapper;
+use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCA\RDMesh\Service\InvitationNotifier;
 use OCA\RDMesh\Service\InvitationService;
 use OCA\RDMesh\Service\MeshService;
@@ -37,6 +38,9 @@ class RDMesh extends App
             function () {
                 return new InvitationService(
                     new InvitationMapper(
+                        \OC::$server->getDatabaseConnection()
+                    ),
+                    new RemoteUserMapper(
                         \OC::$server->getDatabaseConnection()
                     )
                 );

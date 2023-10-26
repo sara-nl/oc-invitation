@@ -6,19 +6,21 @@ use Exception;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
+use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCP\ILogger;
-use OCP\Share;
 use OCP\Share\IRemoteShareesSearch;
 
 class InvitationService implements IRemoteShareesSearch
 {
 
     private InvitationMapper $mapper;
+    private RemoteUserMapper $remoteUserMapper;
     private ILogger $logger;
 
-    public function __construct(InvitationMapper $mapper)
+    public function __construct(InvitationMapper $mapper, RemoteUserMapper $remoteUserMapper)
     {
         $this->mapper = $mapper;
+        $this->remoteUserMapper = $remoteUserMapper;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -53,9 +55,13 @@ class InvitationService implements IRemoteShareesSearch
             if (isset($invitation)) {
                 return $invitation;
             }
+            throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
+        } catch (NotFoundException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            throw new ServiceException("Invitation not found.");
         } catch (Exception $e) {
-            $this->logger->error("An exception occurred trying to retrieve the Invitation with token '$token'. Error message: " . $e->getMessage(), ['app' => RDMesh::APP_NAME]);
-            throw new ServiceException('Invitation not found');
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            throw new ServiceException("An exception occurred trying to retrieve the invitation with token '$token'.");
         }
     }
 
@@ -87,7 +93,8 @@ class InvitationService implements IRemoteShareesSearch
         try {
             return $this->mapper->insert($invitation);
         } catch (Exception $e) {
-            throw new ServiceException($e->getMessage(), $e->getCode(), $e);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            throw new ServiceException('Error inserting the invitation.');
         }
     }
 
@@ -118,15 +125,11 @@ class InvitationService implements IRemoteShareesSearch
      */
     public function search($search): array
     {
-        $result = [];
-        // TODO: implement the actual search
-        array_push($result, [
-            'label' => 'Sjonnie (domain: rd-2.nl)',         // TODO: display at least the invitation name + eg. the recipient domain
-            'value' => [
-                'shareType' => Share::SHARE_TYPE_REMOTE,    // this is a federated share by definition
-                'shareWith' => 'sjonnie@rd-2.nl',           // the cloud ID
-            ]
-        ]);
-        return $result;
+        try {
+            return $this->remoteUserMapper->search($search);
+        } catch (Exception $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            throw new ServiceException('Error searching for remote users.');
+        }
     }
 }
