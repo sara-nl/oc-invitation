@@ -6,6 +6,8 @@
 
 namespace OCA\RDMesh\Service;
 
+use OCA\RDMesh\AppInfo\RDMesh;
+use OCP\ILogger;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
 
@@ -13,10 +15,12 @@ class InvitationNotifier implements INotifier
 {
 
     protected $factory;
+    private ILogger $logger;
 
     public function __construct(\OCP\L10N\IFactory $factory)
     {
         $this->factory = $factory;
+        $this->logger = \OC::$server->getLogger();
     }
 
     /**
@@ -24,7 +28,8 @@ class InvitationNotifier implements INotifier
      */
     public function prepare(INotification $notification, $languageCode)
     {
-        if ($notification->getApp() != 'notification-invite') {
+        if ($notification->getApp() != RDMesh::APP_NAME) {
+            $this->logger->error("Notification has been given the wrong app name '" . $notification->getApp() . "'");
             throw new \InvalidArgumentException("Wrong app");
         }
 

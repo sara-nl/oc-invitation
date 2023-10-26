@@ -6,6 +6,7 @@
 
 namespace OCA\RDMesh\Controller;
 
+use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Service\InvitationService;
@@ -95,12 +96,14 @@ class OcmController extends Controller
                 Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
             ]);
             if (count($existingInvitations) > 0) {
+                $this->logger->error("An accepted invitation already exists for token '$token'", ['app' => RDMesh::APP_NAME]);
                 return new DataResponse(
                     ['error' => '/invite-accepted failed', 'message' => 'An accepted invitation already exists.'],
                     Http::STATUS_NOT_FOUND
                 );
             }
         } catch (ServiceException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
                 ['error' => '/invite-accepted failed', 'message' => $e->getMessage()],
                 Http::STATUS_NOT_FOUND
@@ -117,6 +120,7 @@ class OcmController extends Controller
             Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
         ]);
         if ($updateResult == false) {
+            $this->logger->error("Update failed for invitation with token '$token'", ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
                 [
                     'message' => 'Failed to handle /invite-accepted'
@@ -125,7 +129,7 @@ class OcmController extends Controller
             );
         }
 
-        // TODO: at this point a notification could/should be created to inform the sender that the invite has been accepted. 
+        // TODO: at this point a notification could(should?) be created to inform the sender that the invite has been accepted. 
 
         return new DataResponse(
             [

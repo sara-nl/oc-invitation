@@ -1,4 +1,8 @@
 <?php
+/**
+ * This class represents the Invitation entity.
+ * 
+ */
 
 namespace OCA\RDMesh\Federation;
 
@@ -7,8 +11,6 @@ use OCA\RDMesh\Db\Schema;
 use OCP\AppFramework\Db\Entity;
 
 /**
- * Class Invitation
- * 
  * @method string getToken()
  * @method void setToken(string $token)
  * @method string getProviderDomain()

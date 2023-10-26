@@ -13,13 +13,11 @@ use OCP\ILogger;
 
 class InvitationMapper extends Mapper
 {
-    private IDb $dbConnection;
     private ILogger $logger;
 
     public function __construct(IDb $dbConnection)
     {
         parent::__construct($dbConnection, Schema::Table_Invitations, Invitation::class);
-        $this->dbConnection = $dbConnection;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -31,7 +29,7 @@ class InvitationMapper extends Mapper
      */
     public function find(int $id)
     {
-        $qb = $this->dbConnection->getQueryBuilder();
+        $qb = $this->db->getQueryBuilder();
         $result = $qb->select('*')
             ->from(Schema::Table_Invitations, 'i')
             ->where($qb->expr()->eq('i.id', $qb->createNamedParameter($id)))
@@ -51,17 +49,17 @@ class InvitationMapper extends Mapper
     public function findByToken(string $token)
     {
         try {
-            $qb = $this->dbConnection->getQueryBuilder();
+            $qb = $this->db->getQueryBuilder();
             $result = $qb->select('*')
                 ->from(Schema::Table_Invitations, 'i')
                 ->where($qb->expr()->eq('i.token', $qb->createNamedParameter($token)))
                 ->execute()->fetchAssociative();
-            if (is_array($result)) {
+            if (is_array($result) && count($result) > 0) {
                 return $this->newInvitation($result);
             }
-            return null;
+            throw new Exception("Invitation not found for token $token");
         } catch (Exception $e) {
-            $this->logger->error('Error stacktrace: ' . $e->getTrace(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException($e->getMessage());
         }
     }
@@ -98,7 +96,7 @@ class InvitationMapper extends Mapper
     public function updateInvitation(array $fieldsAndValues): bool
     {
         try {
-            $qb = $this->dbConnection->getQueryBuilder();
+            $qb = $this->db->getQueryBuilder();
             $updateQuery = $qb->update(Schema::Table_Invitations, 'i');
             if (isset($fieldsAndValues['id']) && count($fieldsAndValues) > 1) {
                 foreach ($fieldsAndValues as $field => $value) {
