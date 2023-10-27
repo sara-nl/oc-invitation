@@ -11,6 +11,7 @@ use Exception;
 use OC;
 use OC\Mail\Mailer;
 use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\HttpClient;
@@ -79,14 +80,22 @@ class InvitationController extends Controller
     {
         if ('' == $email) {
             return new DataResponse(
-                ['message' => 'You must provide the email address of the intended recipient of the invite.'],
+                [
+                    'success' => false,
+                    'error_code' => AppError::CREATE_INVITATION_NO_EMAIL,
+                    'message' => 'You must provide the email address of the intended recipient of the invite.'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($senderName == '') {
             // FIXME: decide whether the user's _display_name_ should be used here
             return new DataResponse(
-                ['message' => 'You must provide your name in order to generate an invite.'],
+                [
+                    'success' => false,
+                    'error_code' => AppError::CREATE_INVITATION_NO_NAME,
+                    'message' => 'You must provide your name in order to generate an invite.'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -100,6 +109,34 @@ class InvitationController extends Controller
             MeshService::PARAM_NAME_TOKEN => $token,
             MeshService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshService->getDomain(),
         ];
+
+        // check for existing open invitations
+        // FIXME: modify findAll to accept mutiple values of one column
+        // try {
+        //     $fieldsAndValues = [];
+        //     array_push([Schema::Invitation_sender_cloud_id => OC::$server->getUserSession()->getUser()->getCloudId()]);
+        //     array_push([Schema::Invitation_recipient_email => $email]);
+        //     array_push([Schema::Invitation_status => Invitation::STATUS_OPEN]);
+
+        //     $invitations = $this->invitationService->findAll($fieldsAndValues);
+        //     if(count($invitations) > 0) {
+        //         return new DataResponse(
+        //             [
+        //                 'success' => false,
+        //                 'error_code' => AppError::CREATE_INVITATION_ERROR,
+        //             ],
+        //             Http::STATUS_NOT_FOUND,
+        //         );
+        //         }
+        // } catch (Exception $e) {
+        //     return new DataResponse(
+        //         [
+        //             'success' => false,
+        //             'error_code' => AppError::CREATE_INVITATION_ERROR,
+        //         ],
+        //         Http::STATUS_NOT_FOUND,
+        //     );
+        // }
 
         $inviteLink = $this->meshService->inviteLink($params);
 
@@ -134,7 +171,8 @@ class InvitationController extends Controller
             $this->logger->error('An error occurred while generating the invite: ' . $e->getMessage(), ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
                 [
-                    'error' => 'The invite could not be generated',
+                    'success' => false,
+                    'error_code' => AppError::CREATE_INVITATION_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND
             );
@@ -143,8 +181,9 @@ class InvitationController extends Controller
         if (isset($newInvitation) && $invitation->getId() > 0) {
             return new DataResponse(
                 [
-                    'message' => 'This invite has been send to ' . $email,
-                    'inviteLink' => $inviteLink,
+                    'success' => true,
+                    // FIXME: this will not be needed when the link is actually send by email
+                    'message' => "The invite $inviteLink has been send to $email"
                 ],
                 Http::STATUS_OK
             );
@@ -167,11 +206,11 @@ class InvitationController extends Controller
 
         if ($token == '') {
             \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute('rd-mesh.error.invitation', ['message' => 'The invitation is invalid.']));
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
         }
         if ($token == '') {
             \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute('rd-mesh.error.invitation', ['message' => 'The invitation is invalid.']));
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
         }
 
         // persist the received invite
@@ -190,12 +229,12 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/rd-mesh/accept-invite?token=$token", 'GET');
+            ->setLink("/apps/" . RDMesh::APP_NAME . "/accept-invite?token=$token", 'GET');
 
         $declineAction = $notification->createAction();
         // TODO: implement /decline-invite
         $declineAction->setLabel('decline')
-            ->setLink('/apps/rd-mesh/decline-invite', 'DELETE');
+            ->setLink('/apps/' . RDMesh::APP_NAME . '/decline-invite', 'DELETE');
 
         $notification->setApp(RDMesh::APP_NAME)
             // the user that has received the invite is logged in at this point

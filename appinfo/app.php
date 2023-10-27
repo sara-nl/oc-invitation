@@ -19,7 +19,7 @@ if (
 
             return [
                 // The string under which your app will be referenced in owncloud
-                'id' => 'rd-mesh',
+                'id' => RDMesh::APP_NAME,
 
                 // The sorting weight for the navigation.
                 // The higher the number, the higher will it be listed in the navigation

@@ -3,6 +3,7 @@
         // document.getElementById('elem').onclick = function () {
 
         let generateInvite = function (email, senderName) {
+            $('#invitation-error span').text("");
             let baseUrl = OC.generateUrl('/apps/rd-mesh/generate-invite?email=' + email + '&senderName=' + senderName);
             let options = {
                 'method': 'GET',
@@ -13,23 +14,21 @@
             let response = fetch(baseUrl, options)
                 .then(
                     (response) => {
-                        // console.log(response);
-                        if (response.ok) {
-                            response.json().then(
-                                (data) => {
-                                    console.log("The following invite link has been send: " + data.inviteLink);
-                                }
-                            );
+                        return response.json();
+                    }
+                ).then(
+                    (json) => {
+                        if (json.success == true) {
+                            console.log("invite link '" + json.inviteLink + "' has been send to " + email);
                         } else {
-                            throw new Error(response);
+                            $('#invitation-error span').text(json.error_code);
                         }
                     }
                 ).catch(
                     (response) => {
-                        console.log('error response: ' + response);
+                        $('#invitation-error span').text('ERROR_UNSPECIFIED');
                     }
                 );
-            console.log(response);
         };
 
         let generateInviteButton = document.getElementById('create-invitation');

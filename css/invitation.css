@@ -4,7 +4,8 @@ div#rd-mesh-invitation {
     margin-right: 2em;
 }
 
-div.invites div .accepted, div.invites div .open {
+div.invites div .accepted,
+div.invites div .open {
     margin-top: 1em;
     padding: .2em;
     border: 1px solid lightblue;
@@ -27,5 +28,11 @@ div.create {
 
 div.create h2 {
     margin-left: .2em;
+    font-weight: bold;
+}
+
+div.error {
+    height: 2em;
+    color: red;
     font-weight: bold;
 }
