@@ -2,20 +2,24 @@
 
 use OCA\RDMesh\AppInfo\RDMesh;
 
-script(RDMesh::APP_NAME, 'invitation');
-style(RDMesh::APP_NAME, 'pure-min-css-3.0.0');
-style(RDMesh::APP_NAME, 'invitation');
+$appName = RDMesh::APP_NAME;
+$userDisplayName = \OC::$server->getUserSession()->getUser()->getDisplayName();
+
+script($appName, 'invitation');
+style($appName, 'pure-min-css-3.0.0');
+style($appName, 'invitation');
 ?>
-<div id="rd-mesh-invitation" class="invitation-index pure-g">
+<div id="<?php p($appName); ?>-invitation" class="invitation-index pure-g">
     <div class="pure-u-1-1 create">
         <h2>Create invitation</h2>
         <form class="pure-form">
             <fieldset>
                 <input id="create-invitation-email" type="email" placeholder="Receiver email" />
-                <input id="create-invitation-senderName" type="text" placeholder="Your name" />
+                <input id="create-invitation-senderName" type="text" placeholder="<?php p($userDisplayName); ?>" />
                 <button id="create-invitation" type="submit" class="pure-button pure-button-primary">Create</button>
             </fieldset>
         </form>
+        <div id="invitation-error" class="error"><span></span></div>
     </div>
     <div class="pure-u-1-1 invites">
         <div class="pure-g">
