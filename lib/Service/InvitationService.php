@@ -7,6 +7,7 @@ use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\RemoteUserMapper;
+use OCA\RDMesh\Federation\VInvitation;
 use OCP\ILogger;
 use OCP\Share\IRemoteShareesSearch;
 
@@ -28,10 +29,10 @@ class InvitationService implements IRemoteShareesSearch
      * Returns the invitation with the specified id.
      * 
      * @param int $id
-     * @return Invitation
+     * @return VInvitation
      * @throws NotFoundException in case the invitation could not be found
      */
-    public function find(int $id): Invitation
+    public function find(int $id): VInvitation
     {
         $invitation = $this->mapper->find($id);
         if (isset($invitation)) {
@@ -45,10 +46,10 @@ class InvitationService implements IRemoteShareesSearch
      * Returns the invitation with the specified token.
      * 
      * @param string $token
-     * @return Invitation
+     * @return VInvitation
      * @throws ServiceException in case the invitation could not be returned
      */
-    public function findByToken(string $token): Invitation
+    public function findByToken(string $token): VInvitation
     {
         try {
             $invitation = $this->mapper->findByToken($token);
@@ -123,6 +124,7 @@ class InvitationService implements IRemoteShareesSearch
      *
      * @since 10.12.0
      */
+    // FIXME: move this to RemoteUserService
     public function search($search): array
     {
         try {

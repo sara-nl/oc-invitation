@@ -7,6 +7,7 @@
 namespace OCA\RDMesh\Controller;
 
 use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Service\InvitationService;
@@ -91,9 +92,9 @@ class OcmController extends Controller
             $invitation = $this->invitationService->findByToken($token);
             // check if the receiver has not already accepted a previous invitation
             $existingInvitations = $this->invitationService->findAll([
-                Schema::Invitation_sender_cloud_id => $invitation->getSenderCloudId(),
-                Schema::Invitation_recipient_cloud_id => $userID,
-                Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
+                [Schema::VInvitation_sender_cloud_id => $invitation->getSenderCloudId()],
+                [Schema::VInvitation_recipient_cloud_id => $userID],
+                [Schema::VInvitation_status => Invitation::STATUS_ACCEPTED],
             ]);
             if (count($existingInvitations) > 0) {
                 $this->logger->error("An accepted invitation already exists for token '$token'", ['app' => RDMesh::APP_NAME]);
@@ -105,7 +106,7 @@ class OcmController extends Controller
         } catch (ServiceException $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
-                ['error' => '/invite-accepted failed', 'message' => $e->getMessage()],
+                ['error' => '/invite-accepted failed', 'message' => AppError::OCM_INVITE_ACCEPTED_NOT_FOUND],
                 Http::STATUS_NOT_FOUND
             );
         }

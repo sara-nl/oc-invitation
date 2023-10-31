@@ -4,6 +4,14 @@ div#rd-mesh-invitation {
     margin-right: 2em;
 }
 
+div#rd-mesh-invitation input {
+    color: black;
+}
+
+div.invites table {
+    min-width: 100%;
+}
+
 div.invites div .accepted,
 div.invites div .open {
     margin-top: 1em;

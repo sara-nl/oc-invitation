@@ -19,7 +19,7 @@ class RemoteUserMapper extends Mapper
 
     public function __construct(IDb $dbConnection)
     {
-        parent::__construct($dbConnection, Schema::Table_RemoteUsers, RemoteUser::class);
+        parent::__construct($dbConnection, Schema::View_RemoteUsers, RemoteUser::class);
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -35,11 +35,16 @@ class RemoteUserMapper extends Mapper
     {
         $result = [];
 
+        $userCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
+
         $parameter = '%' . $this->db->escapeLikeParameter($search) . '%';
         $qb = $this->db->getQueryBuilder();
-        $query = $qb->select('*')->from(Schema::Table_RemoteUsers, 'i');
-        $query->where($qb->expr()->iLike(Schema::RemoteUser_remote_user_cloud_id, $qb->createPositionalParameter($parameter)))
-            ->orWhere($qb->expr()->iLike(Schema::RemoteUser_remote_user_name, $qb->createPositionalParameter($parameter)));
+        $query = $qb->select('*')->from(Schema::View_RemoteUsers, 'i');
+        $or = $qb->expr()->orX();
+        $or->add($qb->expr()->iLike(Schema::RemoteUser_remote_user_cloud_id, $qb->createPositionalParameter($parameter)));
+        $or->add($qb->expr()->iLike(Schema::RemoteUser_remote_user_name, $qb->createPositionalParameter($parameter)));
+        $query->where($or)
+            ->andWhere($qb->expr()->eq(Schema::RemoteUser_user_cloud_id, $qb->createPositionalParameter($userCloudID)));
 
         $remoteUsers = [];
         try {
