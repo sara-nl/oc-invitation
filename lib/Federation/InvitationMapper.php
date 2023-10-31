@@ -6,6 +6,7 @@ use Exception;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
+use OCA\RDMesh\Federation\VInvitation;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDb;
@@ -31,11 +32,11 @@ class InvitationMapper extends Mapper
     {
         $qb = $this->db->getQueryBuilder();
         $result = $qb->select('*')
-            ->from(Schema::Table_Invitations, 'i')
+            ->from(Schema::View_Invitations, 'i')
             ->where($qb->expr()->eq('i.id', $qb->createNamedParameter($id)))
             ->execute()->fetchAssociative();
         if (is_array($result)) {
-            return $this->newInvitation($result);
+            return $this->getVInvitation($result);
         }
         return null;
     }
@@ -51,11 +52,12 @@ class InvitationMapper extends Mapper
         try {
             $qb = $this->db->getQueryBuilder();
             $result = $qb->select('*')
-                ->from(Schema::Table_Invitations, 'i')
+                ->from(Schema::View_Invitations, 'i')
                 ->where($qb->expr()->eq('i.token', $qb->createNamedParameter($token)))
                 ->execute()->fetchAssociative();
+            $this->logger->debug(' - result: ' . print_r($result, true));
             if (is_array($result) && count($result) > 0) {
-                return $this->newInvitation($result);
+                return $this->getVInvitation($result);
             }
             throw new Exception("Invitation not found for token $token");
         } catch (Exception $e) {
@@ -66,24 +68,55 @@ class InvitationMapper extends Mapper
 
     /**
      * Returns all invitations matching the specified criteria.
+     * Expected $criteria format:
+     * [
+     *   column_1 => [value1, value2],
+     *   column_2 => [value3],
+     *   ... etc.
+     * ] 
+     * Will yield the following SQL:
+     *  SELECT * WHERE (column_1 = value1 OR column_1 = value2) AND (column_2 = value3) AND (...etc.)
      * 
      * @param array $criteria
-     * @return array
+     * @return array the invitations
      */
     public function findAll(array $criteria): array
     {
-        $qb = $this->db->getQueryBuilder();
-        $query = $qb->select('*')->from(Schema::Table_Invitations, 'i');
-        $i = 0;
-        foreach ($criteria as $field => $value) {
-            if ($i == 0) {
-                $query->where($qb->expr()->eq("i.$field", $qb->createNamedParameter($value)));
+        // first bundle fields and values
+        $fieldsAndValues = [];
+        foreach ($criteria as $fieldAndValue) {
+            $key = array_keys($fieldAndValue)[0];
+            $value = $fieldAndValue[$key];
+            if (isset($fieldsAndValues[$key])) {
+                array_push($fieldsAndValues[$key], $value);
             } else {
-                $query->andWhere($qb->expr()->eq("i.$field", $qb->createNamedParameter($value)));
+                $values = [];
+                array_push($values, $value);
+                $fieldsAndValues[$key] = $values;
+            }
+        }
+
+        $qb = $this->db->getQueryBuilder();
+        $query = $qb->select('*')->from(Schema::View_Invitations, 'i');
+        $i = 0;
+        foreach ($fieldsAndValues as $field => $values) {
+            if ($i == 0) {
+                $or = $qb->expr()->orX();
+                foreach ($values as $value) {
+                    $or->add($qb->expr()->eq("i.$field", $qb->createNamedParameter($value)));
+                }
+                $query->where($or);
+            } else {
+                $or = $qb->expr()->orX();
+                foreach ($values as $value) {
+                    $or->add($qb->expr()->eq("i.$field", $qb->createNamedParameter($value)));
+                }
+                $query->andWhere($or);
             }
             ++$i;
         }
-        return $this->newInvitations($query->execute()->fetchAllAssociative());
+
+        return $this->getVInvitations($query->execute()->fetchAllAssociative());
     }
 
     /**
@@ -119,11 +152,81 @@ class InvitationMapper extends Mapper
     }
 
     /**
+     * Builds and returns a new VInvitation from specified associative array.
+     * 
+     * @param array $associativeArray
+     * @return VInvitation
+     */
+    private function getVInvitation(array $associativeArray): VInvitation
+    {
+        if (isset($associativeArray) && count($associativeArray) > 0) {
+            $this->logger->debug(' - creating VInvitation');
+            $invitation = new VInvitation();
+            $invitation->setId($associativeArray['id']);
+            $invitation->setToken($associativeArray[Schema::VInvitation_token]);
+            $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
+            $invitation->setStatus($associativeArray[Schema::Invitation_status]);
+            $invitation->setUserCloudID($associativeArray[Schema::VInvitation_user_cloud_id]);
+            $invitation->setSentReceived($associativeArray[Schema::VInvitation_sent_received]);
+            $invitation->setProviderDomain($associativeArray[Schema::VInvitation_provider_domain]);
+            $invitation->setRecipientDomain($associativeArray[Schema::VInvitation_recipient_domain]);
+            $invitation->setSenderCloudId($associativeArray[Schema::VInvitation_sender_cloud_id]);
+            $invitation->setSenderEmail($associativeArray[Schema::VInvitation_sender_email]);
+            $invitation->setSenderName($associativeArray[Schema::VInvitation_sender_name]);
+            $invitation->setRecipientCloudId($associativeArray[Schema::VInvitation_recipient_cloud_id]);
+            $invitation->setRecipientEmail($associativeArray[Schema::VInvitation_recipient_email]);
+            $invitation->setRecipientName($associativeArray[Schema::VInvitation_recipient_name]);
+            $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
+            $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
+            $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
+            $this->logger->debug(' - vInvitation: ' . print_r($invitation, true));
+            return $invitation;
+        }
+        $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => RDMesh::APP_NAME]);
+        return null;
+    }
+
+    /**
+     * Builds and returns an array with new VInvitations from the specified associative arrays.
+     * 
+     * @param array $associativeArrays
+     * @return array
+     */
+    private function getVInvitations(array $associativeArrays): array
+    {
+        $invitations = [];
+        if (isset($associativeArrays) && count($associativeArrays) > 0) {
+            foreach ($associativeArrays as $associativeArray) {
+                $invitation = new VInvitation();
+                $invitation->setId($associativeArray['id']);
+                $invitation->setToken($associativeArray[Schema::VInvitation_token]);
+                $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
+                $invitation->setStatus($associativeArray[Schema::Invitation_status]);
+                $invitation->setUserCloudID($associativeArray[Schema::VInvitation_user_cloud_id]);
+                $invitation->setSentReceived($associativeArray[Schema::VInvitation_sent_received]);
+                $invitation->setProviderDomain($associativeArray[Schema::VInvitation_provider_domain]);
+                $invitation->setRecipientDomain($associativeArray[Schema::VInvitation_recipient_domain]);
+                $invitation->setSenderCloudId($associativeArray[Schema::VInvitation_sender_cloud_id]);
+                $invitation->setSenderEmail($associativeArray[Schema::VInvitation_sender_email]);
+                $invitation->setSenderName($associativeArray[Schema::VInvitation_sender_name]);
+                $invitation->setRecipientCloudId($associativeArray[Schema::VInvitation_recipient_cloud_id]);
+                $invitation->setRecipientEmail($associativeArray[Schema::VInvitation_recipient_email]);
+                $invitation->setRecipientName($associativeArray[Schema::VInvitation_recipient_name]);
+                $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
+                $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
+                $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
+                array_push($invitations, $invitation);
+            }
+        }
+        return $invitations;
+    }
+
+    /**
      * Builds and returns a new invitation from specified the associative array.
      * @param array $associativeArray
      * @return Invitation
      */
-    private function newInvitation(array $associativeArray): Invitation
+    private function getInvitation(array $associativeArray): Invitation
     {
         if (isset($associativeArray) && count($associativeArray) > 0) {
             $invitation = new Invitation();
@@ -150,7 +253,7 @@ class InvitationMapper extends Mapper
      * @param array $associativeArrays
      * @return array
      */
-    private function newInvitations(array $associativeArrays): array
+    private function getInvitations(array $associativeArrays): array
     {
         $invitations = [];
         if (isset($associativeArrays) && count($associativeArrays) > 0) {

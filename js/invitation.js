@@ -1,7 +1,5 @@
 (function (document, $) {
     $(document).ready(function () {
-        // document.getElementById('elem').onclick = function () {
-
         let generateInvite = function (email, senderName) {
             $('#invitation-error span').text("");
             let baseUrl = OC.generateUrl('/apps/rd-mesh/generate-invite?email=' + email + '&senderName=' + senderName);
@@ -19,7 +17,7 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            console.log("invite link '" + json.inviteLink + "' has been send to " + email);
+                            console.log(json.message);
                         } else {
                             $('#invitation-error span').text(json.error_code);
                         }
@@ -42,5 +40,65 @@
                 )
             }
         );
+
+        /**
+         * 
+         * @param {*} criteria eg. [{ "status": "open" }, { "status": "new" }]
+         */
+        let getInvitations = function (criteria, renderer) {
+            let baseUrl = OC.generateUrl('/apps/rd-mesh/find-all-invitations?fields=' + JSON.stringify(criteria));
+            let options = {
+                'method': 'GET',
+                'headers': {
+                    'Content-type': 'application/json;charset=utf-8'
+                }
+            };
+            let response = fetch(baseUrl, options)
+                .then(
+                    (response) => {
+                        return response.json();
+                    }
+                ).then(
+                    (json) => {
+                        if (json.success == true) {
+                            console.log("invitations: " + JSON.stringify(json));
+                            if (json.invitations) {
+                                renderer(json.invitations);
+                            }
+                        } else {
+                            $('#invitation-error span').text(json.error_code);
+                        }
+                    }
+                ).catch(
+                    (response) => {
+                        $('#invitation-error span').text('ERROR_UNSPECIFIED');
+                    }
+                );
+        };
+
+        let renderOpenInvitations = function (invitations) {
+            console.log("invitations: " + JSON.stringify(invitations));
+            table = $('div.invites div.open tbody');
+            invitations.forEach((invitation) => {
+                table.append(
+                    '<tr><td>' + invitation.sentReceived
+                    + '</td><td>' + invitation.token.substring(0, 12) + '...'
+                    + '</td><td>' + invitation.remoteUserName
+                    + '</td><td>' + invitation.remoteUserCloudId
+                    + '</td><td>' + invitation.remoteUserEmail
+                    + '</td></tr>');
+            });
+        };
+
+        let renderAcceptedInvitations = function (invitations) {
+            console.log("invitations: " + JSON.stringify(invitations));
+            table = $('div.invites div.accepted tbody');
+            invitations.forEach((invitation) => {
+                table.append('<tr><td>' + invitation.sentReceived + '</td><td>' + invitation.remoteUserName + '</td><td>' + invitation.remoteUserCloudId + '</td><td>' + invitation.remoteUserEmail + '</td></tr>');
+            });
+        };
+
+        getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
+        getInvitations([{ "status": "open" }], renderOpenInvitations);
     });
 })(document, jQuery);

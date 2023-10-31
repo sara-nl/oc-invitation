@@ -110,33 +110,34 @@ class InvitationController extends Controller
             MeshService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshService->getDomain(),
         ];
 
-        // check for existing open invitations
+        // check for existing open invitations for the same recipient email
         // FIXME: modify findAll to accept mutiple values of one column
-        // try {
-        //     $fieldsAndValues = [];
-        //     array_push([Schema::Invitation_sender_cloud_id => OC::$server->getUserSession()->getUser()->getCloudId()]);
-        //     array_push([Schema::Invitation_recipient_email => $email]);
-        //     array_push([Schema::Invitation_status => Invitation::STATUS_OPEN]);
+        try {
+            $fieldsAndValues = [];
+            array_push($fieldsAndValues, [Schema::Invitation_sender_cloud_id => OC::$server->getUserSession()->getUser()->getCloudId()]);
+            array_push($fieldsAndValues, [Schema::Invitation_recipient_email => $email]);
+            array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_OPEN]);
+            array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_ACCEPTED]);
 
-        //     $invitations = $this->invitationService->findAll($fieldsAndValues);
-        //     if(count($invitations) > 0) {
-        //         return new DataResponse(
-        //             [
-        //                 'success' => false,
-        //                 'error_code' => AppError::CREATE_INVITATION_ERROR,
-        //             ],
-        //             Http::STATUS_NOT_FOUND,
-        //         );
-        //         }
-        // } catch (Exception $e) {
-        //     return new DataResponse(
-        //         [
-        //             'success' => false,
-        //             'error_code' => AppError::CREATE_INVITATION_ERROR,
-        //         ],
-        //         Http::STATUS_NOT_FOUND,
-        //     );
-        // }
+            $invitations = $this->invitationService->findAll($fieldsAndValues);
+            if (count($invitations) > 0) {
+                return new DataResponse(
+                    [
+                        'success' => false,
+                        'error_code' => AppError::CREATE_INVITATION_EXISTS,
+                    ],
+                    Http::STATUS_NOT_FOUND,
+                );
+            }
+        } catch (Exception $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_code' => AppError::CREATE_INVITATION_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
 
         $inviteLink = $this->meshService->inviteLink($params);
 
@@ -146,6 +147,7 @@ class InvitationController extends Controller
         $invitation->setProviderDomain($this->meshService->getDomain());
         $invitation->setSenderCloudId(OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(OC::$server->getUserSession()->getUser()->getEMailAddress());
+        $invitation->setRecipientEmail($email);
         $invitation->setSenderName($senderName);
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_NEW);
@@ -217,11 +219,16 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
+        $invitation->setRecipientDomain($this->meshService->getDomain());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
-        // TODO: handle unique constraint exception on token; inserting same token twice throws exception
-        $this->invitationService->insert($invitation);
+        try {
+            $this->invitationService->insert($invitation);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
+        }
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
@@ -385,10 +392,15 @@ class InvitationController extends Controller
         if (isset($id)) {
             try {
                 $invitation = $this->invitationService->find($id);
-                return new DataResponse(
-                    ['invitation' => $invitation],
-                    Http::STATUS_OK,
-                );
+                if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+                    return new DataResponse(
+                        [
+                            'invitation' => $invitation
+                        ],
+                        Http::STATUS_OK,
+                    );
+                }
+                throw new NotFoundException('Not found');
             } catch (NotFoundException $e) {
                 return new DataResponse(
                     ['error' => $e->getMessage()],
@@ -403,25 +415,32 @@ class InvitationController extends Controller
     }
 
     /**
+     * example url: https://rd-1.nl/apps/rd-mesh/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
      * 
      * @NoAdminRequired
      * @NoCSRFRequired
      */
+    // FIXME: remove this test endpoint
     public function findAll(string $fields): DataResponse
     {
         try {
             $fieldsAndValues = json_decode($fields, true);
-            // $this->logger->debug(' - findAll params: ' . print_r($fieldsAndValues, true));
+            // only viewing own invitations are allowed
+            array_push($fieldsAndValues, [Schema::VInvitation_user_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
             $invitations = $this->invitationService->findAll($fieldsAndValues);
             return new DataResponse(
                 [
+                    'success' => true,
                     'invitations' => $invitations,
                 ],
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
             return new DataResponse(
-                ['error' => 'An error has occurred.'],
+                [
+                    'success' => false,
+                    'error_code' => AppError::ERROR,
+                ],
                 Http::STATUS_NOT_FOUND,
             );
         }
@@ -438,8 +457,19 @@ class InvitationController extends Controller
         if (isset($token)) {
             try {
                 $invitation = $this->invitationService->findByToken($token);
+                if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+                    return new DataResponse(
+                        [
+                            'invitation' => $invitation
+                        ],
+                        Http::STATUS_OK,
+                    );
+                }
+                throw new NotFoundException('Not found');
                 return new DataResponse(
-                    ['invitation' => print_r($invitation, true)],
+                    [
+                        'invitation' => $invitation
+                    ],
                     Http::STATUS_OK,
                 );
             } catch (NotFoundException $e) {
@@ -457,7 +487,6 @@ class InvitationController extends Controller
 
     /**
      * 
-     * @NoAdminRequired
      * @NoCSRFRequired
      */
     // FIXME: remove this test endpoint

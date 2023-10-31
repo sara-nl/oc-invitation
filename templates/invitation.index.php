@@ -15,7 +15,7 @@ style($appName, 'invitation');
         <form class="pure-form">
             <fieldset>
                 <input id="create-invitation-email" type="email" placeholder="Receiver email" />
-                <input id="create-invitation-senderName" type="text" placeholder="<?php p($userDisplayName); ?>" />
+                <input disabled id="create-invitation-senderName" type="text" value="<?php p($userDisplayName); ?>" placeholder="<?php p($userDisplayName); ?>" />
                 <button id="create-invitation" type="submit" class="pure-button pure-button-primary">Create</button>
             </fieldset>
         </form>
@@ -30,10 +30,10 @@ style($appName, 'invitation');
                         <table class="pure-table">
                             <thead>
                                 <tr>
-                                    <th>Send/Received</th>
-                                    <th>Name</th>
-                                    <th>Cloud ID</th>
-                                    <th>email</th>
+                                    <th>Sent/Received</th>
+                                    <th>Remote user name</th>
+                                    <th>Remote user cloud ID</th>
+                                    <th>Remote user email</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -49,10 +49,11 @@ style($appName, 'invitation');
                         <table class="pure-table">
                             <thead>
                                 <tr>
-                                    <th>Send/Received</th>
-                                    <th>Name</th>
-                                    <th>Cloud ID</th>
-                                    <th>email</th>
+                                    <th>Sent/Received</th>
+                                    <th>Token</th>
+                                    <th>Remote user name</th>
+                                    <th>Remote user cloud ID</th>
+                                    <th>Remote user email</th>
                                 </tr>
                             </thead>
                             <tbody>
