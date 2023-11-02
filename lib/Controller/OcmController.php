@@ -89,16 +89,17 @@ class OcmController extends Controller
 
         $invitation = null;
         try {
-            $invitation = $this->invitationService->findByToken($token);
+            $invitation = $this->invitationService->findByToken($token, false);
             // check if the receiver has not already accepted a previous invitation
             $existingInvitations = $this->invitationService->findAll([
                 [Schema::VInvitation_sender_cloud_id => $invitation->getSenderCloudId()],
                 [Schema::VInvitation_recipient_cloud_id => $userID],
                 [Schema::VInvitation_status => Invitation::STATUS_ACCEPTED],
-            ]);
+            ], false);
             if (count($existingInvitations) > 0) {
-                $this->logger->error("An accepted invitation already exists for token '$token'", ['app' => RDMesh::APP_NAME]);
+                $this->logger->error("An accepted invitation already exists for remote user with name '$name'", ['app' => RDMesh::APP_NAME]);
                 return new DataResponse(
+                    // FIXME: use standardized error message
                     ['error' => '/invite-accepted failed', 'message' => 'An accepted invitation already exists.'],
                     Http::STATUS_NOT_FOUND
                 );
@@ -114,11 +115,11 @@ class OcmController extends Controller
         // update the invitation with the receiver's info
         $updateResult = $this->invitationService->update([
             'id' => $invitation->getId(),
-            Schema::Invitation_recipient_domain => $recipientProvider,
-            Schema::Invitation_recipient_cloud_id => $userID,
-            Schema::Invitation_recipient_email => $email,
-            Schema::Invitation_recipient_name => $name,
-            Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
+            Schema::VInvitation_recipient_domain => $recipientProvider,
+            Schema::VInvitation_recipient_cloud_id => $userID,
+            Schema::VInvitation_recipient_email => $email,
+            Schema::VInvitation_recipient_name => $name,
+            Schema::VInvitation_status => Invitation::STATUS_ACCEPTED,
         ]);
         if ($updateResult == false) {
             $this->logger->error("Update failed for invitation with token '$token'", ['app' => RDMesh::APP_NAME]);

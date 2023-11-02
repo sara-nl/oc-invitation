@@ -54,16 +54,7 @@ class InvitationController extends Controller
      */
     public function index(): TemplateResponse
     {
-        $invitations = [];
-        array_push($invitations, [
-            'id' => 1,
-            'recipientName' => 'Sjonnie',
-        ]);
-        array_push($invitations, [
-            'id' => 2,
-            'recipientName' => 'Pipo',
-        ]);
-        return new TemplateResponse($this->appName, 'invitation.index', ['invitations' => $invitations]);
+        return new TemplateResponse($this->appName, 'invitation.index');
     }
 
     /**
@@ -72,29 +63,26 @@ class InvitationController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      * @param string email the email address to send the invite to
+     * @param string senderName the name of the sender
+     * @param string message the message for the receiver
      * @return DataResponse the result
      */
-    // TODO: this call should be the result of a 'generate invite' form with all the relevant info.
-    //       (sender name etc.)
-    public function generateInvite(string $email = '', string $senderName = ''): DataResponse
+    public function generateInvite(string $email = '', string $senderName = '', string $message = ''): DataResponse
     {
         if ('' == $email) {
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_code' => AppError::CREATE_INVITATION_NO_EMAIL,
-                    'message' => 'You must provide the email address of the intended recipient of the invite.'
+                    'error_message' => AppError::CREATE_INVITATION_NO_RECIPIENT_EMAIL,
                 ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($senderName == '') {
-            // FIXME: decide whether the user's _display_name_ should be used here
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_code' => AppError::CREATE_INVITATION_NO_NAME,
-                    'message' => 'You must provide your name in order to generate an invite.'
+                    'error_message' => AppError::CREATE_INVITATION_NO_SENDER_NAME,
                 ],
                 Http::STATUS_NOT_FOUND
             );
@@ -103,15 +91,15 @@ class InvitationController extends Controller
         // generate the token
         $token = Uuid::uuid4();
 
-        // add the necessary parameters to the link
-        // TODO: decide what parameters actually must/can be (savely) send
+        // TODO: decide what parameters actually must/can be (savely) send for the receiver to recognize the sender of the invitation
         $params = [
             MeshService::PARAM_NAME_TOKEN => $token,
             MeshService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshService->getDomain(),
         ];
 
-        // check for existing open invitations for the same recipient email
-        // FIXME: modify findAll to accept mutiple values of one column
+        // Check for existing open and accepted invitations for the same recipient email
+        // Note that accepted invitations might have another recipient's email set, so there might still already be an existing invitation
+        // but this will be dealt with upon acceptance of this new invitation
         try {
             $fieldsAndValues = [];
             array_push($fieldsAndValues, [Schema::Invitation_sender_cloud_id => OC::$server->getUserSession()->getUser()->getCloudId()]);
@@ -124,7 +112,7 @@ class InvitationController extends Controller
                 return new DataResponse(
                     [
                         'success' => false,
-                        'error_code' => AppError::CREATE_INVITATION_EXISTS,
+                        'error_message' => AppError::CREATE_INVITATION_EXISTS,
                     ],
                     Http::STATUS_NOT_FOUND,
                 );
@@ -133,7 +121,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_code' => AppError::CREATE_INVITATION_ERROR,
+                    'error_message' => AppError::CREATE_INVITATION_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
             );
@@ -165,7 +153,7 @@ class InvitationController extends Controller
 
         // This message can then be passed to send() of \OC\Mail\Mailer
 
-        // when all's well set status and persist
+        // when all's well set status to open and persist
         $invitation->setStatus(Invitation::STATUS_OPEN);
         try {
             $newInvitation = $this->invitationService->insert($invitation);
@@ -174,7 +162,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_code' => AppError::CREATE_INVITATION_ERROR,
+                    'error_message' => AppError::CREATE_INVITATION_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND
             );
@@ -208,11 +196,23 @@ class InvitationController extends Controller
 
         if ($token == '') {
             \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
-        if ($token == '') {
+        if ($providerDomain == '') {
             \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+        }
+
+        // check if invitation doesn't already exists
+        try {
+            $invitation = $this->invitationService->findByToken($token);
+            // we want a NotFoundException
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS]));
+        } catch (NotFoundException $e) {
+            // we're good to go
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         // persist the received invite
@@ -227,7 +227,7 @@ class InvitationController extends Controller
             $this->invitationService->insert($invitation);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => 'The invitation is invalid.']));
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         $manager = \OC::$server->getNotificationManager();
@@ -261,9 +261,9 @@ class InvitationController extends Controller
     }
 
     /**
-     * Notify the inviter that we accept the invite and include our user info.
-     * The response should contain the inviter's info which we will persist together with the invite.
-     * And at that point the invitation has successfully completed.
+     * Notify the sender of the invite that we accept it and include our user info.
+     * The response should contain the sender's info which we will persist together with the invite.
+     * And at that point the invitation flow has successfully completed.
      * 
      * @NoAdminRequired
      * @NoCSRFRequired
@@ -274,7 +274,7 @@ class InvitationController extends Controller
     {
         if ($token == '') {
             return new DataResponse(
-                ['error' => 'sender token missing'],
+                ['error_message' => 'sender token missing'],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -284,7 +284,7 @@ class InvitationController extends Controller
             $invitation = $this->invitationService->findByToken($token);
         } catch (NotFoundException $e) {
             return new DataResponse(
-                ['error' => 'acceptInvite failed', 'message' => $e->getMessage()],
+                ['error_message' => 'acceptInvite failed', 'message' => $e->getMessage()],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -312,7 +312,7 @@ class InvitationController extends Controller
         ) {
             $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
-                ['error' => 'Failed to accept the invitation'],
+                ['error_message' => 'Failed to accept the invitation'],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -333,7 +333,7 @@ class InvitationController extends Controller
         if ($updateResult == false) {
             $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
-                ['error' => 'Failed to accept the invitation'],
+                ['error_message' => 'Failed to accept the invitation'],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -389,29 +389,32 @@ class InvitationController extends Controller
     // FIXME: remove this test endpoint
     public function find(int $id = null): DataResponse
     {
-        if (isset($id)) {
-            try {
-                $invitation = $this->invitationService->find($id);
-                if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
-                    return new DataResponse(
-                        [
-                            'invitation' => $invitation
-                        ],
-                        Http::STATUS_OK,
-                    );
-                }
-                throw new NotFoundException('Not found');
-            } catch (NotFoundException $e) {
-                return new DataResponse(
-                    ['error' => $e->getMessage()],
-                    Http::STATUS_NOT_FOUND,
-                );
-            }
+        if (!isset($id)) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::REQUEST_MISSING_PARAMETER,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
         }
-        return new DataResponse(
-            ['error' => 'id is required'],
-            Http::STATUS_NOT_FOUND,
-        );
+        try {
+            $invitation = $this->invitationService->find($id);
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'invitation' => $invitation,
+                ]
+            );
+        } catch (NotFoundException $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::INVITATION_NOT_FOUND,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
     }
 
     /**
@@ -420,13 +423,19 @@ class InvitationController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      */
-    // FIXME: remove this test endpoint
-    public function findAll(string $fields): DataResponse
+    public function findAll(string $fields = null): DataResponse
     {
+        if (!isset($fields)) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::REQUEST_MISSING_PARAMETER,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
         try {
             $fieldsAndValues = json_decode($fields, true);
-            // only viewing own invitations are allowed
-            array_push($fieldsAndValues, [Schema::VInvitation_user_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
             $invitations = $this->invitationService->findAll($fieldsAndValues);
             return new DataResponse(
                 [
@@ -439,7 +448,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_code' => AppError::ERROR,
+                    'error_message' => AppError::ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
             );
@@ -454,35 +463,43 @@ class InvitationController extends Controller
     // FIXME: remove this test endpoint
     public function findByToken(string $token = null): DataResponse
     {
-        if (isset($token)) {
-            try {
-                $invitation = $this->invitationService->findByToken($token);
-                if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
-                    return new DataResponse(
-                        [
-                            'invitation' => $invitation
-                        ],
-                        Http::STATUS_OK,
-                    );
-                }
-                throw new NotFoundException('Not found');
-                return new DataResponse(
-                    [
-                        'invitation' => $invitation
-                    ],
-                    Http::STATUS_OK,
-                );
-            } catch (NotFoundException $e) {
-                return new DataResponse(
-                    ['error' => $e->getMessage()],
-                    Http::STATUS_NOT_FOUND,
-                );
-            }
+        if (!isset($token)) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::REQUEST_MISSING_PARAMETER,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
         }
-        return new DataResponse(
-            ['error' => 'token is required'],
-            Http::STATUS_NOT_FOUND,
-        );
+        try {
+            $invitation = $this->invitationService->findByToken($token);
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'invitation' => $invitation,
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (NotFoundException $e) {
+            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::INVITATION_NOT_FOUND,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
     }
 
     /**

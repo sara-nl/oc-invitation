@@ -4,6 +4,7 @@ namespace OCA\RDMesh\Service;
 
 use Exception;
 use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\RemoteUserMapper;
@@ -11,6 +12,10 @@ use OCA\RDMesh\Federation\VInvitation;
 use OCP\ILogger;
 use OCP\Share\IRemoteShareesSearch;
 
+/**
+ * The service between controller and persistancy layer:
+ *  - invitation access rights of the current user are handled here
+ */
 class InvitationService implements IRemoteShareesSearch
 {
 
@@ -36,45 +41,57 @@ class InvitationService implements IRemoteShareesSearch
     {
         $invitation = $this->mapper->find($id);
         if (isset($invitation)) {
-            return $invitation;
+            if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+                return $invitation;
+            }
+            $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with id '$id'.", ['app' => RDMesh::APP_NAME]);
         }
-        $this->logger->debug("Invitation with id=$id not found.", ['app' => RDMesh::APP_NAME]);
-        throw new NotFoundException('Invitation not found');
+        throw new NotFoundException("Invitation with id=$id not found.");
     }
 
     /**
      * Returns the invitation with the specified token.
      * 
      * @param string $token
+     * @param bool $loginRequired true if we need session user access check, default is true
      * @return VInvitation
-     * @throws ServiceException in case the invitation could not be returned
+     * @throws NotFoundException in case the invitation could not be found
+     * @throws ServiceException in case of error
      */
-    public function findByToken(string $token): VInvitation
+    public function findByToken(string $token, bool $loginRequired = true): VInvitation
     {
         try {
             $invitation = $this->mapper->findByToken($token);
             if (isset($invitation)) {
-                return $invitation;
+                if ($loginRequired == false || \OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+                    return $invitation;
+                }
+                $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with token '$token'.", ['app' => RDMesh::APP_NAME]);
             }
-            throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
-            throw new ServiceException("Invitation not found.");
+            $this->logger->error("Invitation not found for token '$token'.", ['app' => RDMesh::APP_NAME]);
+            throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new ServiceException("An exception occurred trying to retrieve the invitation with token '$token'.");
         }
+        throw new NotFoundException("Invitation with token '$token' not found.");
     }
 
     /**
      * Returns all invitations matching the specified criteria.
      * 
      * @param array $criteria
+     * @param bool $loginRequired true if we need session user access check, default is true
      * @return array
      */
-    public function findAll(array $criteria): array
+    public function findAll(array $criteria, bool $loginRequired = true): array
     {
         try {
+            // add access restriction
+            if ($loginRequired) {
+                array_push($criteria, [Schema::VInvitation_user_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
+            }
             return $this->mapper->findAll($criteria);
         } catch (Exception $e) {
             $this->logger->error('findAll failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);

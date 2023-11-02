@@ -28,6 +28,7 @@ class InvitationMapper extends Mapper
      * @param int $id
      * @return mixed
      */
+    // FIXME: throw NotFoundException if the invitation could not be found
     public function find(int $id)
     {
         $qb = $this->db->getQueryBuilder();
@@ -44,7 +45,7 @@ class InvitationMapper extends Mapper
     /** Returns the invitation with the specified token, or NotFoundException if it could not be found.
      * 
      * @param string $token
-     * @return mixed
+     * @return VInvitation
      * @throws NotFoundException
      */
     public function findByToken(string $token)
@@ -55,15 +56,14 @@ class InvitationMapper extends Mapper
                 ->from(Schema::View_Invitations, 'i')
                 ->where($qb->expr()->eq('i.token', $qb->createNamedParameter($token)))
                 ->execute()->fetchAssociative();
-            $this->logger->debug(' - result: ' . print_r($result, true));
             if (is_array($result) && count($result) > 0) {
                 return $this->getVInvitation($result);
             }
-            throw new Exception("Invitation not found for token $token");
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException($e->getMessage());
         }
+        throw new NotFoundException("Invitation not found for token $token");
     }
 
     /**
@@ -126,6 +126,7 @@ class InvitationMapper extends Mapper
      * @param array $fieldsAndValues
      * @return bool true if an invitation has been updated, false otherwise
      */
+    // FIXME: check if update is allowed (current user only)
     public function updateInvitation(array $fieldsAndValues): bool
     {
         try {
@@ -160,7 +161,6 @@ class InvitationMapper extends Mapper
     private function getVInvitation(array $associativeArray): VInvitation
     {
         if (isset($associativeArray) && count($associativeArray) > 0) {
-            $this->logger->debug(' - creating VInvitation');
             $invitation = new VInvitation();
             $invitation->setId($associativeArray['id']);
             $invitation->setToken($associativeArray[Schema::VInvitation_token]);
@@ -179,7 +179,6 @@ class InvitationMapper extends Mapper
             $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
             $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
             $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
-            $this->logger->debug(' - vInvitation: ' . print_r($invitation, true));
             return $invitation;
         }
         $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => RDMesh::APP_NAME]);

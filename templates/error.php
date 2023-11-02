@@ -1,5 +1,14 @@
-<?php 
+<?php
 // note: including the index page with the message as 'pop-up' does not work like so: print_unescaped($this->inc('files.view.index')); 
+
+use OCA\RDMesh\AppInfo\RDMesh;
+
+$appName = RDMesh::APP_NAME;
+
+style($appName, 'pure-min-css-3.0.0');
+style($appName, 'invitation');
+
+$urlGenerator = \OC::$server->getURLGenerator();
 ?>
 
 <div class="error" style="
@@ -12,5 +21,8 @@
     background-color: aqua;
     font-weight: bold;
     padding-left: 5em;">
-    <?php p($l->t($_['message']));?>
+    <?php p($l->t($_['message'])); ?>
+    <p>
+        <a href="<?php echo $urlGenerator->linkToRoute('files.view.index'); ?>">Click to continue</a>
+    </p>
 </div>

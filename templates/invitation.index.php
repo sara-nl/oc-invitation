@@ -3,6 +3,7 @@
 use OCA\RDMesh\AppInfo\RDMesh;
 
 $appName = RDMesh::APP_NAME;
+// FIXME: decide whether the user display name is appropriate (as default)
 $userDisplayName = \OC::$server->getUserSession()->getUser()->getDisplayName();
 
 script($appName, 'invitation');

@@ -17,9 +17,9 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            console.log(json.message);
+                            $('#invitation-error span').text(json.message);
                         } else {
-                            $('#invitation-error span').text(json.error_code);
+                            $('#invitation-error span').text(json.error_message);
                         }
                     }
                 ).catch(
@@ -61,12 +61,11 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            console.log("invitations: " + JSON.stringify(json));
                             if (json.invitations) {
                                 renderer(json.invitations);
                             }
                         } else {
-                            $('#invitation-error span').text(json.error_code);
+                            $('#invitation-error span').text(json.error_message);
                         }
                     }
                 ).catch(
