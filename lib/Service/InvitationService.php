@@ -151,6 +151,8 @@ class InvitationService implements IRemoteShareesSearch
     public function search($search): array
     {
         try {
+            // FIXME: allow returning a single not invited remote user to be compatible with the default OC behaviour
+            //        this option should be configurable with a 'allow sharing with non invited users' setting
             return $this->remoteUserMapper->search($search);
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
