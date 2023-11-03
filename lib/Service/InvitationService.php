@@ -39,14 +39,20 @@ class InvitationService implements IRemoteShareesSearch
      */
     public function find(int $id): VInvitation
     {
-        $invitation = $this->mapper->find($id);
-        if (isset($invitation)) {
+        try {
+            $invitation = $this->mapper->find($id);
             if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
                 return $invitation;
             }
             $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with id '$id'.", ['app' => RDMesh::APP_NAME]);
+            throw new NotFoundException("Invitation with id=$id not found.");
+        } catch (NotFoundException $e) {
+            $this->logger->debug($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            throw new NotFoundException("Invitation with id=$id not found.");
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            throw new NotFoundException("Invitation with id=$id not found.");
         }
-        throw new NotFoundException("Invitation with id=$id not found.");
     }
 
     /**

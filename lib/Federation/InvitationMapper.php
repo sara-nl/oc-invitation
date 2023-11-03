@@ -23,12 +23,12 @@ class InvitationMapper extends Mapper
     }
 
     /**
-     * Returns the invitation with the specified id, or null if it could not be found.
+     * Returns the invitation with the specified id, or NotFoundException if it could not be found.
 
      * @param int $id
      * @return mixed
+     * @throws NotFoundException
      */
-    // FIXME: throw NotFoundException if the invitation could not be found
     public function find(int $id)
     {
         $qb = $this->db->getQueryBuilder();
@@ -39,7 +39,7 @@ class InvitationMapper extends Mapper
         if (is_array($result)) {
             return $this->getVInvitation($result);
         }
-        return null;
+        throw new NotFoundException("Could not retrieve invitation with id '$id'.");
     }
 
     /** Returns the invitation with the specified token, or NotFoundException if it could not be found.
