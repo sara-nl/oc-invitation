@@ -47,10 +47,10 @@ class InvitationService implements IRemoteShareesSearch
             $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with id '$id'.", ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         } catch (NotFoundException $e) {
-            $this->logger->debug($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            $this->logger->debug($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         }
     }
@@ -117,7 +117,7 @@ class InvitationService implements IRemoteShareesSearch
         try {
             return $this->mapper->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new ServiceException('Error inserting the invitation.');
         }
     }
@@ -155,7 +155,7 @@ class InvitationService implements IRemoteShareesSearch
             //        this option should be configurable with a 'allow sharing with non invited users' setting
             return $this->remoteUserMapper->search($search);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             throw new ServiceException('Error searching for remote users.');
         }
     }
