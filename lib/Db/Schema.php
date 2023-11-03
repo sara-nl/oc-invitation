@@ -53,4 +53,9 @@ class Schema
     public const RemoteUser_user_name = 'user_name';
     public const RemoteUser_remote_user_cloud_id = 'remote_user_cloud_id';
     public const RemoteUser_remote_user_name = 'remote_user_name';
+
+    /* Domain providers table */
+    public const Table_DomainProviders = 'mesh_domain_providers';
+
+    public const DomainProvider_domain = 'domain';
 }

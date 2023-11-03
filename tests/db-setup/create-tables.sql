@@ -18,6 +18,12 @@ CREATE TABLE `oc_mesh_invitations` (
   `status` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT ''
 ) ENGINE='InnoDB' COLLATE 'utf8mb4_bin';
 
+DROP TABLE IF EXISTS `oc_mesh_domain_providers`;
+CREATE TABLE `oc_mesh_domain_providers` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `domain` varchar(255) COLLATE 'utf8mb4_bin' UNIQUE NOT NULL DEFAULT ""
+) ENGINE='InnoDB' COLLATE 'utf8mb4_bin';
+
 drop view if exists oc_mesh_view_invitations;
 create view oc_mesh_view_invitations as
 select distinct 

@@ -7,7 +7,7 @@
 namespace OCA\RDMesh\Controller;
 
 use OCA\Federation\TrustedServers;
-use OCA\RDMesh\Service\MeshService;
+use OCA\RDMesh\Service\MeshRegistryService;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
 
@@ -49,7 +49,7 @@ class PageController extends Controller
     */
    private function getWAYFURLs(string $token, string $providerDomain): array
    {
-      // get the mesh
+      // FIXME: get the domain providers, NOT the trusted servers
       $trustedServers = $this->trustedServers->getServers();
       $wayfList = [];
       foreach ($trustedServers as $i => $server) {
@@ -68,9 +68,9 @@ class PageController extends Controller
          // TODO: check if the server supports the invitation workflow
 
          $appName = $this->appName;
-         $handleInviteEndpoint = trim(MeshService::ENDPOINT_HANDLE_INVITE, '/');
-         $tokenParam = MeshService::PARAM_NAME_TOKEN;
-         $providerDomainParam = MeshService::PARAM_NAME_PROVIDER_DOMAIN;
+         $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
+         $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;
+         $providerDomainParam = MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN;
          $link = "https://$host/apps/$appName/$handleInviteEndpoint?$tokenParam=$token&$providerDomainParam=$providerDomain";
          $wayfList[$i] = $link;
       }

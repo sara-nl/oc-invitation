@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * The invitation notifier
  */
 
 namespace OCA\RDMesh\Service;
@@ -42,8 +42,8 @@ class InvitationNotifier implements INotifier
                     (string) $l->t(
                         'You received an invitation from "%s" (token: "%s").',
                         [
-                            $notification->getSubjectParameters()[MeshService::PARAM_NAME_PROVIDER_DOMAIN],
-                            $notification->getSubjectParameters()[MeshService::PARAM_NAME_TOKEN],
+                            $notification->getSubjectParameters()[MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN],
+                            $notification->getSubjectParameters()[MeshRegistryService::PARAM_NAME_TOKEN],
                         ]
                     )
                 );

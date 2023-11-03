@@ -19,8 +19,8 @@ return [
 		['name' => 'invitation#find_all', 'url' => '/find-all-invitations', 'verb' => 'GET'],
 
 		// bespoke API - mesh registry
-		['name' => 'registry#invite_link', 'url' => '/invite-link', 'verb' => 'GET'],
 		['name' => 'mesh_registry#forward_invite', 'url' => '/registry/forward-invite', 'verb' => 'GET'],
+		['name' => 'mesh_registry#providers', 'url' => '/registry/providers', 'verb' => 'GET'],
 		// TODO: public info endpoint that returns relevant info of this mesh node/server
 		//		 returns: full host url (=trusted server url), name, logo, ...
 
