@@ -27,6 +27,9 @@ class AppError
     public const HANDLE_INVITATION_ERROR = 'HANDLE_INVITATION_ERROR';
     public const HANDLE_INVITATION_EXISTS = 'HANDLE_INVITATION_EXISTS';
 
+    /*  */
+    public const MESH_REGISTRY_ALL_PROVIDERS_ERROR = 'MESH_REGISTRY_ALL_PROVIDERS_ERROR';
+
     /* ocm invite accepted errors */
     public const OCM_INVITE_ACCEPTED_NOT_FOUND = 'OCM_INVITE_ACCEPTED_NOT_FOUND';
 }

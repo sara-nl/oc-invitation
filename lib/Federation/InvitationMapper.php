@@ -23,12 +23,12 @@ class InvitationMapper extends Mapper
     }
 
     /**
-     * Returns the invitation with the specified id, or null if it could not be found.
+     * Returns the invitation with the specified id, or NotFoundException if it could not be found.
 
      * @param int $id
      * @return mixed
+     * @throws NotFoundException
      */
-    // FIXME: throw NotFoundException if the invitation could not be found
     public function find(int $id)
     {
         $qb = $this->db->getQueryBuilder();
@@ -39,7 +39,7 @@ class InvitationMapper extends Mapper
         if (is_array($result)) {
             return $this->getVInvitation($result);
         }
-        return null;
+        throw new NotFoundException("Could not retrieve invitation with id '$id'.");
     }
 
     /** Returns the invitation with the specified token, or NotFoundException if it could not be found.
@@ -214,62 +214,6 @@ class InvitationMapper extends Mapper
                 $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
                 $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
                 $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
-                array_push($invitations, $invitation);
-            }
-        }
-        return $invitations;
-    }
-
-    /**
-     * Builds and returns a new invitation from specified the associative array.
-     * @param array $associativeArray
-     * @return Invitation
-     */
-    private function getInvitation(array $associativeArray): Invitation
-    {
-        if (isset($associativeArray) && count($associativeArray) > 0) {
-            $invitation = new Invitation();
-            $invitation->setId($associativeArray['id']);
-            $invitation->setToken($associativeArray[Schema::Invitation_token]);
-            $invitation->setProviderDomain($associativeArray[Schema::Invitation_provider_domain]);
-            $invitation->setRecipientDomain($associativeArray[Schema::Invitation_recipient_domain]);
-            $invitation->setSenderCloudId($associativeArray[Schema::Invitation_sender_cloud_id]);
-            $invitation->setSenderEmail($associativeArray[Schema::Invitation_sender_email]);
-            $invitation->setSenderName($associativeArray[Schema::Invitation_sender_name]);
-            $invitation->setRecipientCloudId($associativeArray[Schema::Invitation_recipient_cloud_id]);
-            $invitation->setRecipientEmail($associativeArray[Schema::Invitation_recipient_email]);
-            $invitation->setRecipientName($associativeArray[Schema::Invitation_recipient_name]);
-            $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
-            $invitation->setStatus($associativeArray[Schema::Invitation_status]);
-            return $invitation;
-        }
-        $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => RDMesh::APP_NAME]);
-        return null;
-    }
-
-    /**
-     * Builds and returns an array of new invitation objects from the specified the associatives array.
-     * @param array $associativeArrays
-     * @return array
-     */
-    private function getInvitations(array $associativeArrays): array
-    {
-        $invitations = [];
-        if (isset($associativeArrays) && count($associativeArrays) > 0) {
-            foreach ($associativeArrays as $associativeArray) {
-                $invitation = new Invitation();
-                $invitation->setId($associativeArray['id']);
-                $invitation->setToken($associativeArray[Schema::Invitation_token]);
-                $invitation->setProviderDomain($associativeArray[Schema::Invitation_provider_domain]);
-                $invitation->setRecipientDomain($associativeArray[Schema::Invitation_recipient_domain]);
-                $invitation->setSenderCloudId($associativeArray[Schema::Invitation_sender_cloud_id]);
-                $invitation->setSenderEmail($associativeArray[Schema::Invitation_sender_email]);
-                $invitation->setSenderName($associativeArray[Schema::Invitation_sender_name]);
-                $invitation->setRecipientCloudId($associativeArray[Schema::Invitation_recipient_cloud_id]);
-                $invitation->setRecipientEmail($associativeArray[Schema::Invitation_recipient_email]);
-                $invitation->setRecipientName($associativeArray[Schema::Invitation_recipient_name]);
-                $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
-                $invitation->setStatus($associativeArray[Schema::Invitation_status]);
                 array_push($invitations, $invitation);
             }
         }

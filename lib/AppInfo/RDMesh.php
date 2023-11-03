@@ -10,7 +10,7 @@ use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCA\RDMesh\Service\InvitationNotifier;
 use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\MeshService;
+use OCA\RDMesh\Service\MeshRegistryService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 
@@ -25,9 +25,9 @@ class RDMesh extends App
         // instantiate the application configuration service
         $container = $this->getContainer();
         $container->registerService(
-            'MeshService',
+            'MeshRegistryService',
             function (IContainer $c) {
-                return new MeshService(
+                return new MeshRegistryService(
                     self::APP_NAME,
                     $c->query('Config'),
                 );
@@ -55,7 +55,7 @@ class RDMesh extends App
             function () {
                 return new InvitationNotifier(
                     \OC::$server->getL10NFactory(),
-                    new MeshService(
+                    new MeshRegistryService(
                         self::APP_NAME,
                         $this->getContainer()->query('Config'),
                     )

@@ -16,7 +16,7 @@ use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\HttpClient;
 use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\MeshService;
+use OCA\RDMesh\Service\MeshRegistryService;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -30,18 +30,18 @@ use Ramsey\Uuid\Uuid;
 class InvitationController extends Controller
 {
 
-    private MeshService $meshService;
+    private MeshRegistryService $meshRegistryService;
     private InvitationService $invitationService;
     private ILogger $logger;
 
     public function __construct(
         $appName,
         IRequest $request,
-        MeshService $meshService,
+        MeshRegistryService $meshRegistryService,
         InvitationService $invitationService
     ) {
         parent::__construct($appName, $request);
-        $this->meshService = $meshService;
+        $this->meshRegistryService = $meshRegistryService;
         $this->invitationService = $invitationService;
         $this->logger = \OC::$server->getLogger();
     }
@@ -93,8 +93,8 @@ class InvitationController extends Controller
 
         // TODO: decide what parameters actually must/can be (savely) send for the receiver to recognize the sender of the invitation
         $params = [
-            MeshService::PARAM_NAME_TOKEN => $token,
-            MeshService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshService->getDomain(),
+            MeshRegistryService::PARAM_NAME_TOKEN => $token,
+            MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getDomain(),
         ];
 
         // Check for existing open and accepted invitations for the same recipient email
@@ -127,12 +127,12 @@ class InvitationController extends Controller
             );
         }
 
-        $inviteLink = $this->meshService->inviteLink($params);
+        $inviteLink = $this->meshRegistryService->inviteLink($params);
 
         // persist the invite to send
         $invitation = new Invitation();
         $invitation->setToken($token);
-        $invitation->setProviderDomain($this->meshService->getDomain());
+        $invitation->setProviderDomain($this->meshRegistryService->getDomain());
         $invitation->setSenderCloudId(OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
@@ -219,7 +219,7 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
-        $invitation->setRecipientDomain($this->meshService->getDomain());
+        $invitation->setRecipientDomain($this->meshRegistryService->getDomain());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
@@ -247,10 +247,10 @@ class InvitationController extends Controller
             // the user that has received the invite is logged in at this point
             ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
-            ->setObject(MeshService::PARAM_NAME_TOKEN, $token)
+            ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token)
             ->setSubject('invitation', [
-                MeshService::PARAM_NAME_TOKEN => $token,
-                MeshService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
+                MeshRegistryService::PARAM_NAME_TOKEN => $token,
+                MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
             ])
             ->addAction($acceptAction)
             ->addAction($declineAction);
@@ -289,19 +289,19 @@ class InvitationController extends Controller
             );
         }
 
-        $recipientDomain = $this->meshService->getDomain();
+        $recipientDomain = $this->meshRegistryService->getDomain();
         $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
         $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
         $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
         $params = [
-            MeshService::PARAM_NAME_RECIPIENT_PROVIDER => $recipientDomain,
-            MeshService::PARAM_NAME_TOKEN => $token,
-            MeshService::PARAM_NAME_USER_ID => $recipientCloudID,
-            MeshService::PARAM_NAME_EMAIL => $recipientEmail,
-            MeshService::PARAM_NAME_NAME => $recipientName,
+            MeshRegistryService::PARAM_NAME_RECIPIENT_PROVIDER => $recipientDomain,
+            MeshRegistryService::PARAM_NAME_TOKEN => $token,
+            MeshRegistryService::PARAM_NAME_USER_ID => $recipientCloudID,
+            MeshRegistryService::PARAM_NAME_EMAIL => $recipientEmail,
+            MeshRegistryService::PARAM_NAME_NAME => $recipientName,
         ];
 
-        $url = $this->meshService->getFullInviteAcceptedEndpointURL($invitation->getProviderDomain());
+        $url = $this->meshRegistryService->getFullInviteAcceptedEndpointURL($invitation->getProviderDomain());
         $httpClient = new HttpClient();
         $response = $httpClient->curlPost($url, $params);
         $resArray = (array)$response['response'];
@@ -324,9 +324,9 @@ class InvitationController extends Controller
                 Schema::Invitation_recipient_domain => $recipientDomain,
                 Schema::Invitation_recipient_email => $recipientEmail,
                 Schema::Invitation_recipient_name => $recipientName,
-                Schema::Invitation_sender_cloud_id => $resArray[MeshService::PARAM_NAME_USER_ID],
-                Schema::Invitation_sender_email => $resArray[MeshService::PARAM_NAME_EMAIL],
-                Schema::Invitation_sender_name => $resArray[MeshService::PARAM_NAME_NAME],
+                Schema::Invitation_sender_cloud_id => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
+                Schema::Invitation_sender_email => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
+                Schema::Invitation_sender_name => $resArray[MeshRegistryService::PARAM_NAME_NAME],
                 Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
             ]
         );
@@ -345,7 +345,7 @@ class InvitationController extends Controller
             $notification
                 ->setApp(RDMesh::APP_NAME)
                 ->setUser(OC::$server->getUserSession()->getUser()->getUID())
-                ->setObject(MeshService::PARAM_NAME_TOKEN, $token);
+                ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
             $manager->markProcessed($notification);
         } catch (Exception $e) {
             // invitation has already successfully been accepted; we only log this exception
@@ -366,15 +366,15 @@ class InvitationController extends Controller
      */
     private function verifiedInviteAcceptedResponse(array $response): bool
     {
-        if (!isset($response) || $response[MeshService::PARAM_NAME_USER_ID] == '') {
+        if (!isset($response) || $response[MeshRegistryService::PARAM_NAME_USER_ID] == '') {
             $this->logger->error('/invite-accepted response does not contain the user id of the sender of the invitation.');
             return false;
         }
-        if (!isset($response[MeshService::PARAM_NAME_EMAIL]) || $response[MeshService::PARAM_NAME_EMAIL] == '') {
+        if (!isset($response[MeshRegistryService::PARAM_NAME_EMAIL]) || $response[MeshRegistryService::PARAM_NAME_EMAIL] == '') {
             $this->logger->error('/invite-accepted response does not contain the email of the sender of the invitation.');
             return false;
         }
-        if (!isset($response[MeshService::PARAM_NAME_NAME]) || $response[MeshService::PARAM_NAME_NAME] == '') {
+        if (!isset($response[MeshRegistryService::PARAM_NAME_NAME]) || $response[MeshRegistryService::PARAM_NAME_NAME] == '') {
             $this->logger->error('/invite-accepted response does not contain the name of the sender of the invitation.');
             return false;
         }

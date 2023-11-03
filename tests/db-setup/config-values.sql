@@ -1,4 +1,5 @@
--- The provider domain of this instance, equal to its trusted server domain value
--- Eg. trusted server value is'https://rd-1.nl', then provider domain is 'rd-1.nl'
-INSERT INTO `oc_appconfig` (`appid`, `configkey`, `configvalue`) VALUES ('rd-mesh', 'domain', 'rd-1.nl') 
-    ON DUPLICATE KEY UPDATE `configvalue`='rd-1.nl';
+SET NAMES utf8mb4;
+
+INSERT INTO `oc_mesh_domain_providers` (`id`, `domain`) VALUES
+    (1, 'rd-1.nl'),
+    (2, 'rd-2.nl');

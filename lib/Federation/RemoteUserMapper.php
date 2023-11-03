@@ -53,6 +53,7 @@ class RemoteUserMapper extends Mapper
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
             throw new Exception("Error searching for remote users with search string '$search'");
         }
+        // FIXME: return RemoteUser entities and move this part to RemoteUserService when implementing 'allow sharing with non invited users'.
         foreach ($remoteUsers as $i => $remoteUser) {
             array_push($result, [
                 'label' => $remoteUser->getRemoteUserName() . '(' . $remoteUser->getRemoteUserCloudID() . ')',

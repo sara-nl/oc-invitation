@@ -6,9 +6,7 @@
 
 namespace OCA\RDMesh\Controller;
 
-use OCA\Federation\TrustedServers;
 use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Service\MeshService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
