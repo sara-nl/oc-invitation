@@ -6,6 +6,7 @@
 
 namespace OCA\RDMesh\AppInfo;
 
+use OCA\RDMesh\Federation\DomainProviderMapper;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCA\RDMesh\Service\InvitationNotifier;
@@ -30,6 +31,9 @@ class RDMesh extends App
                 return new MeshRegistryService(
                     self::APP_NAME,
                     $c->query('Config'),
+                    new DomainProviderMapper(
+                        \OC::$server->getDatabaseConnection()
+                    )
                 );
             }
         );

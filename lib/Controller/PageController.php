@@ -6,7 +6,7 @@
 
 namespace OCA\RDMesh\Controller;
 
-use OCA\Federation\TrustedServers;
+use OCA\RDMesh\Federation\DomainProvider;
 use OCA\RDMesh\Service\MeshRegistryService;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
@@ -14,12 +14,12 @@ use OCP\IRequest;
 class PageController extends Controller
 {
 
-   private TrustedServers $trustedServers;
+   private MeshRegistryService $meshRegistryService;
 
-   public function __construct($appName, IRequest $request, TrustedServers $trustedServers)
+   public function __construct($appName, IRequest $request, MeshRegistryService $meshRegistryService)
    {
       parent::__construct($appName, $request);
-      $this->trustedServers = $trustedServers;
+      $this->meshRegistryService = $meshRegistryService;
    }
 
    /**
@@ -37,7 +37,8 @@ class PageController extends Controller
       echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
       // TODO: retrieve the mesh servers info from the db
       foreach ($this->getWAYFURLs($token, $providerDomain) as $i => $url) {
-         echo print_r("<a href=\"$url\">$url</a>", true) . '</html>';
+         $domain = parse_url($url, PHP_URL_HOST);
+         echo print_r("<p><a href=\"$url\">$domain</a></p>", true) . '</html>';
       }
       echo '</html>';
 
@@ -49,21 +50,10 @@ class PageController extends Controller
     */
    private function getWAYFURLs(string $token, string $providerDomain): array
    {
-      // FIXME: get the domain providers, NOT the trusted servers
-      $trustedServers = $this->trustedServers->getServers();
+      $domainProviders = $this->meshRegistryService->allDomainProviders();
       $wayfList = [];
-      foreach ($trustedServers as $i => $server) {
-
-         // TODO: we assume that the trusted server domain is the full owncloud root url, ie. the part before /apps/
-         //
-         //        +----------------------------+
-         //        |                            |
-         //        https://owncloud.mydomain.org/apps/rd-mesh/...
-         //
-         // TODO: We must figure out how to deal with domains, hosts, and designing the request functions for these.
-         //       plus if required the configuration of these.
-         
-         $host = parse_url($server['url'], PHP_URL_HOST);
+      foreach ($domainProviders as $i => $domainProvider ) {
+         $host = $domainProvider->getDomain();
 
          // TODO: check if the server supports the invitation workflow
 

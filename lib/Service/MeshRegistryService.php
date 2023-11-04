@@ -128,7 +128,7 @@ class MeshRegistryService
     /**
      * Returns all domain providers of the mesh.
      * 
-     * @return array all domain providers
+     * @return array[DomainProvider] all domain providers
      * @throws NotFoundException
      */
     public function allDomainProviders(): array
