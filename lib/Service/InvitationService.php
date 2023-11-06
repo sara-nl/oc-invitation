@@ -7,26 +7,22 @@ use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
-use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCA\RDMesh\Federation\VInvitation;
 use OCP\ILogger;
-use OCP\Share\IRemoteShareesSearch;
 
 /**
  * The service between controller and persistancy layer:
  *  - invitation access rights of the current user are handled here
  */
-class InvitationService implements IRemoteShareesSearch
+class InvitationService
 {
 
     private InvitationMapper $mapper;
-    private RemoteUserMapper $remoteUserMapper;
     private ILogger $logger;
 
-    public function __construct(InvitationMapper $mapper, RemoteUserMapper $remoteUserMapper)
+    public function __construct(InvitationMapper $mapper)
     {
         $this->mapper = $mapper;
-        $this->remoteUserMapper = $remoteUserMapper;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -131,32 +127,5 @@ class InvitationService implements IRemoteShareesSearch
     public function update(array $fieldsAndValues): bool
     {
         return $this->mapper->updateInvitation($fieldsAndValues);
-    }
-
-    /**
-     * Return the identifier of this provider.
-     * @param string search string for autocomplete
-     * @return array[] this function should return an array
-     * where each element is an associative array, containing:
-     * - label: a string to display as label
-     * - value: an associative array containing:
-     *   - shareType: int, to be used as share type
-     *   - shareWith: string, identifying the sharee
-     *   - server (optional): string, URL of the server, e.g.
-     * https://github.com/owncloud/core/blob/v10.12.0-beta.1/apps/files_sharing/lib/Controller/ShareesController.php#L421
-     *
-     * @since 10.12.0
-     */
-    // FIXME: move this to RemoteUserService
-    public function search($search): array
-    {
-        try {
-            // FIXME: allow returning a single not invited remote user to be compatible with the default OC behaviour
-            //        this option should be configurable with a 'allow sharing with non invited users' setting
-            return $this->remoteUserMapper->search($search);
-        } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
-            throw new ServiceException('Error searching for remote users.');
-        }
     }
 }
