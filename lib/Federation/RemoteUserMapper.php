@@ -33,8 +33,6 @@ class RemoteUserMapper extends Mapper
      */
     public function search(string $search): array
     {
-        $result = [];
-
         $userCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
 
         $parameter = '%' . $this->db->escapeLikeParameter($search) . '%';
@@ -53,18 +51,7 @@ class RemoteUserMapper extends Mapper
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
             throw new Exception("Error searching for remote users with search string '$search'");
         }
-        // FIXME: return RemoteUser entities and move this part to RemoteUserService when implementing 'allow sharing with non invited users'.
-        foreach ($remoteUsers as $i => $remoteUser) {
-            array_push($result, [
-                'label' => $remoteUser->getRemoteUserName() . '(' . $remoteUser->getRemoteUserCloudID() . ')',
-                'value' => [
-                    'shareType' => Share::SHARE_TYPE_REMOTE,
-                    'shareWith' => $remoteUser->getRemoteUserCloudID(),
-                ]
-            ]);
-        }
-
-        return $result;
+        return $remoteUsers;
     }
 
     /**
