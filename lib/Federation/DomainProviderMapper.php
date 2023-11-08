@@ -11,14 +11,14 @@ use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
-use OCP\IDb;
+use OCP\IDBConnection;
 use OCP\ILogger;
 
 class DomainProviderMapper extends Mapper
 {
     private ILogger $logger;
 
-    public function __construct(IDb $dbConnection)
+    public function __construct(IDBConnection $dbConnection)
     {
         parent::__construct($dbConnection, Schema::Table_DomainProviders, DomainProvider::class);
         $this->logger = \OC::$server->getLogger();

@@ -10,6 +10,7 @@ namespace OCA\RDMesh\Service;
 use Exception;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Federation\RemoteUserMapper;
+use OCP\IConfig;
 use OCP\ILogger;
 use OCP\Share;
 use OCP\Share\IRemoteShareesSearch;
@@ -18,11 +19,13 @@ class RemoteUserService implements IRemoteShareesSearch
 {
 
     private RemoteUserMapper $remoteUserMapper;
+    private IConfig $config;
     private ILogger $logger;
 
-    public function __construct(RemoteUserMapper $remoteUserMapper)
+    public function __construct(RemoteUserMapper $remoteUserMapper, IConfig, $config)
     {
         $this->remoteUserMapper = $remoteUserMapper;
+        $this->config = $config;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -49,15 +52,6 @@ class RemoteUserService implements IRemoteShareesSearch
                 return $result;
             }
 
-            // prepare non invited user
-            // TODO: do we need a translation for 'Not invited' ?
-            $nonInvitedUser = [
-                'label' => "$search (Not invited)",
-                'value' => [
-                    'shareType' => Share::SHARE_TYPE_REMOTE,
-                    'shareWith' => $search,
-                ]
-            ];
             $remoteUsers = $this->remoteUserMapper->search($search);
 
             foreach ($remoteUsers as $i => $remoteUser) {
@@ -70,8 +64,18 @@ class RemoteUserService implements IRemoteShareesSearch
                 ]);
             }
 
-            // check for non invited user
-            if (strpos($search, '@') !== false && count($remoteUsers) < 1) {
+            // prepare non invited user
+            // TODO: do we need a translation for 'Not invited' ?
+            $nonInvitedUser = [
+                'label' => "$search (Not invited)",
+                'value' => [
+                    'shareType' => Share::SHARE_TYPE_REMOTE,
+                    'shareWith' => $search,
+                ]
+            ];
+            if ($this->config->getAppValue(RDMesh::APP_NAME, RDMesh::CONFIG_allow_sharing_with_non_invited_users) 
+                    && strpos($search, '@') !== false 
+                    && count($remoteUsers) < 1) {
                 array_push($result, $nonInvitedUser);
             }
 

@@ -6,8 +6,7 @@
 
 namespace OCA\RDMesh\Controller;
 
-use OCA\RDMesh\Federation\DomainProvider;
-use OCA\RDMesh\Service\MeshRegistryService;
+use OCA\RDMesh\Federation\Service\MeshRegistryService;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
 
@@ -33,9 +32,8 @@ class PageController extends Controller
     */
    public function wayf(string $token, string $providerDomain): void
    {
-
+      // TODO: use template for this
       echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
-      // TODO: retrieve the mesh servers info from the db
       foreach ($this->getWAYFURLs($token, $providerDomain) as $i => $url) {
          $domain = parse_url($url, PHP_URL_HOST);
          echo print_r("<p><a href=\"$url\">$domain</a></p>", true) . '</html>';
@@ -55,7 +53,11 @@ class PageController extends Controller
       foreach ($domainProviders as $i => $domainProvider ) {
          $host = $domainProvider->getDomain();
 
-         // TODO: check if the server supports the invitation workflow
+         // TODO: optional: check if the server supports the invitation workflow
+         //       This should be done via the ocm /ocm-provider endpoint which must return the '/invite-accepted' capability
+         //       to inform us it supports handling invitations.
+         //       More likely is that we already know it should, 
+         //       so this would be more like a sanity check (eg. the service may be down)
 
          $appName = $this->appName;
          $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');

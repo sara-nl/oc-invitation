@@ -7,6 +7,7 @@
 namespace OCA\RDMesh\Service;
 
 use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\RDMesh\Federation\Service\MeshRegistryService;
 use OCP\ILogger;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;

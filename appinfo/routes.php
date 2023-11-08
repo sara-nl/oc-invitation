@@ -12,7 +12,6 @@ return [
 		['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'GET'],
 		['name' => 'invitation#index', 'url' => '/index', 'verb' => 'GET'],
 
-		// TODO: remove these test endpoints
 		['name' => 'invitation#find', 'url' => '/find-invitation', 'verb' => 'GET'],
 		['name' => 'invitation#find_by_token', 'url' => '/find-invitation-by-token', 'verb' => 'GET'],
 		['name' => 'invitation#update', 'url' => '/update-invitation', 'verb' => 'GET'],

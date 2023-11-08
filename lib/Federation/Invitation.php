@@ -11,6 +11,8 @@ use OCA\RDMesh\Db\Schema;
 use OCP\AppFramework\Db\Entity;
 
 /**
+ * @method string getUserCloudId()
+ * @method void setUserCloudId(string $userCloudId)
  * @method string getToken()
  * @method void setToken(string $token)
  * @method string getProviderDomain()
@@ -36,6 +38,7 @@ use OCP\AppFramework\Db\Entity;
  */
 class Invitation extends Entity implements JsonSerializable
 {
+    protected $userCloudId;
     protected $token;
     protected $providerDomain;
     protected $recipientDomain;
@@ -58,6 +61,7 @@ class Invitation extends Entity implements JsonSerializable
     {
         return [
             'id' => $this->id,
+            $this->columnToProperty(Schema::Invitation_user_cloud_id) => $this->userCloudId,
             $this->columnToProperty(Schema::Invitation_token) => $this->token,
             $this->columnToProperty(Schema::Invitation_provider_domain) => $this->providerDomain,
             $this->columnToProperty(Schema::Invitation_recipient_domain) => $this->recipientDomain,

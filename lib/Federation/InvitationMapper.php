@@ -9,14 +9,14 @@ use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\VInvitation;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
-use OCP\IDb;
+use OCP\IDBConnection;
 use OCP\ILogger;
 
 class InvitationMapper extends Mapper
 {
     private ILogger $logger;
 
-    public function __construct(IDb $dbConnection)
+    public function __construct(IDBConnection $dbConnection)
     {
         parent::__construct($dbConnection, Schema::Table_Invitations, Invitation::class);
         $this->logger = \OC::$server->getLogger();
@@ -124,10 +124,10 @@ class InvitationMapper extends Mapper
      * The id of the invitation must be specified as one of the fields and values.
      * 
      * @param array $fieldsAndValues
+     * @param string @userCloudID if set only the invitations owned by the user with this cloud ID can be updated
      * @return bool true if an invitation has been updated, false otherwise
      */
-    // FIXME: check if update is allowed (current user only)
-    public function updateInvitation(array $fieldsAndValues): bool
+    public function updateInvitation(array $fieldsAndValues, string $userCloudID = ''): bool
     {
         try {
             $qb = $this->db->getQueryBuilder();
@@ -138,9 +138,12 @@ class InvitationMapper extends Mapper
                         $updateQuery->set("i.$field", $qb->createNamedParameter($value));
                     }
                 }
-                $updateQuery->where(
-                    $updateQuery->expr()->eq('i.id', $updateQuery->createNamedParameter($fieldsAndValues['id']))
-                );
+                $andWhere = $qb->expr()->andX();
+                $andWhere->add($qb->expr()->eq('i.id', $qb->createNamedParameter($fieldsAndValues['id'])));
+                if($userCloudID !== '') {
+                    $andWhere->add($qb->expr()->eq('i.' . Schema::Invitation_user_cloud_id, $qb->createNamedParameter($userCloudID)));
+                }
+                $updateQuery->where($andWhere);
                 $result = $updateQuery->execute();
                 if ($result === 1) {
                     return true;
@@ -196,25 +199,7 @@ class InvitationMapper extends Mapper
         $invitations = [];
         if (isset($associativeArrays) && count($associativeArrays) > 0) {
             foreach ($associativeArrays as $associativeArray) {
-                $invitation = new VInvitation();
-                $invitation->setId($associativeArray['id']);
-                $invitation->setToken($associativeArray[Schema::VInvitation_token]);
-                $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
-                $invitation->setStatus($associativeArray[Schema::Invitation_status]);
-                $invitation->setUserCloudID($associativeArray[Schema::VInvitation_user_cloud_id]);
-                $invitation->setSentReceived($associativeArray[Schema::VInvitation_sent_received]);
-                $invitation->setProviderDomain($associativeArray[Schema::VInvitation_provider_domain]);
-                $invitation->setRecipientDomain($associativeArray[Schema::VInvitation_recipient_domain]);
-                $invitation->setSenderCloudId($associativeArray[Schema::VInvitation_sender_cloud_id]);
-                $invitation->setSenderEmail($associativeArray[Schema::VInvitation_sender_email]);
-                $invitation->setSenderName($associativeArray[Schema::VInvitation_sender_name]);
-                $invitation->setRecipientCloudId($associativeArray[Schema::VInvitation_recipient_cloud_id]);
-                $invitation->setRecipientEmail($associativeArray[Schema::VInvitation_recipient_email]);
-                $invitation->setRecipientName($associativeArray[Schema::VInvitation_recipient_name]);
-                $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
-                $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
-                $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
-                array_push($invitations, $invitation);
+                array_push($invitations, $this->getVInvitation($associativeArray));
             }
         }
         return $invitations;

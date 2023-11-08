@@ -9,15 +9,14 @@ namespace OCA\RDMesh\Federation;
 use Exception;
 use OCA\RDMesh\Db\Schema;
 use OCP\AppFramework\Db\Mapper;
-use OCP\IDb;
-use OCP\Share;
+use OCP\IDBConnection;
 use OCP\ILogger;
 
 class RemoteUserMapper extends Mapper
 {
     private ILogger $logger;
 
-    public function __construct(IDb $dbConnection)
+    public function __construct(IDBConnection $dbConnection)
     {
         parent::__construct($dbConnection, Schema::View_RemoteUsers, RemoteUser::class);
         $this->logger = \OC::$server->getLogger();
