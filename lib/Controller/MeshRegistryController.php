@@ -12,7 +12,7 @@ namespace OCA\RDMesh\Controller;
 
 use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Service\MeshRegistryService;
+use OCA\RDMesh\Federation\Service\MeshRegistryService;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -44,21 +44,43 @@ class MeshRegistryController extends Controller
      * @param string $token the token
      * @param string $senderDomain the domain of the sender
      * @param string $senderEmail the email of the sender
-     * TODO: check the response type
      * @return Response
      */
     public function forwardInvite(string $token = '', string $providerDomain = ''): Response
     {
+        $urlGenerator = \OC::$server->getURLGenerator();
+
         if ($token == '') {
-            return new DataResponse(
-                ['error' => 'token missing'],
-                Http::STATUS_NOT_FOUND
+            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse(
+                $urlGenerator->linkToRoute(
+                    RDMesh::APP_NAME . '.error.invitation',
+                    [
+                        'message' => AppError::HANDLE_INVITATION_MISSING_TOKEN
+                    ]
+                )
             );
         }
         if ($providerDomain == '') {
-            return new DataResponse(
-                ['error' => 'provider domain missing'],
-                Http::STATUS_NOT_FOUND
+            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse(
+                $urlGenerator->linkToRoute(
+                    RDMesh::APP_NAME . '.error.invitation',
+                    [
+                        'message' => AppError::HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN
+                    ]
+                )
+            );
+        }
+        if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
+            \OC::$server->getLogger()->error("Provider domain '$providerDomain' is unknown.", ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse(
+                $urlGenerator->linkToRoute(
+                    RDMesh::APP_NAME . '.error.invitation',
+                    [
+                        'message' => AppError::HANDLE_INVITATION_PROVIDER_UNKNOWN
+                    ]
+                )
             );
         }
 
@@ -67,7 +89,9 @@ class MeshRegistryController extends Controller
             MeshRegistryService::PARAM_NAME_TOKEN => $token,
             MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
         ];
-        return new RedirectResponse($urlGenerator->linkToRoute($this->meshRegistryService->getWayfPageRoute(), $params));
+        return new RedirectResponse(
+            $urlGenerator->linkToRoute($this->meshRegistryService->getWayfPageRoute(), $params)
+        );
     }
 
     /**

@@ -5,9 +5,10 @@
  * 
  */
 
-namespace OCA\RDMesh\Service;
+namespace OCA\RDMesh\Federation\Service;
 
 use OCA\RDMesh\Federation\DomainProviderMapper;
+use OCA\RDMesh\Service\NotFoundException;
 use OCP\IConfig;
 
 class MeshRegistryService
@@ -17,6 +18,7 @@ class MeshRegistryService
     private IConfig $config;
     private DomainProviderMapper $domainProviderMapper;
 
+    // TODO: move all this to a more appropriate class
     private const ENDPOINT_FORWARD_INVITE = '/registry/forward-invite';
     public const ENDPOINT_ACCEPT_INVITE = '/accept-invite';
     public const ENDPOINT_HANDLE_INVITE = '/handle-invite';
@@ -138,6 +140,21 @@ class MeshRegistryService
         } catch (NotFoundException $e) {
             throw $e;
         }
+    }
+
+    /**
+     * Returns true if the specified domain is of a known domain provider
+     * 
+     * @return bool
+     */
+    public function isKnowDomainProvider(string $domain): bool
+    {
+        foreach($this->allDomainProviders() as $domainProvider) {
+            if($domainProvider->getDomain() === $domain) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

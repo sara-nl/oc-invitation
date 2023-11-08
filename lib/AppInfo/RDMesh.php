@@ -11,13 +11,15 @@ use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\RemoteUserMapper;
 use OCA\RDMesh\Service\InvitationNotifier;
 use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\MeshRegistryService;
+use OCA\RDMesh\Federation\Service\MeshRegistryService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 
 class RDMesh extends App
 {
     public const APP_NAME = 'rd-mesh';
+
+    public const CONFIG_allow_sharing_with_non_invited_users = 'allow_sharing_with_non_invited_users';
 
     public function __construct()
     {
@@ -62,6 +64,9 @@ class RDMesh extends App
                     new MeshRegistryService(
                         self::APP_NAME,
                         $this->getContainer()->query('Config'),
+                        new DomainProviderMapper(
+                            \OC::$server->getDatabaseConnection()
+                        )
                     )
                 );
             },

@@ -11,6 +11,7 @@ use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Service\InvitationService;
+use OCA\RDMesh\Service\NotFoundException;
 use OCA\RDMesh\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -58,31 +59,46 @@ class OcmController extends Controller
     ): DataResponse {
         if ($recipientProvider == '') {
             return new DataResponse(
-                ['error' => 'recipient provider missing'],
+                [
+                    'success' => false,
+                    'error_message' => 'recipient provider missing'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($token == '') {
             return new DataResponse(
-                ['error' => 'sender token missing'],
+                [
+                    'success' => false,
+                    'error_message' => 'sender token missing'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($userID == '') {
             return new DataResponse(
-                ['error' => 'recipient user ID missing'],
+                [
+                    'success' => false,
+                    'error_message' => 'recipient user ID missing'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($email == '') {
             return new DataResponse(
-                ['error' => 'recipient email missing'],
+                [
+                    'success' => false,
+                    'error_message' => 'recipient email missing'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
         if ($name == '') {
             return new DataResponse(
-                ['error' => 'recipient name missing'],
+                [
+                    'success' => false,
+                    'error_message' => 'recipient name missing'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -90,6 +106,7 @@ class OcmController extends Controller
         $invitation = null;
         try {
             $invitation = $this->invitationService->findByToken($token, false);
+            
             // check if the receiver has not already accepted a previous invitation
             $existingInvitations = $this->invitationService->findAll([
                 [Schema::VInvitation_sender_cloud_id => $invitation->getSenderCloudId()],
@@ -99,15 +116,29 @@ class OcmController extends Controller
             if (count($existingInvitations) > 0) {
                 $this->logger->error("An accepted invitation already exists for remote user with name '$name'", ['app' => RDMesh::APP_NAME]);
                 return new DataResponse(
-                    // FIXME: use standardized error message
-                    ['error' => '/invite-accepted failed', 'message' => 'An accepted invitation already exists.'],
+                    [
+                        'success' => false,
+                        'error_message' => AppError::OCM_INVITE_ACCEPTED_EXISTS
+                    ],
                     Http::STATUS_NOT_FOUND
                 );
             }
+        } catch(NotFoundException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::OCM_INVITE_ACCEPTED_NOT_FOUND
+                ],
+                Http::STATUS_NOT_FOUND
+            );
         } catch (ServiceException $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
-                ['error' => '/invite-accepted failed', 'message' => AppError::OCM_INVITE_ACCEPTED_NOT_FOUND],
+                [
+                    'success' => false,
+                    'error_message' => AppError::OCM_INVITE_ACCEPTED_ERROR
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -120,12 +151,13 @@ class OcmController extends Controller
             Schema::VInvitation_recipient_email => $email,
             Schema::VInvitation_recipient_name => $name,
             Schema::VInvitation_status => Invitation::STATUS_ACCEPTED,
-        ]);
+        ], false);
         if ($updateResult == false) {
             $this->logger->error("Update failed for invitation with token '$token'", ['app' => RDMesh::APP_NAME]);
             return new DataResponse(
                 [
-                    'message' => 'Failed to handle /invite-accepted'
+                    'success' => false,
+                    'error_message' => AppError::OCM_INVITE_ACCEPTED_ERROR
                 ],
                 Http::STATUS_NOT_FOUND
             );

@@ -13,6 +13,7 @@ class Schema
     /* Invitations table */
     public const Table_Invitations = 'mesh_invitations';
 
+    public const Invitation_user_cloud_id = 'user_cloud_id';
     public const Invitation_token = 'token';
     public const Invitation_provider_domain = 'provider_domain';
     public const Invitation_recipient_domain = 'recipient_domain';

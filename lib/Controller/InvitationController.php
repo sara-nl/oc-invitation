@@ -8,15 +8,14 @@ namespace OCA\RDMesh\Controller;
 
 use DateTime;
 use Exception;
-use OC;
 use OC\Mail\Mailer;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
+use OCA\RDMesh\Federation\Service\MeshRegistryService;
 use OCA\RDMesh\HttpClient;
 use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\MeshRegistryService;
 use OCA\RDMesh\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
@@ -102,7 +101,7 @@ class InvitationController extends Controller
         // but this will be dealt with upon acceptance of this new invitation
         try {
             $fieldsAndValues = [];
-            array_push($fieldsAndValues, [Schema::Invitation_sender_cloud_id => OC::$server->getUserSession()->getUser()->getCloudId()]);
+            array_push($fieldsAndValues, [Schema::Invitation_sender_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
             array_push($fieldsAndValues, [Schema::Invitation_recipient_email => $email]);
             array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_OPEN]);
             array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_ACCEPTED]);
@@ -131,10 +130,11 @@ class InvitationController extends Controller
 
         // persist the invite to send
         $invitation = new Invitation();
+        $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
         $invitation->setProviderDomain($this->meshRegistryService->getDomain());
-        $invitation->setSenderCloudId(OC::$server->getUserSession()->getUser()->getCloudId());
-        $invitation->setSenderEmail(OC::$server->getUserSession()->getUser()->getEMailAddress());
+        $invitation->setSenderCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
+        $invitation->setSenderEmail(\OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
         $invitation->setSenderName($senderName);
         $invitation->setTimestamp(time());
@@ -202,6 +202,10 @@ class InvitationController extends Controller
             \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
+        if(!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
+            \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+        }
 
         // check if invitation doesn't already exists
         try {
@@ -217,6 +221,7 @@ class InvitationController extends Controller
 
         // persist the received invite
         $invitation = new Invitation();
+        $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
         $invitation->setRecipientDomain($this->meshRegistryService->getDomain());
@@ -284,7 +289,7 @@ class InvitationController extends Controller
             $invitation = $this->invitationService->findByToken($token);
         } catch (NotFoundException $e) {
             return new DataResponse(
-                ['error_message' => 'acceptInvite failed', 'message' => $e->getMessage()],
+                ['error_message' => 'acceptInvite failed'],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -328,7 +333,7 @@ class InvitationController extends Controller
                 Schema::Invitation_sender_email => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
                 Schema::Invitation_sender_name => $resArray[MeshRegistryService::PARAM_NAME_NAME],
                 Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
-            ]
+            ], true
         );
         if ($updateResult == false) {
             $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => RDMesh::APP_NAME]);
@@ -344,12 +349,12 @@ class InvitationController extends Controller
             $notification = $manager->createNotification();
             $notification
                 ->setApp(RDMesh::APP_NAME)
-                ->setUser(OC::$server->getUserSession()->getUser()->getUID())
+                ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
                 ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
             $manager->markProcessed($notification);
         } catch (Exception $e) {
             // invitation has already successfully been accepted; we only log this exception
-            $this->logger->error("Unable to remove notification for app '" . RDMesh::APP_NAME . "' user '" . OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => RDMesh::APP_NAME]);
+            $this->logger->error("Unable to remove notification for app '" . RDMesh::APP_NAME . "' user '" . \OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => RDMesh::APP_NAME]);
         }
 
         return new DataResponse(
@@ -383,10 +388,9 @@ class InvitationController extends Controller
 
     /**
      * 
-     * @NoAdminRequired
      * @NoCSRFRequired
      */
-    // FIXME: remove this test endpoint
+    // TODO: dev endpoint, may need to be removed
     public function find(int $id = null): DataResponse
     {
         if (!isset($id)) {
@@ -457,10 +461,9 @@ class InvitationController extends Controller
 
     /**
      * 
-     * @NoAdminRequired
      * @NoCSRFRequired
      */
-    // FIXME: remove this test endpoint
+    // TODO: dev endpoint, may need to be removed
     public function findByToken(string $token = null): DataResponse
     {
         if (!isset($token)) {
@@ -503,10 +506,10 @@ class InvitationController extends Controller
     }
 
     /**
-     * 
+     * @NoAdminRequired
      * @NoCSRFRequired
      */
-    // FIXME: remove this test endpoint
+    // TODO: dev endpoint, may need to be removed
     public function update(int $id, string $status): DataResponse
     {
         $fieldsAndValues = [];

@@ -5,6 +5,7 @@
 DROP TABLE IF EXISTS `oc_mesh_invitations`;
 CREATE TABLE `oc_mesh_invitations` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_cloud_id` varchar(255) COLLATE 'utf8mb4_bin' DEFAULT "",
   `token` varchar(255) COLLATE 'utf8mb4_bin' UNIQUE NOT NULL DEFAULT "",
   `provider_domain` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT '',
   `recipient_domain` varchar(255) COLLATE 'utf8mb4_bin' NOT NULL DEFAULT '',

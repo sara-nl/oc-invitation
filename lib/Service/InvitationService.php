@@ -3,11 +3,14 @@
 namespace OCA\RDMesh\Service;
 
 use Exception;
+use OC\HTTPHelper;
+use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\VInvitation;
+use OCP\AppFramework\Http;
 use OCP\ILogger;
 
 /**
@@ -62,22 +65,21 @@ class InvitationService
      */
     public function findByToken(string $token, bool $loginRequired = true): VInvitation
     {
+        $invitation = null;
         try {
             $invitation = $this->mapper->findByToken($token);
-            if (isset($invitation)) {
-                if ($loginRequired == false || \OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
-                    return $invitation;
-                }
-                $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with token '$token'.", ['app' => RDMesh::APP_NAME]);
-            }
         } catch (NotFoundException $e) {
             $this->logger->error("Invitation not found for token '$token'.", ['app' => RDMesh::APP_NAME]);
             throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
-        } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
-            throw new ServiceException("An exception occurred trying to retrieve the invitation with token '$token'.");
         }
-        throw new NotFoundException("Invitation with token '$token' not found.");
+        if($loginRequired == true && \OC::$server->getUserSession()->getUser() == null) {
+            throw new ServiceException("Unable to find invitation, unauthenticated.");
+        }
+        if($loginRequired == false 
+            || \OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+            return $invitation;
+        }
+        throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
     }
 
     /**
@@ -86,6 +88,7 @@ class InvitationService
      * @param array $criteria
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return array
+     * @throws ServiceException
      */
     public function findAll(array $criteria, bool $loginRequired = true): array
     {
@@ -97,7 +100,7 @@ class InvitationService
             return $this->mapper->findAll($criteria);
         } catch (Exception $e) {
             $this->logger->error('findAll failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
-            throw new ServiceException('Unable to find all invitations for the specified criteria.');
+            throw new ServiceException('Failed to find all invitations for the specified criteria.');
         }
     }
 
@@ -121,11 +124,21 @@ class InvitationService
     /**
      * Updates the invitation according to the specified fields and values.
      * 
-     * @param array $fieldsAndValues
+     * @param array $fieldsAndValues one of which must be the id
+     * @param bool $loginRequired true if we need session user access check, default is true
      * @return bool true if update succeeded, otherwise false
+     * @throws 
      */
-    public function update(array $fieldsAndValues): bool
+    public function update(array $fieldsAndValues, bool $loginRequired = true): bool
     {
-        return $this->mapper->updateInvitation($fieldsAndValues);
+        if ($loginRequired === true) {
+            if (\OC::$server->getUserSession()->getUser() == null) {
+                $this->logger->debug('Unable to update invitation, unauthenticated.', ['app' => RDMesh::APP_NAME]);
+                return false;
+            }
+            return $this->mapper->updateInvitation($fieldsAndValues, \OC::$server->getUserSession()->getUser()->getCloudId());
+        } else {
+            return $this->mapper->updateInvitation($fieldsAndValues);
+        }
     }
 }
