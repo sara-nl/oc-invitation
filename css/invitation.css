@@ -4,8 +4,15 @@ div#rd-mesh-invitation {
     margin-right: 2em;
 }
 
-div#rd-mesh-invitation input {
+div#rd-mesh-invitation input,
+textarea {
     color: black;
+    width: 22em;
+}
+
+div#rd-mesh-invitation textarea {
+    width: 22.3em;
+    height: 6em;
 }
 
 div.invites table {

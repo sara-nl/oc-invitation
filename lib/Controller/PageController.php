@@ -30,11 +30,11 @@ class PageController extends Controller
     * @param string $providerDomain the domain of the sender
     * @return void
     */
-   public function wayf(string $token, string $providerDomain): void
+   public function wayf(string $token, string $providerDomain, string $name): void
    {
       // TODO: use template for this
       echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
-      foreach ($this->getWAYFURLs($token, $providerDomain) as $i => $url) {
+      foreach ($this->getWAYFURLs($token, $providerDomain, $name) as $i => $url) {
          $domain = parse_url($url, PHP_URL_HOST);
          echo print_r("<p><a href=\"$url\">$domain</a></p>", true) . '</html>';
       }
@@ -46,7 +46,7 @@ class PageController extends Controller
    /**
     * Returns the WAYF URLs.
     */
-   private function getWAYFURLs(string $token, string $providerDomain): array
+   private function getWAYFURLs(string $token, string $providerDomain, string $name): array
    {
       $domainProviders = $this->meshRegistryService->allDomainProviders();
       $wayfList = [];
@@ -63,7 +63,8 @@ class PageController extends Controller
          $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
          $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;
          $providerDomainParam = MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN;
-         $link = "https://$host/apps/$appName/$handleInviteEndpoint?$tokenParam=$token&$providerDomainParam=$providerDomain";
+         $nameParam = MeshRegistryService::PARAM_NAME_NAME;
+         $link = "https://$host/apps/$appName/$handleInviteEndpoint?$tokenParam=$token&$providerDomainParam=$providerDomain&$nameParam=$name";
          $wayfList[$i] = $link;
       }
 

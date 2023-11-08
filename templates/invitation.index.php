@@ -12,12 +12,20 @@ style($appName, 'invitation');
 ?>
 <div id="<?php p($appName); ?>-invitation" class="invitation-index pure-g">
     <div class="pure-u-1-1 create">
-        <h2>Create invitation</h2>
         <form class="pure-form">
             <fieldset>
-                <input id="create-invitation-email" type="email" placeholder="Receiver email" />
-                <input disabled id="create-invitation-senderName" type="text" value="<?php p($userDisplayName); ?>" placeholder="<?php p($userDisplayName); ?>" />
-                <button id="create-invitation" type="submit" class="pure-button pure-button-primary">Create</button>
+                <legend>Create invitation</legend>
+                <div class="pure-g">
+                    <div class="pure-u-1-4">
+                        <input id="create-invitation-email" type="email" placeholder="Receiver email" />
+                        <button id="create-invitation" type="submit" class="pure-button pure-button-primary">Create</button>
+                    </div>
+                </div>
+                <div class="pure-g">
+                    <div class="pure-u-1-3">
+                        <textarea id="create-invitation-message" placeholder="Your message (optional)"></textarea>
+                    </div>
+                </div>
             </fieldset>
         </form>
         <div id="invitation-error" class="error"><span></span></div>

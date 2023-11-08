@@ -46,7 +46,7 @@ class MeshRegistryController extends Controller
      * @param string $senderEmail the email of the sender
      * @return Response
      */
-    public function forwardInvite(string $token = '', string $providerDomain = ''): Response
+    public function forwardInvite(string $token = '', string $providerDomain = '', string $name = ''): Response
     {
         $urlGenerator = \OC::$server->getURLGenerator();
 
@@ -72,6 +72,18 @@ class MeshRegistryController extends Controller
                 )
             );
         }
+        if ($name == '') {
+            \OC::$server->getLogger()->error('Invite is missing the sender name.', ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse(
+                $urlGenerator->linkToRoute(
+                    RDMesh::APP_NAME . '.error.invitation',
+                    [
+                        'message' => AppError::HANDLE_INVITATION_MISSING_SENDER_NAME
+                    ]
+                )
+            );
+        }
+
         if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
             \OC::$server->getLogger()->error("Provider domain '$providerDomain' is unknown.", ['app' => RDMesh::APP_NAME]);
             return new RedirectResponse(
@@ -88,6 +100,7 @@ class MeshRegistryController extends Controller
         $params = [
             MeshRegistryService::PARAM_NAME_TOKEN => $token,
             MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
+            MeshRegistryService::PARAM_NAME_NAME => $name,
         ];
         return new RedirectResponse(
             $urlGenerator->linkToRoute($this->meshRegistryService->getWayfPageRoute(), $params)

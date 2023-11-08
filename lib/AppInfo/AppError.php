@@ -38,6 +38,8 @@ class AppError
     public const HANDLE_INVITATION_MISSING_TOKEN = 'HANDLE_INVITATION_MISSING_TOKEN';
     /* invitation is missing the provider domain */
     public const HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN = 'HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN';
+    /* invitation is missing the sender name */
+    public const HANDLE_INVITATION_MISSING_SENDER_NAME = 'HANDLE_INVITATION_MISSING_SENDER_NAME';
     /* The domain provider of the invitation is unknown */
     public const HANDLE_INVITATION_PROVIDER_UNKNOWN = 'HANDLE_INVITATION_PROVIDER_UNKNOWN';
 

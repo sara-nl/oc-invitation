@@ -66,7 +66,7 @@ class InvitationController extends Controller
      * @param string message the message for the receiver
      * @return DataResponse the result
      */
-    public function generateInvite(string $email = '', string $senderName = '', string $message = ''): DataResponse
+    public function generateInvite(string $email = '', string $message = ''): DataResponse
     {
         if ('' == $email) {
             return new DataResponse(
@@ -77,23 +77,13 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
-        if ($senderName == '') {
-            return new DataResponse(
-                [
-                    'success' => false,
-                    'error_message' => AppError::CREATE_INVITATION_NO_SENDER_NAME,
-                ],
-                Http::STATUS_NOT_FOUND
-            );
-        }
-
         // generate the token
         $token = Uuid::uuid4();
 
-        // TODO: decide what parameters actually must/can be (savely) send for the receiver to recognize the sender of the invitation
         $params = [
             MeshRegistryService::PARAM_NAME_TOKEN => $token,
             MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getDomain(),
+            MeshRegistryService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
         ];
 
         // Check for existing open and accepted invitations for the same recipient email
@@ -136,7 +126,7 @@ class InvitationController extends Controller
         $invitation->setSenderCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(\OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
-        $invitation->setSenderName($senderName);
+        $invitation->setSenderName(\OC::$server->getUserSession()->getUser()->getDisplayName());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_NEW);
 
@@ -190,7 +180,7 @@ class InvitationController extends Controller
      * @param string $senderEmail the email of the sender
      * @return RedirectResponse
      */
-    public function handleInvite(string $token = '', string $providerDomain = ''): RedirectResponse
+    public function handleInvite(string $token = '', string $providerDomain = '', string $name = ''): RedirectResponse
     {
         $urlGenerator = \OC::$server->getURLGenerator();
 
@@ -202,6 +192,11 @@ class InvitationController extends Controller
             \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
+        if ($name == '') {
+            \OC::$server->getLogger()->error('Invite is missing sender name.', ['app' => RDMesh::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+        }
+
         if(!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
             \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => RDMesh::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
@@ -224,6 +219,7 @@ class InvitationController extends Controller
         $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
+        $invitation->setSenderName($name);
         $invitation->setRecipientDomain($this->meshRegistryService->getDomain());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
@@ -256,6 +252,7 @@ class InvitationController extends Controller
             ->setSubject('invitation', [
                 MeshRegistryService::PARAM_NAME_TOKEN => $token,
                 MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
+                MeshRegistryService::PARAM_NAME_NAME => $name,
             ])
             ->addAction($acceptAction)
             ->addAction($declineAction);

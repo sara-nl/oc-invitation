@@ -22,7 +22,7 @@ class RemoteUserService implements IRemoteShareesSearch
     private IConfig $config;
     private ILogger $logger;
 
-    public function __construct(RemoteUserMapper $remoteUserMapper, IConfig, $config)
+    public function __construct(RemoteUserMapper $remoteUserMapper, IConfig $config)
     {
         $this->remoteUserMapper = $remoteUserMapper;
         $this->config = $config;

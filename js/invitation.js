@@ -1,8 +1,8 @@
 (function (document, $) {
     $(document).ready(function () {
-        let generateInvite = function (email, senderName) {
+        let generateInvite = function (email, message) {
             $('#invitation-error span').text("");
-            let baseUrl = OC.generateUrl('/apps/rd-mesh/generate-invite?email=' + email + '&senderName=' + senderName);
+            let baseUrl = OC.generateUrl('/apps/rd-mesh/generate-invite?email=' + email + '&message=' + message);
             let options = {
                 'method': 'GET',
                 'headers': {
@@ -36,7 +36,7 @@
                 event.stopPropagation();
                 generateInvite(
                     document.getElementById('create-invitation-email').value,
-                    document.getElementById('create-invitation-senderName').value
+                    document.getElementById('create-invitation-message').value
                 )
             }
         );
