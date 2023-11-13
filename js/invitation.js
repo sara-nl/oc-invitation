@@ -2,7 +2,7 @@
     $(document).ready(function () {
         let generateInvite = function (email, message) {
             $('#invitation-error span').text("");
-            let baseUrl = OC.generateUrl('/apps/rd-mesh/generate-invite?email=' + email + '&message=' + message);
+            let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
             let options = {
                 'method': 'GET',
                 'headers': {
@@ -46,7 +46,7 @@
          * @param {*} criteria eg. [{ "status": "open" }, { "status": "new" }]
          */
         let getInvitations = function (criteria, renderer) {
-            let baseUrl = OC.generateUrl('/apps/rd-mesh/find-all-invitations?fields=' + JSON.stringify(criteria));
+            let baseUrl = OC.generateUrl('/apps/invitation/find-all-invitations?fields=' + JSON.stringify(criteria));
             let options = {
                 'method': 'GET',
                 'headers': {

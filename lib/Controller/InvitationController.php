@@ -5,19 +5,19 @@
  * 
  */
 
-namespace OCA\RDMesh\Controller;
+namespace OCA\Invitation\Controller;
 
 use DateTime;
 use Exception;
 use OC\Mail\Mailer;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\AppInfo\AppError;
-use OCA\RDMesh\Db\Schema;
-use OCA\RDMesh\Federation\Invitation;
-use OCA\RDMesh\Federation\Service\MeshRegistryService;
-use OCA\RDMesh\HttpClient;
-use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\AppInfo\AppError;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Federation\Invitation;
+use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\HttpClient;
+use OCA\Invitation\Service\InvitationService;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -149,7 +149,7 @@ class InvitationController extends Controller
         try {
             $newInvitation = $this->invitationService->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error('An error occurred while generating the invite: ' . $e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('An error occurred while generating the invite: ' . $e->getMessage(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -186,33 +186,33 @@ class InvitationController extends Controller
         $urlGenerator = \OC::$server->getURLGenerator();
 
         if ($token == '') {
-            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
         if ($providerDomain == '') {
-            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
         if ($name == '') {
-            \OC::$server->getLogger()->error('Invite is missing sender name.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invite is missing sender name.', ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
-            \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         // check if invitation doesn't already exists
         try {
             $invitation = $this->invitationService->findByToken($token);
             // we want a NotFoundException
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS]));
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS]));
         } catch (NotFoundException $e) {
             // we're good to go
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         // persist the received invite
@@ -228,8 +228,8 @@ class InvitationController extends Controller
         try {
             $this->invitationService->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         $manager = \OC::$server->getNotificationManager();
@@ -238,14 +238,14 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/" . RDMesh::APP_NAME . "/accept-invite?token=$token", 'GET');
+            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite?token=$token", 'GET');
 
         $declineAction = $notification->createAction();
         // TODO: implement /decline-invite
         $declineAction->setLabel('decline')
-            ->setLink('/apps/' . RDMesh::APP_NAME . '/decline-invite', 'DELETE');
+            ->setLink('/apps/' . InvitationApp::APP_NAME . '/decline-invite', 'DELETE');
 
-        $notification->setApp(RDMesh::APP_NAME)
+        $notification->setApp(InvitationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
             ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
@@ -313,7 +313,7 @@ class InvitationController extends Controller
             $response['success'] == false
             || $this->verifiedInviteAcceptedResponse($resArray) == false
         ) {
-            $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 ['error_message' => 'Failed to accept the invitation'],
                 Http::STATUS_NOT_FOUND
@@ -335,7 +335,7 @@ class InvitationController extends Controller
             true
         );
         if ($updateResult == false) {
-            $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => RDMesh::APP_NAME]);
+            $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 ['error_message' => 'Failed to accept the invitation'],
                 Http::STATUS_NOT_FOUND
@@ -347,13 +347,13 @@ class InvitationController extends Controller
             $manager = \OC::$server->getNotificationManager();
             $notification = $manager->createNotification();
             $notification
-                ->setApp(RDMesh::APP_NAME)
+                ->setApp(InvitationApp::APP_NAME)
                 ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
                 ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
             $manager->markProcessed($notification);
         } catch (Exception $e) {
             // invitation has already successfully been accepted; we only log this exception
-            $this->logger->error("Unable to remove notification for app '" . RDMesh::APP_NAME . "' user '" . \OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => RDMesh::APP_NAME]);
+            $this->logger->error("Unable to remove notification for app '" . InvitationApp::APP_NAME . "' user '" . \OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => InvitationApp::APP_NAME]);
         }
 
         return new DataResponse(
@@ -484,7 +484,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -493,7 +493,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

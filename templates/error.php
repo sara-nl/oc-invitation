@@ -1,8 +1,8 @@
 <?php
 
-use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\Invitation\AppInfo\InvitationApp;
 
-$appName = RDMesh::APP_NAME;
+$appName = InvitationApp::APP_NAME;
 
 style($appName, 'pure-min-css-3.0.0');
 style($appName, 'invitation');

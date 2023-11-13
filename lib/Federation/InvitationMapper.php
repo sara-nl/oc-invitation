@@ -1,13 +1,13 @@
 <?php
 
-namespace OCA\RDMesh\Federation;
+namespace OCA\Invitation\Federation;
 
 use Exception;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Db\Schema;
-use OCA\RDMesh\Federation\Invitation;
-use OCA\RDMesh\Federation\VInvitation;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Federation\Invitation;
+use OCA\Invitation\Federation\VInvitation;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;
@@ -60,7 +60,7 @@ class InvitationMapper extends Mapper
                 return $this->getVInvitation($result);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException($e->getMessage());
         }
         throw new NotFoundException("Invitation not found for token $token");
@@ -150,7 +150,7 @@ class InvitationMapper extends Mapper
                 }
             }
         } catch (Exception $e) {
-            $this->logger->error('updateInvitation failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('updateInvitation failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
         }
         return false;
     }
@@ -184,7 +184,7 @@ class InvitationMapper extends Mapper
             $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
             return $invitation;
         }
-        $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => RDMesh::APP_NAME]);
+        $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => InvitationApp::APP_NAME]);
         return null;
     }
 

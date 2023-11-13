@@ -5,12 +5,12 @@
  * 
  */
 
-namespace OCA\RDMesh\Controller;
+namespace OCA\Invitation\Controller;
 
-use OCA\RDMesh\AppInfo\AppError;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Federation\Service\MeshRegistryService;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\Invitation\AppInfo\AppError;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -48,10 +48,10 @@ class MeshRegistryController extends Controller
         $urlGenerator = \OC::$server->getURLGenerator();
 
         if ($token == '') {
-            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => RDMesh::APP_NAME]);
+            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    RDMesh::APP_NAME . '.error.invitation',
+                    InvitationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_MISSING_TOKEN
                     ]
@@ -59,10 +59,10 @@ class MeshRegistryController extends Controller
             );
         }
         if ($providerDomain == '') {
-            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => RDMesh::APP_NAME]);
+            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    RDMesh::APP_NAME . '.error.invitation',
+                    InvitationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN
                     ]
@@ -70,10 +70,10 @@ class MeshRegistryController extends Controller
             );
         }
         if ($name == '') {
-            \OC::$server->getLogger()->error('Invite is missing the sender name.', ['app' => RDMesh::APP_NAME]);
+            \OC::$server->getLogger()->error('Invite is missing the sender name.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    RDMesh::APP_NAME . '.error.invitation',
+                    InvitationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_MISSING_SENDER_NAME
                     ]
@@ -82,10 +82,10 @@ class MeshRegistryController extends Controller
         }
 
         if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
-            \OC::$server->getLogger()->error("Provider domain '$providerDomain' is unknown.", ['app' => RDMesh::APP_NAME]);
+            \OC::$server->getLogger()->error("Provider domain '$providerDomain' is unknown.", ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    RDMesh::APP_NAME . '.error.invitation',
+                    InvitationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_PROVIDER_UNKNOWN
                     ]
@@ -123,7 +123,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error($e, ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => true,

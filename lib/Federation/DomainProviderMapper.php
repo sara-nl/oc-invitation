@@ -4,12 +4,12 @@
  * The domain provider mapper.
  */
 
-namespace OCA\RDMesh\Federation;
+namespace OCA\Invitation\Federation;
 
 use Exception;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Db\Schema;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;
@@ -38,7 +38,7 @@ class DomainProviderMapper extends Mapper
                 ->from(Schema::Table_DomainProviders, 'dp');
             return $this->getDomainProviders($qb->execute()->fetchAllAssociative());
         }catch(Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException('Error retrieving all domain providers');
         }
     }
@@ -56,7 +56,7 @@ class DomainProviderMapper extends Mapper
             $domainProvider->setDomain($associativeArray[Schema::DomainProvider_domain]);
             return $domainProvider;
         }
-        $this->logger->error('Unable to create a new DomainProvider from associative array: ' . print_r($associativeArray, true), ['app' => RDMesh::APP_NAME]);
+        $this->logger->error('Unable to create a new DomainProvider from associative array: ' . print_r($associativeArray, true), ['app' => InvitationApp::APP_NAME]);
         return null;
     }
 

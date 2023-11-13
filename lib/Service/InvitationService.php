@@ -1,13 +1,13 @@
 <?php
 
-namespace OCA\RDMesh\Service;
+namespace OCA\Invitation\Service;
 
 use Exception;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Db\Schema;
-use OCA\RDMesh\Federation\Invitation;
-use OCA\RDMesh\Federation\InvitationMapper;
-use OCA\RDMesh\Federation\VInvitation;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Federation\Invitation;
+use OCA\Invitation\Federation\InvitationMapper;
+use OCA\Invitation\Federation\VInvitation;
 use OCP\ILogger;
 
 /**
@@ -40,13 +40,13 @@ class InvitationService
             if (\OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
                 return $invitation;
             }
-            $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with id '$id'.", ['app' => RDMesh::APP_NAME]);
+            $this->logger->debug("User with cloud id '" . \OC::$server->getUserSession()->getUser()->getCloudId() . "' is not authorized to access invitation with id '$id'.", ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         } catch (NotFoundException $e) {
-            $this->logger->debug($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->debug($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("Invitation with id=$id not found.");
         }
     }
@@ -66,7 +66,7 @@ class InvitationService
         try {
             $invitation = $this->mapper->findByToken($token);
         } catch (NotFoundException $e) {
-            $this->logger->error("Invitation not found for token '$token'.", ['app' => RDMesh::APP_NAME]);
+            $this->logger->error("Invitation not found for token '$token'.", ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
         }
         if($loginRequired == true && \OC::$server->getUserSession()->getUser() == null) {
@@ -96,7 +96,7 @@ class InvitationService
             }
             return $this->mapper->findAll($criteria);
         } catch (Exception $e) {
-            $this->logger->error('findAll failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('findAll failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Failed to find all invitations for the specified criteria.');
         }
     }
@@ -113,7 +113,7 @@ class InvitationService
         try {
             return $this->mapper->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error inserting the invitation.');
         }
     }
@@ -130,7 +130,7 @@ class InvitationService
     {
         if ($loginRequired === true) {
             if (\OC::$server->getUserSession()->getUser() == null) {
-                $this->logger->debug('Unable to update invitation, unauthenticated.', ['app' => RDMesh::APP_NAME]);
+                $this->logger->debug('Unable to update invitation, unauthenticated.', ['app' => InvitationApp::APP_NAME]);
                 return false;
             }
             return $this->mapper->updateInvitation($fieldsAndValues, \OC::$server->getUserSession()->getUser()->getCloudId());

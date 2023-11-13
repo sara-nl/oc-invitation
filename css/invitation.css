@@ -1,16 +1,16 @@
-div#rd-mesh-invitation {
+div#invitation {
     margin-top: 1em;
     margin-left: 2em;
     margin-right: 2em;
 }
 
-div#rd-mesh-invitation input,
+div#invitation input,
 textarea {
     color: black;
     width: 22em;
 }
 
-div#rd-mesh-invitation textarea {
+div#invitation textarea {
     width: 22.3em;
     height: 6em;
 }

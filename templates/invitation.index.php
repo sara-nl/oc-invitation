@@ -1,8 +1,8 @@
 <?php
 
-use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\Invitation\AppInfo\InvitationApp;
 
-$appName = RDMesh::APP_NAME;
+$appName = InvitationApp::APP_NAME;
 // FIXME: decide whether the user display name is appropriate (as default)
 $userDisplayName = \OC::$server->getUserSession()->getUser()->getDisplayName();
 
@@ -10,7 +10,7 @@ script($appName, 'invitation');
 style($appName, 'pure-min-css-3.0.0');
 style($appName, 'invitation');
 ?>
-<div id="<?php p($appName); ?>-invitation" class="invitation-index pure-g">
+<div id="<?php p($appName); ?>" class="invitation-index pure-g">
     <div class="pure-u-1-1 create">
         <form class="pure-form">
             <fieldset>

@@ -1,8 +1,8 @@
 <?php
 
-namespace OCA\RDMesh;
+namespace OCA\Invitation;
 
-use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\Invitation\AppInfo\InvitationApp;
 use OCP\AppFramework\Http;
 
 class HttpClient
@@ -39,7 +39,7 @@ class HttpClient
             if ($message == '') {
                 $message .= 'no error info';
             }
-            \OC::$server->getLogger()->error("curlPost error: " . $message, ['app' => RDMesh::APP_NAME]);
+            \OC::$server->getLogger()->error("curlPost error: " . $message, ['app' => InvitationApp::APP_NAME]);
             return ['error_message' => $message, 'success' => false];
         } else {
             return ['response' => $output, 'success' => true];

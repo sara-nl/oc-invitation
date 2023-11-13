@@ -4,7 +4,7 @@
  * Database schema table names.
  */
 
-namespace OCA\RDMesh\Db;
+namespace OCA\Invitation\Db;
 
 class Schema
 {

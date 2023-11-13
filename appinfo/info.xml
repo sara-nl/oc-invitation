@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <info>
     <!-- Mandatory fields -->
-    <id>rd-mesh</id>
-    <name>Research Drive Mesh App</name>
-    <description>Research Drive Mesh App</description>
+    <id>invitation</id>
+    <name>Invitation App</name>
+    <description>Invitation App</description>
     <version>0.001</version>
     <!-- TODO: check licence-->
     <licence>mit</licence>
     <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
 <!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
     <category>Integration.</category>
-    <summary>Enhanced federated sharing between Research Drive instances.</summary>
+    <summary>Enhances federated sharing between Owncloud instances by implementing an invitation workflow.</summary>
     <types>
         <filesystem/>
     </types>
 
 
     <documentation>
-    	<user>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</user>
-        <admin>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</admin>
-        <developer>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/README.md</developer>
+    	<user>https://github.com/SURFnet/oc-invitation/README.md</user>
+        <admin>https://github.com/SURFnet/oc-invitation/README.md</admin>
+        <developer>https://github.com/SURFnet/oc-invitation/README.md</developer>
     </documentation>
 
 
     <author>Antoon Prins</author>
-    <namespace>RDMesh</namespace>
-    <website>https://git.ia.surfsara.nl/online-storage/rd-mesh-app</website>
-    <bugs>https://git.ia.surfsara.nl/online-storage/rd-mesh-app/-/issues</bugs>
-    <repository type="git">https://git.ia.surfsara.nl/online-storage/rd-mesh-app.git</repository>
+    <namespace>Invitation</namespace>
+    <website>https://github.com/SURFnet/oc-invitation</website>
+    <bugs>https://github.com/SURFnet/oc-invitation/issues</bugs>
+    <repository type="git">https://github.com/SURFnet/oc-invitation.git</repository>
 
     <dependencies>
         <owncloud min-version="10" max-version="13"/>

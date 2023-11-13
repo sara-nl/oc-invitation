@@ -4,10 +4,10 @@
  * Mapper for remote users.
  */
 
-namespace OCA\RDMesh\Federation;
+namespace OCA\Invitation\Federation;
 
 use Exception;
-use OCA\RDMesh\Db\Schema;
+use OCA\Invitation\Db\Schema;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;

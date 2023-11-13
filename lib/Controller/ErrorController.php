@@ -5,9 +5,9 @@
  * 
  */
 
-namespace OCA\RDMesh\Controller;
+namespace OCA\Invitation\Controller;
 
-use OCA\RDMesh\AppInfo\RDMesh;
+use OCA\Invitation\AppInfo\InvitationApp;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
@@ -30,6 +30,6 @@ class ErrorController extends Controller
      */
     public function invitation(string $message): TemplateResponse
     {
-        return new TemplateResponse(RDMesh::APP_NAME, 'error', ['message' => $message]);
+        return new TemplateResponse(InvitationApp::APP_NAME, 'error', ['message' => $message]);
     }
 }

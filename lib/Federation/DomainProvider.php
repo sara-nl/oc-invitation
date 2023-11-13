@@ -4,10 +4,10 @@
  * Represents a domain provider in the mesh. Domain providers are registered in the mesh registry.
  */
 
-namespace OCA\RDMesh\Federation;
+namespace OCA\Invitation\Federation;
 
 use JsonSerializable;
-use OCA\RDMesh\Db\Schema;
+use OCA\Invitation\Db\Schema;
 use OCP\AppFramework\Db\Entity;
 
 /**

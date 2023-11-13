@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\RDMesh\Migration;
+namespace OCA\Invitation\Migration;
 
 use Doctrine\DBAL\Schema\Schema;
 use OCP\Migration\ISchemaMigration;

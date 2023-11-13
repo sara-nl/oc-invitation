@@ -13,7 +13,7 @@ VALUES
 INSERT INTO `oc_appconfig` 
     (`appid`, `configkey`, `configvalue`)
 VALUES
-    ('rd-mesh', 'domain', 'rd-1.nl')
+    ('invitation', 'domain', 'rd-1.nl')
 ON DUPLICATE KEY UPDATE
     configkey= 'domain',
     configvalue = 'rd-1.nl';
@@ -21,7 +21,7 @@ ON DUPLICATE KEY UPDATE
 INSERT INTO `oc_appconfig` 
     (`appid`, `configkey`, `configvalue`)
 VALUES
-    ('rd-mesh', 'allow_sharing_with_non_invited_users', 'yes')
+    ('invitation', 'allow_sharing_with_non_invited_users', 'yes')
 ON DUPLICATE KEY UPDATE
     configkey= 'allow_sharing_with_non_invited_users',
     configvalue = 'yes';

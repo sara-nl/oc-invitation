@@ -1,5 +1,5 @@
 /* TODO: add indices
-   TODO: should we use prefix 'oc_' or something else ?
+   TODO: is prefix 'oc_' ok ?
  */
 
 DROP TABLE IF EXISTS `oc_mesh_invitations`;
@@ -55,7 +55,7 @@ select distinct
  ) s
 join oc_appconfig c
  on c.configvalue=s.user_provider_domain
-where c.appid='rd-mesh' and c.configkey='domain'
+where c.appid='invitation' and c.configkey='domain'
 group by s.id;
 
 drop view if exists oc_mesh_view_remote_users;
@@ -77,5 +77,5 @@ select distinct
  ) s
 join oc_appconfig c
  on c.configvalue=s.provider_domain
- where c.appid='rd-mesh' and c.configkey='domain'
+ where c.appid='invitation' and c.configkey='domain'
 group by s.invitation_id;

@@ -4,7 +4,7 @@
  * Translatable errors that may be returned or used as exception messages. 
  */
 
-namespace OCA\RDMesh\AppInfo;
+namespace OCA\Invitation\AppInfo;
 
 class AppError
 {

@@ -4,15 +4,15 @@
  * OCM controller
  */
 
-namespace OCA\RDMesh\Controller;
+namespace OCA\Invitation\Controller;
 
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\AppInfo\AppError;
-use OCA\RDMesh\Db\Schema;
-use OCA\RDMesh\Federation\Invitation;
-use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Service\NotFoundException;
-use OCA\RDMesh\Service\ServiceException;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\AppInfo\AppError;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Federation\Invitation;
+use OCA\Invitation\Service\InvitationService;
+use OCA\Invitation\Service\NotFoundException;
+use OCA\Invitation\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -114,7 +114,7 @@ class OcmController extends Controller
                 [Schema::VInvitation_status => Invitation::STATUS_ACCEPTED],
             ], false);
             if (count($existingInvitations) > 0) {
-                $this->logger->error("An accepted invitation already exists for remote user with name '$name'", ['app' => RDMesh::APP_NAME]);
+                $this->logger->error("An accepted invitation already exists for remote user with name '$name'", ['app' => InvitationApp::APP_NAME]);
                 return new DataResponse(
                     [
                         'success' => false,
@@ -124,7 +124,7 @@ class OcmController extends Controller
                 );
             }
         } catch(NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -133,7 +133,7 @@ class OcmController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -153,7 +153,7 @@ class OcmController extends Controller
             Schema::VInvitation_status => Invitation::STATUS_ACCEPTED,
         ], false);
         if ($updateResult == false) {
-            $this->logger->error("Update failed for invitation with token '$token'", ['app' => RDMesh::APP_NAME]);
+            $this->logger->error("Update failed for invitation with token '$token'", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

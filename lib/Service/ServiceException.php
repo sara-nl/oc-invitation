@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\RDMesh\Service;
+namespace OCA\Invitation\Service;
 
 use Exception;
 

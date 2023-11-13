@@ -4,10 +4,10 @@
  * The invitation notifier
  */
 
-namespace OCA\RDMesh\Service;
+namespace OCA\Invitation\Service;
 
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Federation\Service\MeshRegistryService;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Federation\Service\MeshRegistryService;
 use OCP\ILogger;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;
@@ -29,7 +29,7 @@ class InvitationNotifier implements INotifier
      */
     public function prepare(INotification $notification, $languageCode)
     {
-        if ($notification->getApp() != RDMesh::APP_NAME) {
+        if ($notification->getApp() != InvitationApp::APP_NAME) {
             $this->logger->error("Notification has been given the wrong app name '" . $notification->getApp() . "'");
             throw new \InvalidArgumentException("Wrong app");
         }

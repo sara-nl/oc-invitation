@@ -5,11 +5,11 @@
  * 
  */
 
-namespace OCA\RDMesh\Service;
+namespace OCA\Invitation\Service;
 
 use Exception;
-use OCA\RDMesh\AppInfo\RDMesh;
-use OCA\RDMesh\Federation\RemoteUserMapper;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Federation\RemoteUserMapper;
 use OCP\IConfig;
 use OCP\ILogger;
 use OCP\Share;
@@ -73,7 +73,7 @@ class RemoteUserService implements IRemoteShareesSearch
                     'shareWith' => $search,
                 ]
             ];
-            if ($this->config->getAppValue(RDMesh::APP_NAME, RDMesh::CONFIG_allow_sharing_with_non_invited_users) 
+            if ($this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_allow_sharing_with_non_invited_users) 
                     && strpos($search, '@') !== false 
                     && count($remoteUsers) < 1) {
                 array_push($result, $nonInvitedUser);
@@ -81,7 +81,7 @@ class RemoteUserService implements IRemoteShareesSearch
 
             return $result;
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => RDMesh::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error searching for remote users.');
         }
     }

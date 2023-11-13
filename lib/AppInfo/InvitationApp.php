@@ -4,20 +4,20 @@
  * Setup and wiring of the app.
  */
 
-namespace OCA\RDMesh\AppInfo;
+namespace OCA\Invitation\AppInfo;
 
-use OCA\RDMesh\Federation\DomainProviderMapper;
-use OCA\RDMesh\Federation\InvitationMapper;
-use OCA\RDMesh\Federation\RemoteUserMapper;
-use OCA\RDMesh\Service\InvitationNotifier;
-use OCA\RDMesh\Service\InvitationService;
-use OCA\RDMesh\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Federation\DomainProviderMapper;
+use OCA\Invitation\Federation\InvitationMapper;
+use OCA\Invitation\Federation\RemoteUserMapper;
+use OCA\Invitation\Service\InvitationNotifier;
+use OCA\Invitation\Service\InvitationService;
+use OCA\Invitation\Federation\Service\MeshRegistryService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 
-class RDMesh extends App
+class InvitationApp extends App
 {
-    public const APP_NAME = 'rd-mesh';
+    public const APP_NAME = 'invitation';
 
     public const CONFIG_allow_sharing_with_non_invited_users = 'allow_sharing_with_non_invited_users';
 

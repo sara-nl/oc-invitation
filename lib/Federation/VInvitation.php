@@ -5,10 +5,10 @@
  * 
  */
 
-namespace OCA\RDMesh\Federation;
+namespace OCA\Invitation\Federation;
 
 use JsonSerializable;
-use OCA\RDMesh\Db\Schema;
+use OCA\Invitation\Db\Schema;
 use OCP\AppFramework\Db\Entity;
 
 /**

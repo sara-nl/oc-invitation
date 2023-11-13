@@ -4,9 +4,9 @@
  * Page controller
  */
 
-namespace OCA\RDMesh\Controller;
+namespace OCA\Invitation\Controller;
 
-use OCA\RDMesh\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Federation\Service\MeshRegistryService;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
 

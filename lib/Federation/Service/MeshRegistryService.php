@@ -5,10 +5,10 @@
  * 
  */
 
-namespace OCA\RDMesh\Federation\Service;
+namespace OCA\Invitation\Federation\Service;
 
-use OCA\RDMesh\Federation\DomainProviderMapper;
-use OCA\RDMesh\Service\NotFoundException;
+use OCA\Invitation\Federation\DomainProviderMapper;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\IConfig;
 
 class MeshRegistryService
