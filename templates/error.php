@@ -1,5 +1,4 @@
 <?php
-// note: including the index page with the message as 'pop-up' does not work like so: print_unescaped($this->inc('files.view.index')); 
 
 use OCA\RDMesh\AppInfo\RDMesh;
 

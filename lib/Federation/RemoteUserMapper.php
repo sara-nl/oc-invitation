@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * Mapper for remote users.
  */
 
 namespace OCA\RDMesh\Federation;

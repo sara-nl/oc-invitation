@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Represent this EFSS instance's mesh registry service.
+ * Represents this EFSS instance's mesh registry service.
  * 
  */
 

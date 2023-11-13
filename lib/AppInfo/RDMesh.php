@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * Setup and wiring of the app.
  */
 
 namespace OCA\RDMesh\AppInfo;

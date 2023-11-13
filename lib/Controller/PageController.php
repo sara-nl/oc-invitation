@@ -1,7 +1,7 @@
 <?php
 
 /**
- * 
+ * Page controller
  */
 
 namespace OCA\RDMesh\Controller;

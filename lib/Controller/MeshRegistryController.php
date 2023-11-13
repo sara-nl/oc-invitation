@@ -2,9 +2,6 @@
 
 /**
  * This is the mesh registry controller.
- * Endpoints:
- *      /get-domain
- *      /forward-invite
  * 
  */
 

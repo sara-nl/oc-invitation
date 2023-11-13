@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Invitation controller.
  * 
  */
 
@@ -197,7 +198,7 @@ class InvitationController extends Controller
             return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
-        if(!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
+        if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
             \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => RDMesh::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(RDMesh::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
@@ -330,7 +331,8 @@ class InvitationController extends Controller
                 Schema::Invitation_sender_email => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
                 Schema::Invitation_sender_name => $resArray[MeshRegistryService::PARAM_NAME_NAME],
                 Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
-            ], true
+            ],
+            true
         );
         if ($updateResult == false) {
             $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => RDMesh::APP_NAME]);

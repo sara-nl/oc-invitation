@@ -3,14 +3,11 @@
 namespace OCA\RDMesh\Service;
 
 use Exception;
-use OC\HTTPHelper;
-use OCA\RDMesh\AppInfo\AppError;
 use OCA\RDMesh\AppInfo\RDMesh;
 use OCA\RDMesh\Db\Schema;
 use OCA\RDMesh\Federation\Invitation;
 use OCA\RDMesh\Federation\InvitationMapper;
 use OCA\RDMesh\Federation\VInvitation;
-use OCP\AppFramework\Http;
 use OCP\ILogger;
 
 /**

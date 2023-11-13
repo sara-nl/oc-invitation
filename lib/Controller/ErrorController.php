@@ -1,6 +1,7 @@
 <?php
 
 /**
+ * Error controller.
  * 
  */
 
@@ -31,5 +32,4 @@ class ErrorController extends Controller
     {
         return new TemplateResponse(RDMesh::APP_NAME, 'error', ['message' => $message]);
     }
-
 }

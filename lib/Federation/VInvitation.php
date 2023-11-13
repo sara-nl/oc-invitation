@@ -64,9 +64,6 @@ class VInvitation extends Entity implements JsonSerializable
     protected $remoteUserName;
     protected $remoteUserEmail;
 
-    public const SENT = 'sent';
-    public const RECEIVED = 'received';
-
     public function jsonSerialize()
     {
         return [

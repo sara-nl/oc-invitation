@@ -1,8 +1,7 @@
 <?php
 
 /**
- * App response errors.
- * To be used as translatable error messages. 
+ * Translatable errors that may be returned or used as exception messages. 
  */
 
 namespace OCA\RDMesh\AppInfo;
