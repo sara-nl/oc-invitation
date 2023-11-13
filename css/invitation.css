@@ -41,8 +41,9 @@ div.create {
     margin-bottom: 1em;
 }
 
-div.create h2 {
+div.create legend {
     margin-left: .2em;
+    font-size: larger;
     font-weight: bold;
 }
 
