@@ -11,13 +11,16 @@ This app gives an enhanced federated sharing user experience by implementing an 
 
 #### Features
 * [Implements an invitation workflow](#invitation-workflow)
-* Implements a federated IDs address book
+* Implements searchable remote users
 
 #### Development
 * [How to build the app](#build-the-app)
+
+#### Installation and running the app
+After building extract `build/artifacts/appstore/rd-mesh.tar.gz` and place the `rd-mesh` folder into the `app` folder of your owncloud instance.
+
+Finally the admin should activate the app. It should than be present as a menu entrance for all users.
+
 ---
 ### Invitation Workflow
 ![Invitation Workflow](invitation-flow-user-info-exchange.png "Invitation Workflow") 
-
-### Build the app
-```$ make appstore```
