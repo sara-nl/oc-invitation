@@ -1,4 +1,4 @@
-# Invitation app
+# Federated Sharing Invitation app
 
 ---
 ### Enhanced federated sharing between Owncloud instances.
