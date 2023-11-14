@@ -421,7 +421,7 @@ class InvitationController extends Controller
     }
 
     /**
-     * example url: https://rd-1.nl/apps/rd-mesh/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
+     * example url: https://rd-1.nl/apps/invitation/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
      * 
      * @NoAdminRequired
      * @NoCSRFRequired

@@ -17,7 +17,7 @@ This app gives an enhanced federated sharing user experience by implementing an 
 * [How to build the app](#build-the-app)
 
 #### Installation and running the app
-After building extract `build/artifacts/appstore/rd-mesh.tar.gz` and place the `rd-mesh` folder into the `app` folder of your owncloud instance.
+After building extract `build/artifacts/appstore/invitation.tar.gz` and place the `invitation` folder into the `app` folder of your owncloud instance.
 
 Finally the admin should activate the app. It should than be present as a menu entrance for all users.
 

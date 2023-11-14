@@ -1,6 +1,6 @@
 {
-    "name": "surf/rd-mesh",
-    "description": "Enhanced federated sharing between Research Drive instances",
+    "name": "surf/oc-invitation",
+    "description": "Enhanced federated sharing between Owncloud instances",
     "type": "project",
     "license": "MIT",
     "config": {
