@@ -28,7 +28,7 @@ style($appName, 'invitation');
                 </div>
             </fieldset>
         </form>
-        <div id="invitation-error" class="error"><span></span></div>
+        <div id="invitation-message"><span class="message"></span><span class="error"></span></div>
     </div>
     <div class="pure-u-1-1 invites">
         <div class="pure-g">

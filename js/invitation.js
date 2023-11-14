@@ -1,7 +1,7 @@
 (function (document, $) {
     $(document).ready(function () {
         let generateInvite = function (email, message) {
-            $('#invitation-error span').text("");
+            $('#invitation-message span').text("");
             let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
             let options = {
                 'method': 'GET',
@@ -17,10 +17,11 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            $('#invitation-error span').text(json.message);
+                            $('#invitation-message span.message').text(json.message);
                         } else {
-                            $('#invitation-error span').text(json.error_message);
+                            $('#invitation-message span.error').text(json.error_message);
                         }
+                        getInvitations([{ "status": "open" }], renderOpenInvitations);
                     }
                 ).catch(
                     (response) => {
@@ -78,6 +79,7 @@
         let renderOpenInvitations = function (invitations) {
             console.log("invitations: " + JSON.stringify(invitations));
             table = $('div.invites div.open tbody');
+            table.empty();
             invitations.forEach((invitation) => {
                 table.append(
                     '<tr><td>' + invitation.sentReceived
@@ -92,8 +94,14 @@
         let renderAcceptedInvitations = function (invitations) {
             console.log("invitations: " + JSON.stringify(invitations));
             table = $('div.invites div.accepted tbody');
+            table.empty();
             invitations.forEach((invitation) => {
-                table.append('<tr><td>' + invitation.sentReceived + '</td><td>' + invitation.remoteUserName + '</td><td>' + invitation.remoteUserCloudId + '</td><td>' + invitation.remoteUserEmail + '</td></tr>');
+                table.append(
+                    '<tr><td>' + invitation.sentReceived
+                    + '</td><td>' + invitation.remoteUserName
+                    + '</td><td>' + invitation.remoteUserCloudId
+                    + '</td><td>' + invitation.remoteUserEmail
+                    + '</td></tr>');
             });
         };
 

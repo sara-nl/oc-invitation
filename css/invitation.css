@@ -47,10 +47,17 @@ div.create legend {
     font-weight: bold;
 }
 
-div.error {
+div#invitation-message {
     height: 2em;
-    color: red;
     font-weight: bold;
+}
+
+div#invitation-message span.message {
+    color: initial;
+}
+
+div#invitation-message span.error {
+    color: red;
 }
 
 div.app-invitation div.error a {
