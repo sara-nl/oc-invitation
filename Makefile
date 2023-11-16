@@ -6,9 +6,24 @@ source_package_name=$(source_build_directory)/$(app_name)
 appstore_build_directory=$(CURDIR)/build/artifacts/appstore
 appstore_package_name=$(appstore_build_directory)/$(app_name)
 
+# Code styling: PSR-12 is followed 
+# full check
+.PHONY: lint-check-full
+lint-check-full:
+	${CURDIR}/vendor/bin/phpcs --standard=PSR12 lib
+
+# check for errors only, ignoring warnings
+.PHONY: lint-check-errors
+lint-check-errors:
+	${CURDIR}/vendor/bin/phpcs --standard=PSR12 --warning-severity=0 lib
+
+.PHONY: lint-fix
+lint-fix:
+	${CURDIR}/vendor/bin/phpcbf --standard=PSR12 lib
+
 # Builds the source package for the app store, ignores php and js tests
-.PHONY: appstore
-appstore:
+.PHONY: buildapp
+buildapp:
 	rm -rf $(appstore_build_directory)
 	mkdir -p $(appstore_build_directory)
 	# concatenate cd, ls and tar commands with '&&' otherwise the script context will remain the root instead of build
