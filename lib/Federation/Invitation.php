@@ -1,7 +1,8 @@
 <?php
+
 /**
  * This class represents the Invitation entity.
- * 
+ *
  */
 
 namespace OCA\Invitation\Federation;
@@ -61,18 +62,18 @@ class Invitation extends Entity implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            $this->columnToProperty(Schema::Invitation_user_cloud_id) => $this->userCloudId,
-            $this->columnToProperty(Schema::Invitation_token) => $this->token,
-            $this->columnToProperty(Schema::Invitation_provider_domain) => $this->providerDomain,
-            $this->columnToProperty(Schema::Invitation_recipient_domain) => $this->recipientDomain,
-            $this->columnToProperty(Schema::Invitation_sender_cloud_id) => $this->senderCloudId,
-            $this->columnToProperty(Schema::Invitation_sender_email) => $this->senderEmail,
-            $this->columnToProperty(Schema::Invitation_sender_name) => $this->senderName,
-            $this->columnToProperty(Schema::Invitation_recipient_cloud_id) => $this->recipientCloudId,
-            $this->columnToProperty(Schema::Invitation_recipient_email) => $this->recipientEmail,
-            $this->columnToProperty(Schema::Invitation_recipient_name) => $this->recipientName,
-            $this->columnToProperty(Schema::Invitation_timestamp) => $this->timestamp,
-            $this->columnToProperty(Schema::Invitation_status) => $this->status,
+            $this->columnToProperty(Schema::INVITATION_USER_CLOUD_ID) => $this->userCloudId,
+            $this->columnToProperty(Schema::INVITATION_TOKEN) => $this->token,
+            $this->columnToProperty(Schema::INVITATION_PROVIDER_DOMAIN) => $this->providerDomain,
+            $this->columnToProperty(Schema::INVITATION_RECIPIENT_DOMAIN) => $this->recipientDomain,
+            $this->columnToProperty(Schema::INVITATION_SENDER_CLOUD_ID) => $this->senderCloudId,
+            $this->columnToProperty(Schema::INVITATION_SENDER_EMAIL) => $this->senderEmail,
+            $this->columnToProperty(Schema::INVITATION_SENDER_NAME) => $this->senderName,
+            $this->columnToProperty(Schema::INVITATION_RECIPIENT_CLOUD_ID) => $this->recipientCloudId,
+            $this->columnToProperty(Schema::INVITATION_RECIPIENT_EMAIL) => $this->recipientEmail,
+            $this->columnToProperty(Schema::INVITATION_RECIPIENT_NAME) => $this->recipientName,
+            $this->columnToProperty(Schema::INVITATION_TIMESTAMP) => $this->timestamp,
+            $this->columnToProperty(Schema::INVITATION_STATUS) => $this->status,
         ];
     }
 }

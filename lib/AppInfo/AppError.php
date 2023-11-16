@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Translatable errors that may be returned or used as exception messages. 
+ * Translatable errors that may be returned or used as exception messages.
  */
 
 namespace OCA\Invitation\AppInfo;

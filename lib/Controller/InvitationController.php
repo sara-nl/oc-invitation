@@ -91,10 +91,10 @@ class InvitationController extends Controller
         // but this will be dealt with upon acceptance of this new invitation
         try {
             $fieldsAndValues = [];
-            array_push($fieldsAndValues, [Schema::Invitation_sender_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
-            array_push($fieldsAndValues, [Schema::Invitation_recipient_email => $email]);
-            array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_OPEN]);
-            array_push($fieldsAndValues, [Schema::Invitation_status => Invitation::STATUS_ACCEPTED]);
+            array_push($fieldsAndValues, [Schema::INVITATION_SENDER_CLOUD_ID => \OC::$server->getUserSession()->getUser()->getCloudId()]);
+            array_push($fieldsAndValues, [Schema::INVITATION_RECIPIENT_EMAIL => $email]);
+            array_push($fieldsAndValues, [Schema::INVITATION_STATUS => Invitation::STATUS_OPEN]);
+            array_push($fieldsAndValues, [Schema::INVITATION_STATUS => Invitation::STATUS_ACCEPTED]);
 
             $invitations = $this->invitationService->findAll($fieldsAndValues);
             if (count($invitations) > 0) {
@@ -322,14 +322,14 @@ class InvitationController extends Controller
         // all's well, update the invitation
         $updateResult = $this->invitationService->update(
             [
-                Schema::id => $invitation->getId(),
-                Schema::Invitation_recipient_domain => $recipientDomain,
-                Schema::Invitation_recipient_email => $recipientEmail,
-                Schema::Invitation_recipient_name => $recipientName,
-                Schema::Invitation_sender_cloud_id => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
-                Schema::Invitation_sender_email => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
-                Schema::Invitation_sender_name => $resArray[MeshRegistryService::PARAM_NAME_NAME],
-                Schema::Invitation_status => Invitation::STATUS_ACCEPTED,
+                Schema::ID => $invitation->getId(),
+                Schema::INVITATION_RECIPIENT_DOMAIN => $recipientDomain,
+                Schema::INVITATION_RECIPIENT_EMAIL => $recipientEmail,
+                Schema::INVITATION_RECIPIENT_NAME => $recipientName,
+                Schema::INVITATION_SENDER_CLOUD_ID => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
+                Schema::INVITATION_SENDER_EMAIL => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
+                Schema::INVITATION_SENDER_NAME => $resArray[MeshRegistryService::PARAM_NAME_NAME],
+                Schema::INVITATION_STATUS => Invitation::STATUS_ACCEPTED,
             ],
             true
         );
@@ -515,7 +515,7 @@ class InvitationController extends Controller
             $fieldsAndValues['id'] = $id;
         }
         if (isset($status)) {
-            $fieldsAndValues[Schema::Invitation_status] = $status;
+            $fieldsAndValues[Schema::INVITATION_STATUS] = $status;
         }
 
         $result = $this->invitationService->update($fieldsAndValues);

@@ -19,7 +19,7 @@ class InvitationApp extends App
 {
     public const APP_NAME = 'invitation';
 
-    public const CONFIG_allow_sharing_with_non_invited_users = 'allow_sharing_with_non_invited_users';
+    public const CONFIG_ALLOW_SHARING_WITH_NON_INVITED_USERS = 'allow_sharing_with_non_invited_users';
 
     public function __construct()
     {
@@ -79,6 +79,5 @@ class InvitationApp extends App
         );
 
         // All route controllers are registered automatically through owncloud's 'Automatic Dependency Assembly'
-
     }
 }

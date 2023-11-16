@@ -18,7 +18,7 @@ class RemoteUserMapper extends Mapper
 
     public function __construct(IDBConnection $dbConnection)
     {
-        parent::__construct($dbConnection, Schema::View_RemoteUsers, RemoteUser::class);
+        parent::__construct($dbConnection, Schema::VIEW_REMOTEUSERS, RemoteUser::class);
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -26,7 +26,7 @@ class RemoteUserMapper extends Mapper
      * Returns remote user entites, as specified in OCP\Share\IRemoteShareesSearch.search(),
      * that match the search criterium.
      * We search in remote user cloud ID and name.
-     * 
+     *
      * @param string $search the string to search for
      * @throws Exception in case of error
      */
@@ -36,12 +36,12 @@ class RemoteUserMapper extends Mapper
 
         $parameter = '%' . $this->db->escapeLikeParameter($search) . '%';
         $qb = $this->db->getQueryBuilder();
-        $query = $qb->select('*')->from(Schema::View_RemoteUsers, 'i');
+        $query = $qb->select('*')->from(Schema::VIEW_REMOTEUSERS, 'i');
         $or = $qb->expr()->orX();
-        $or->add($qb->expr()->iLike(Schema::RemoteUser_remote_user_cloud_id, $qb->createPositionalParameter($parameter)));
-        $or->add($qb->expr()->iLike(Schema::RemoteUser_remote_user_name, $qb->createPositionalParameter($parameter)));
+        $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID, $qb->createPositionalParameter($parameter)));
+        $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_NAME, $qb->createPositionalParameter($parameter)));
         $query->where($or)
-            ->andWhere($qb->expr()->eq(Schema::RemoteUser_user_cloud_id, $qb->createPositionalParameter($userCloudID)));
+            ->andWhere($qb->expr()->eq(Schema::REMOTEUSER_USER_CLOUD_ID, $qb->createPositionalParameter($userCloudID)));
 
         $remoteUsers = [];
         try {
@@ -64,11 +64,11 @@ class RemoteUserMapper extends Mapper
         if (isset($associativeArrays) && count($associativeArrays) > 0) {
             foreach ($associativeArrays as $associativeArray) {
                 $remoteUser = new RemoteUser();
-                $remoteUser->setInvitationID($associativeArray[Schema::RemoteUser_invitation_id]);
-                $remoteUser->setUserCloudID($associativeArray[Schema::RemoteUser_user_cloud_id]);
-                $remoteUser->setUserCloudID($associativeArray[Schema::RemoteUser_user_name]);
-                $remoteUser->setRemoteUserCloudID($associativeArray[Schema::RemoteUser_remote_user_cloud_id]);
-                $remoteUser->setRemoteUserName($associativeArray[Schema::RemoteUser_remote_user_name]);
+                $remoteUser->setInvitationID($associativeArray[Schema::REMOTEUSER_INVITATION_ID]);
+                $remoteUser->setUserCloudID($associativeArray[Schema::REMOTEUSER_USER_CLOUD_ID]);
+                $remoteUser->setUserCloudID($associativeArray[Schema::REMOTEUSER_USER_NAME]);
+                $remoteUser->setRemoteUserCloudID($associativeArray[Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID]);
+                $remoteUser->setRemoteUserName($associativeArray[Schema::REMOTEUSER_REMOTE_USER_NAME]);
                 array_push($remoteUsers, $remoteUser);
             }
         }

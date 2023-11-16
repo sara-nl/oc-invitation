@@ -2,7 +2,7 @@
 
 /**
  * Implements the remote user sharees search interface.
- * 
+ *
  */
 
 namespace OCA\Invitation\Service;
@@ -17,7 +17,6 @@ use OCP\Share\IRemoteShareesSearch;
 
 class RemoteUserService implements IRemoteShareesSearch
 {
-
     private RemoteUserMapper $remoteUserMapper;
     private IConfig $config;
     private ILogger $logger;
@@ -73,9 +72,11 @@ class RemoteUserService implements IRemoteShareesSearch
                     'shareWith' => $search,
                 ]
             ];
-            if ($this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_allow_sharing_with_non_invited_users) 
-                    && strpos($search, '@') !== false 
-                    && count($remoteUsers) < 1) {
+            if (
+                $this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_NON_INVITED_USERS)
+                    && strpos($search, '@') !== false
+                    && count($remoteUsers) < 1
+            ) {
                 array_push($result, $nonInvitedUser);
             }
 

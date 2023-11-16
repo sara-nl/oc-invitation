@@ -14,7 +14,6 @@ use OCP\Notification\INotifier;
 
 class InvitationNotifier implements INotifier
 {
-
     protected $factory;
     private ILogger $logger;
 

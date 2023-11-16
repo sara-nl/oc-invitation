@@ -7,7 +7,6 @@ use OCP\AppFramework\Http;
 
 class HttpClient
 {
-
     /**
      * @return mixed returns an array with in the following format:
      *  [

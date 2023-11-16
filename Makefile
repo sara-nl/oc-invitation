@@ -10,16 +10,16 @@ appstore_package_name=$(appstore_build_directory)/$(app_name)
 # full check
 .PHONY: php-codesniffer-full
 php-codesniffer-full:
-	${CURDIR}/vendor/bin/phpcs ./ --standard=PSR12 --report=full --extensions=php
+	${CURDIR}/vendor/bin/phpcs appinfo/ lib/ templates/ --standard=PSR12 --report=full
 
 # check for errors only, ignoring warnings
 .PHONY: php-codesniffer-errors
 php-codesniffer-errors:
-	${CURDIR}/vendor/bin/phpcs ./ --standard=PSR12 --report=full --extensions=php --warning-severity=0
+	${CURDIR}/vendor/bin/phpcs appinfo/ lib/ templates/ --standard=PSR12 --report=full --warning-severity=0
 
 .PHONY: php-codesniffer-fix
 php-codesniffer-fix:
-	${CURDIR}/vendor/bin/phpcbf ./ --standard=PSR12
+	${CURDIR}/vendor/bin/phpcbf appinfo/ lib/ templates/ --standard=PSR12
 
 # Builds the source package for the app store, ignores php and js tests
 .PHONY: buildapp

@@ -2,7 +2,7 @@
 
 /**
  * This entity represents the remote user for both sides in the invitation trust relationship.
- * 
+ *
  */
 
 namespace OCA\Invitation\Federation;
@@ -40,11 +40,11 @@ class RemoteUser extends Entity implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            $this->columnToProperty(Schema::RemoteUser_invitation_id) => $this->invitationID,
-            $this->columnToProperty(Schema::RemoteUser_user_cloud_id) => $this->userCloudID,
-            $this->columnToProperty(Schema::RemoteUser_user_name) => $this->userName,
-            $this->columnToProperty(Schema::RemoteUser_remote_user_cloud_id) => $this->remoteUserCloudID,
-            $this->columnToProperty(Schema::RemoteUser_remote_user_name) => $this->remoteUserName,
+            $this->columnToProperty(Schema::REMOTEUSER_INVITATION_ID) => $this->invitationID,
+            $this->columnToProperty(Schema::REMOTEUSER_USER_CLOUD_ID) => $this->userCloudID,
+            $this->columnToProperty(Schema::REMOTEUSER_USER_NAME) => $this->userName,
+            $this->columnToProperty(Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID) => $this->remoteUserCloudID,
+            $this->columnToProperty(Schema::REMOTEUSER_REMOTE_USER_NAME) => $this->remoteUserName,
         ];
     }
 }

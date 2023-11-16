@@ -2,7 +2,7 @@
 
 /**
  * This class represents the Invitation view entity.
- * 
+ *
  */
 
 namespace OCA\Invitation\Federation;
@@ -68,22 +68,22 @@ class VInvitation extends Entity implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            $this->columnToProperty(Schema::VInvitation_token) => $this->token,
-            $this->columnToProperty(Schema::VInvitation_timestamp) => $this->timestamp,
-            $this->columnToProperty(Schema::VInvitation_status) => $this->status,
-            $this->columnToProperty(Schema::VInvitation_user_cloud_id) => $this->userCloudID,
-            $this->columnToProperty(Schema::VInvitation_sent_received) => $this->sentReceived,
-            $this->columnToProperty(Schema::VInvitation_provider_domain) => $this->providerDomain,
-            $this->columnToProperty(Schema::VInvitation_recipient_domain) => $this->recipientDomain,
-            $this->columnToProperty(Schema::VInvitation_sender_cloud_id) => $this->senderCloudId,
-            $this->columnToProperty(Schema::VInvitation_sender_name) => $this->senderName,
-            $this->columnToProperty(Schema::VInvitation_sender_email) => $this->senderEmail,
-            $this->columnToProperty(Schema::VInvitation_recipient_cloud_id) => $this->recipientCloudId,
-            $this->columnToProperty(Schema::VInvitation_recipient_email) => $this->recipientEmail,
-            $this->columnToProperty(Schema::VInvitation_recipient_name) => $this->recipientName,
-            $this->columnToProperty(Schema::VInvitation_remote_user_name) => $this->remoteUserName,
-            $this->columnToProperty(Schema::VInvitation_remote_user_cloud_id) => $this->remoteUserCloudID,
-            $this->columnToProperty(Schema::VInvitation_remote_user_email) => $this->remoteUserEmail
+            $this->columnToProperty(Schema::VINVITATION_TOKEN) => $this->token,
+            $this->columnToProperty(Schema::VINVITATION_TIMESTAMP) => $this->timestamp,
+            $this->columnToProperty(Schema::VINVITATION_STATUS) => $this->status,
+            $this->columnToProperty(Schema::VINVITATION_USER_CLOUD_ID) => $this->userCloudID,
+            $this->columnToProperty(Schema::VINVITATION_SEND_RECEIVED) => $this->sentReceived,
+            $this->columnToProperty(Schema::VINVITATION_PROVIDER_DOMAIN) => $this->providerDomain,
+            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_DOMAIN) => $this->recipientDomain,
+            $this->columnToProperty(Schema::VINVITATION_SENDER_CLOUD_ID) => $this->senderCloudId,
+            $this->columnToProperty(Schema::VINVITATION_SENDER_NAME) => $this->senderName,
+            $this->columnToProperty(Schema::VINVITATION_SENDER_EMAIL) => $this->senderEmail,
+            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_CLOUD_ID) => $this->recipientCloudId,
+            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_EMAIL) => $this->recipientEmail,
+            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_NAME) => $this->recipientName,
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_NAME) => $this->remoteUserName,
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_CLOUD_ID) => $this->remoteUserCloudID,
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_EMAIL) => $this->remoteUserEmail
         ];
     }
 }

@@ -16,7 +16,6 @@ use OCP\ILogger;
  */
 class InvitationService
 {
-
     private InvitationMapper $mapper;
     private ILogger $logger;
 
@@ -28,7 +27,7 @@ class InvitationService
 
     /**
      * Returns the invitation with the specified id.
-     * 
+     *
      * @param int $id
      * @return VInvitation
      * @throws NotFoundException in case the invitation could not be found
@@ -53,7 +52,7 @@ class InvitationService
 
     /**
      * Returns the invitation with the specified token.
-     * 
+     *
      * @param string $token
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return VInvitation
@@ -69,11 +68,13 @@ class InvitationService
             $this->logger->error("Invitation not found for token '$token'.", ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
         }
-        if($loginRequired == true && \OC::$server->getUserSession()->getUser() == null) {
+        if ($loginRequired == true && \OC::$server->getUserSession()->getUser() == null) {
             throw new ServiceException("Unable to find invitation, unauthenticated.");
         }
-        if($loginRequired == false 
-            || \OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()) {
+        if (
+            $loginRequired == false
+            || \OC::$server->getUserSession()->getUser()->getCloudId() === $invitation->getUserCloudID()
+        ) {
             return $invitation;
         }
         throw new NotFoundException("An exception occurred trying to retrieve the invitation with token '$token'.");
@@ -81,7 +82,7 @@ class InvitationService
 
     /**
      * Returns all invitations matching the specified criteria.
-     * 
+     *
      * @param array $criteria
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return array
@@ -92,7 +93,7 @@ class InvitationService
         try {
             // add access restriction
             if ($loginRequired) {
-                array_push($criteria, [Schema::VInvitation_user_cloud_id => \OC::$server->getUserSession()->getUser()->getCloudId()]);
+                array_push($criteria, [Schema::VINVITATION_USER_CLOUD_ID => \OC::$server->getUserSession()->getUser()->getCloudId()]);
             }
             return $this->mapper->findAll($criteria);
         } catch (Exception $e) {
@@ -103,7 +104,7 @@ class InvitationService
 
     /**
      * Inserts the specified invitation.
-     * 
+     *
      * @param Invitation $invitation
      * @return Invitation
      * @throws ServiceException
@@ -120,11 +121,11 @@ class InvitationService
 
     /**
      * Updates the invitation according to the specified fields and values.
-     * 
+     *
      * @param array $fieldsAndValues one of which must be the id
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return bool true if update succeeded, otherwise false
-     * @throws 
+     * @throws
      */
     public function update(array $fieldsAndValues, bool $loginRequired = true): bool
     {

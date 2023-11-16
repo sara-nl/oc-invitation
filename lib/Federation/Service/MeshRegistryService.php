@@ -2,7 +2,7 @@
 
 /**
  * Represents this EFSS instance's mesh registry service.
- * 
+ *
  */
 
 namespace OCA\Invitation\Federation\Service;
@@ -13,7 +13,6 @@ use OCP\IConfig;
 
 class MeshRegistryService
 {
-
     private string $appName;
     private IConfig $config;
     private DomainProviderMapper $domainProviderMapper;
@@ -44,7 +43,7 @@ class MeshRegistryService
 
     /**
      * Returns the full 'https://...host.../forward-invite' endpoint of this EFSS instance
-     * 
+     *
      * @return string
      */
     public function getFullForwardInviteEndpoint()
@@ -56,7 +55,7 @@ class MeshRegistryService
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getWayfPageRoute(): string
@@ -68,7 +67,7 @@ class MeshRegistryService
 
     /**
      * Returns the full 'https://...host.../accept-invite' endpoint URL of this EFSS instance.
-     * 
+     *
      * @return string the full /accept-invite endpoint URL
      */
     public function getFullAcceptInviteEndpointURL(): string
@@ -81,7 +80,7 @@ class MeshRegistryService
 
     /**
      * Returns the full 'https://...host.../invite-accepted' endpoint URL of this EFSS instance.
-     * 
+     *
      * @param string $senderHost the host of the sender of the invitation
      * @return string the full /invite-accepted endpoint URL
      */
@@ -97,7 +96,7 @@ class MeshRegistryService
 
     /**
      * Returns the invite link with the specified parameters.
-     * 
+     *
      * @param array the parameters to include in the link
      * @return string the invite link
      */
@@ -118,7 +117,7 @@ class MeshRegistryService
 
     /**
      * Returns the domain of this mesh node as configured.
-     * 
+     *
      * @return string the domain
      */
     public function getDomain(): string
@@ -129,7 +128,7 @@ class MeshRegistryService
 
     /**
      * Returns all domain providers of the mesh.
-     * 
+     *
      * @return array[DomainProvider] all domain providers
      * @throws NotFoundException
      */
@@ -144,13 +143,13 @@ class MeshRegistryService
 
     /**
      * Returns true if the specified domain is of a known domain provider
-     * 
+     *
      * @return bool
      */
     public function isKnowDomainProvider(string $domain): bool
     {
-        foreach($this->allDomainProviders() as $domainProvider) {
-            if($domainProvider->getDomain() === $domain) {
+        foreach ($this->allDomainProviders() as $domainProvider) {
+            if ($domainProvider->getDomain() === $domain) {
                 return true;
             }
         }
@@ -159,7 +158,7 @@ class MeshRegistryService
 
     /**
      * Returns the value of the specified application key.
-     * 
+     *
      * @return mixed
      */
     public function getAppValue($key)

@@ -18,7 +18,7 @@ class InvitationMapper extends Mapper
 
     public function __construct(IDBConnection $dbConnection)
     {
-        parent::__construct($dbConnection, Schema::Table_Invitations, Invitation::class);
+        parent::__construct($dbConnection, Schema::TABLE_INVITATIONS, Invitation::class);
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -33,7 +33,7 @@ class InvitationMapper extends Mapper
     {
         $qb = $this->db->getQueryBuilder();
         $result = $qb->select('*')
-            ->from(Schema::View_Invitations, 'i')
+            ->from(Schema::VIEW_INVITATIONS, 'i')
             ->where($qb->expr()->eq('i.id', $qb->createNamedParameter($id)))
             ->execute()->fetchAssociative();
         if (is_array($result)) {
@@ -43,7 +43,7 @@ class InvitationMapper extends Mapper
     }
 
     /** Returns the invitation with the specified token, or NotFoundException if it could not be found.
-     * 
+     *
      * @param string $token
      * @return VInvitation
      * @throws NotFoundException
@@ -53,7 +53,7 @@ class InvitationMapper extends Mapper
         try {
             $qb = $this->db->getQueryBuilder();
             $result = $qb->select('*')
-                ->from(Schema::View_Invitations, 'i')
+                ->from(Schema::VIEW_INVITATIONS, 'i')
                 ->where($qb->expr()->eq('i.token', $qb->createNamedParameter($token)))
                 ->execute()->fetchAssociative();
             if (is_array($result) && count($result) > 0) {
@@ -73,10 +73,10 @@ class InvitationMapper extends Mapper
      *   column_1 => [value1, value2],
      *   column_2 => [value3],
      *   ... etc.
-     * ] 
+     * ]
      * Will yield the following SQL:
      *  SELECT * WHERE (column_1 = value1 OR column_1 = value2) AND (column_2 = value3) AND (...etc.)
-     * 
+     *
      * @param array $criteria
      * @return array the invitations
      */
@@ -97,7 +97,7 @@ class InvitationMapper extends Mapper
         }
 
         $qb = $this->db->getQueryBuilder();
-        $query = $qb->select('*')->from(Schema::View_Invitations, 'i');
+        $query = $qb->select('*')->from(Schema::VIEW_INVITATIONS, 'i');
         $i = 0;
         foreach ($fieldsAndValues as $field => $values) {
             if ($i == 0) {
@@ -122,7 +122,7 @@ class InvitationMapper extends Mapper
     /**
      * Updates the invitation according to the specified fields and values.
      * The id of the invitation must be specified as one of the fields and values.
-     * 
+     *
      * @param array $fieldsAndValues
      * @param string @userCloudID if set only the invitations owned by the user with this cloud ID can be updated
      * @return bool true if an invitation has been updated, false otherwise
@@ -131,7 +131,7 @@ class InvitationMapper extends Mapper
     {
         try {
             $qb = $this->db->getQueryBuilder();
-            $updateQuery = $qb->update(Schema::Table_Invitations, 'i');
+            $updateQuery = $qb->update(Schema::TABLE_INVITATIONS, 'i');
             if (isset($fieldsAndValues['id']) && count($fieldsAndValues) > 1) {
                 foreach ($fieldsAndValues as $field => $value) {
                     if ($field != 'id') {
@@ -140,8 +140,8 @@ class InvitationMapper extends Mapper
                 }
                 $andWhere = $qb->expr()->andX();
                 $andWhere->add($qb->expr()->eq('i.id', $qb->createNamedParameter($fieldsAndValues['id'])));
-                if($userCloudID !== '') {
-                    $andWhere->add($qb->expr()->eq('i.' . Schema::Invitation_user_cloud_id, $qb->createNamedParameter($userCloudID)));
+                if ($userCloudID !== '') {
+                    $andWhere->add($qb->expr()->eq('i.' . Schema::INVITATION_USER_CLOUD_ID, $qb->createNamedParameter($userCloudID)));
                 }
                 $updateQuery->where($andWhere);
                 $result = $updateQuery->execute();
@@ -157,7 +157,7 @@ class InvitationMapper extends Mapper
 
     /**
      * Builds and returns a new VInvitation from specified associative array.
-     * 
+     *
      * @param array $associativeArray
      * @return VInvitation
      */
@@ -166,22 +166,22 @@ class InvitationMapper extends Mapper
         if (isset($associativeArray) && count($associativeArray) > 0) {
             $invitation = new VInvitation();
             $invitation->setId($associativeArray['id']);
-            $invitation->setToken($associativeArray[Schema::VInvitation_token]);
-            $invitation->setTimestamp($associativeArray[Schema::Invitation_timestamp]);
-            $invitation->setStatus($associativeArray[Schema::Invitation_status]);
-            $invitation->setUserCloudID($associativeArray[Schema::VInvitation_user_cloud_id]);
-            $invitation->setSentReceived($associativeArray[Schema::VInvitation_sent_received]);
-            $invitation->setProviderDomain($associativeArray[Schema::VInvitation_provider_domain]);
-            $invitation->setRecipientDomain($associativeArray[Schema::VInvitation_recipient_domain]);
-            $invitation->setSenderCloudId($associativeArray[Schema::VInvitation_sender_cloud_id]);
-            $invitation->setSenderEmail($associativeArray[Schema::VInvitation_sender_email]);
-            $invitation->setSenderName($associativeArray[Schema::VInvitation_sender_name]);
-            $invitation->setRecipientCloudId($associativeArray[Schema::VInvitation_recipient_cloud_id]);
-            $invitation->setRecipientEmail($associativeArray[Schema::VInvitation_recipient_email]);
-            $invitation->setRecipientName($associativeArray[Schema::VInvitation_recipient_name]);
-            $invitation->setRemoteUserCloudID($associativeArray[Schema::VInvitation_remote_user_cloud_id]);
-            $invitation->setRemoteUserName($associativeArray[Schema::VInvitation_remote_user_name]);
-            $invitation->setRemoteUserEmail($associativeArray[Schema::VInvitation_remote_user_email]);
+            $invitation->setToken($associativeArray[Schema::VINVITATION_TOKEN]);
+            $invitation->setTimestamp($associativeArray[Schema::INVITATION_TIMESTAMP]);
+            $invitation->setStatus($associativeArray[Schema::INVITATION_STATUS]);
+            $invitation->setUserCloudID($associativeArray[Schema::VINVITATION_USER_CLOUD_ID]);
+            $invitation->setSentReceived($associativeArray[Schema::VINVITATION_SEND_RECEIVED]);
+            $invitation->setProviderDomain($associativeArray[Schema::VINVITATION_PROVIDER_DOMAIN]);
+            $invitation->setRecipientDomain($associativeArray[Schema::VINVITATION_RECIPIENT_DOMAIN]);
+            $invitation->setSenderCloudId($associativeArray[Schema::VINVITATION_SENDER_CLOUD_ID]);
+            $invitation->setSenderEmail($associativeArray[Schema::VINVITATION_SENDER_EMAIL]);
+            $invitation->setSenderName($associativeArray[Schema::VINVITATION_SENDER_NAME]);
+            $invitation->setRecipientCloudId($associativeArray[Schema::VINVITATION_RECIPIENT_CLOUD_ID]);
+            $invitation->setRecipientEmail($associativeArray[Schema::VINVITATION_RECIPIENT_EMAIL]);
+            $invitation->setRecipientName($associativeArray[Schema::VINVITATION_RECIPIENT_NAME]);
+            $invitation->setRemoteUserCloudID($associativeArray[Schema::VINVITATION_REMOTE_USER_CLOUD_ID]);
+            $invitation->setRemoteUserName($associativeArray[Schema::VINVITATION_REMOTE_USER_NAME]);
+            $invitation->setRemoteUserEmail($associativeArray[Schema::VINVITATION_REMOTE_USER_EMAIL]);
             return $invitation;
         }
         $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => InvitationApp::APP_NAME]);
@@ -190,7 +190,7 @@ class InvitationMapper extends Mapper
 
     /**
      * Builds and returns an array with new VInvitations from the specified associative arrays.
-     * 
+     *
      * @param array $associativeArrays
      * @return array
      */

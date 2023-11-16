@@ -22,7 +22,7 @@ class DomainProvider extends Entity implements JsonSerializable
     {
         return [
             'id' => $this->id,
-            $this->columnToProperty(Schema::DomainProvider_domain) => $this->domain,
+            $this->columnToProperty(Schema::DOMAINPROVIDER_DOMAIN) => $this->domain,
         ];
     }
 }
