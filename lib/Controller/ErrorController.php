@@ -2,7 +2,7 @@
 
 /**
  * Error controller.
- * 
+ *
  */
 
 namespace OCA\Invitation\Controller;
@@ -14,7 +14,6 @@ use OCP\IRequest;
 
 class ErrorController extends Controller
 {
-
     public function __construct($appName, IRequest $request)
     {
         parent::__construct($appName, $request);
@@ -22,7 +21,7 @@ class ErrorController extends Controller
 
     /**
      * Displays the invitation error.
-     * 
+     *
      * @NoCSRFRequired
      * @PublicPage
      * @param string $message

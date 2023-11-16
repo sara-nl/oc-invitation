@@ -2,7 +2,7 @@
 
 /**
  * This is the mesh registry controller.
- * 
+ *
  */
 
 namespace OCA\Invitation\Controller;
@@ -21,7 +21,6 @@ use OCP\IRequest;
 
 class MeshRegistryController extends Controller
 {
-
     private MeshRegistryService $meshRegistryService;
     private ILogger $logger;
 
@@ -106,7 +105,7 @@ class MeshRegistryController extends Controller
 
     /**
      * Returns all registered domain providers.
-     * 
+     *
      * @NoCSRFRequired
      * @PublicPage
      * @return DataResponse

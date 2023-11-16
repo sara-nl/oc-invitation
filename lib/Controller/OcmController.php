@@ -22,7 +22,7 @@ use OCP\IRequest;
 /**
  * Class OcmController.
  * Enhances the existing federatedfilesharing app with the ocm endpoint '/invite-accepted'
- * 
+ *
  */
 class OcmController extends Controller
 {
@@ -38,9 +38,9 @@ class OcmController extends Controller
 
     /**
      * Inform the sender of the invite that it has been accepted by the recipient.
-     * 
+     *
      * FIXME: use method parameters
-     * 
+     *
      * @NoCSRFRequired
      * @PublicPage
      * @param string $recipientProvider maps to recipient_domain in the Invitation entity
@@ -106,7 +106,7 @@ class OcmController extends Controller
         $invitation = null;
         try {
             $invitation = $this->invitationService->findByToken($token, false);
-            
+
             // check if the receiver has not already accepted a previous invitation
             $existingInvitations = $this->invitationService->findAll([
                 [Schema::VInvitation_sender_cloud_id => $invitation->getSenderCloudId()],
@@ -123,7 +123,7 @@ class OcmController extends Controller
                     Http::STATUS_NOT_FOUND
                 );
             }
-        } catch(NotFoundException $e) {
+        } catch (NotFoundException $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
@@ -163,7 +163,7 @@ class OcmController extends Controller
             );
         }
 
-        // TODO: at this point a notification could(should?) be created to inform the sender that the invite has been accepted. 
+        // TODO: at this point a notification could(should?) be created to inform the sender that the invite has been accepted.
 
         return new DataResponse(
             [

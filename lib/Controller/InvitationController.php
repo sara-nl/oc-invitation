@@ -2,7 +2,7 @@
 
 /**
  * Invitation controller.
- * 
+ *
  */
 
 namespace OCA\Invitation\Controller;
@@ -29,7 +29,6 @@ use Ramsey\Uuid\Uuid;
 
 class InvitationController extends Controller
 {
-
     private MeshRegistryService $meshRegistryService;
     private InvitationService $invitationService;
     private ILogger $logger;
@@ -47,7 +46,7 @@ class InvitationController extends Controller
     }
 
     /**
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      * @return TemplateResponse
@@ -59,7 +58,7 @@ class InvitationController extends Controller
 
     /**
      * Generates an invite and sends it to the specified email address.
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      * @param string email the email address to send the invite to
@@ -173,7 +172,7 @@ class InvitationController extends Controller
 
     /**
      * Handle the invite by creating the notification with the option to accept or reject it.
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      * @param string $token the token
@@ -267,7 +266,7 @@ class InvitationController extends Controller
      * Notify the sender of the invite that we accept it and include our user info.
      * The response should contain the sender's info which we will persist together with the invite.
      * And at that point the invitation flow has successfully completed.
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      * @param string $token the token
@@ -364,7 +363,7 @@ class InvitationController extends Controller
 
     /**
      * Verify the /invite-accepted response for all required fields.
-     * 
+     *
      * @param array $response the response to verify
      * @return bool true if the response is valid, false otherwise
      */
@@ -386,7 +385,7 @@ class InvitationController extends Controller
     }
 
     /**
-     * 
+     *
      * @NoCSRFRequired
      */
     // TODO: dev endpoint, may need to be removed
@@ -422,7 +421,7 @@ class InvitationController extends Controller
 
     /**
      * example url: https://rd-1.nl/apps/invitation/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      */
@@ -459,7 +458,7 @@ class InvitationController extends Controller
     }
 
     /**
-     * 
+     *
      * @NoCSRFRequired
      */
     // TODO: dev endpoint, may need to be removed

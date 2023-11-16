@@ -6,20 +6,20 @@ source_package_name=$(source_build_directory)/$(app_name)
 appstore_build_directory=$(CURDIR)/build/artifacts/appstore
 appstore_package_name=$(appstore_build_directory)/$(app_name)
 
-# Code styling: PSR-12 is followed 
+# Code sniffing: PSR-12 is followed 
 # full check
-.PHONY: lint-check-full
-lint-check-full:
-	${CURDIR}/vendor/bin/phpcs --standard=PSR12 lib
+.PHONY: php-codesniffer-full
+php-codesniffer-full:
+	${CURDIR}/vendor/bin/phpcs ./ --standard=PSR12 --report=full --extensions=php
 
 # check for errors only, ignoring warnings
-.PHONY: lint-check-errors
-lint-check-errors:
-	${CURDIR}/vendor/bin/phpcs --standard=PSR12 --warning-severity=0 lib
+.PHONY: php-codesniffer-errors
+php-codesniffer-errors:
+	${CURDIR}/vendor/bin/phpcs ./ --standard=PSR12 --report=full --extensions=php --warning-severity=0
 
-.PHONY: lint-fix
-lint-fix:
-	${CURDIR}/vendor/bin/phpcbf --standard=PSR12 lib
+.PHONY: php-codesniffer-fix
+php-codesniffer-fix:
+	${CURDIR}/vendor/bin/phpcbf ./ --standard=PSR12
 
 # Builds the source package for the app store, ignores php and js tests
 .PHONY: buildapp

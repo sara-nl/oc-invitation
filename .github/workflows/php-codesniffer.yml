@@ -1,0 +1,24 @@
+name: PHP Codesniffer
+# Please use the same settings as make lint-check-errors.
+# See: https://github.com/marketplace/actions/php-code-sniffer-php-actions
+on: [push]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Composer install
+        uses: php-actions/composer@v6
+
+      - name: PHP Code Sniffer
+        uses: php-actions/phpcs@v1
+        with:
+          php_version: 7.4
+          version: 3.7.2
+          standard: PSR12
+          extensions: php
+          warning_severity: 0
+          path: ./
