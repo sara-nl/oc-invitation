@@ -13,12 +13,29 @@ jobs:
       - name: Composer install
         uses: php-actions/composer@v6
 
-      - name: PHP Code Sniffer
+      - name: PHP Code Sniffer appinfo
         uses: php-actions/phpcs@v1
         with:
           php_version: 7.4
           version: 3.7.2
           standard: PSR12
-          extensions: php
           warning_severity: 0
-          path: ./
+          path: appinfo/
+
+      - name: PHP Code Sniffer lib
+        uses: php-actions/phpcs@v1
+        with:
+          php_version: 7.4
+          version: 3.7.2
+          standard: PSR12
+          warning_severity: 0
+          path: lib/
+
+      - name: PHP Code Sniffer templates
+        uses: php-actions/phpcs@v1
+        with:
+          php_version: 7.4
+          version: 3.7.2
+          standard: PSR12
+          warning_severity: 0
+          path: templates/
