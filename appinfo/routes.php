@@ -9,8 +9,9 @@ return [
         // bespoke API - invites
         ['name' => 'invitation#generate_invite', 'url' => '/generate-invite', 'verb' => 'GET'],
         ['name' => 'invitation#handle_invite', 'url' => '/handle-invite', 'verb' => 'GET'],
-        // TODO: change method to POST ...? How to create a notification POST action ?!
+        // TODO: change method to PUT
         ['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'GET'],
+        ['name' => 'invitation#decline_invite', 'url' => '/decline-invite', 'verb' => 'PUT'],
         ['name' => 'invitation#index', 'url' => '/index', 'verb' => 'GET'],
 
         ['name' => 'invitation#find', 'url' => '/find-invitation', 'verb' => 'GET'],

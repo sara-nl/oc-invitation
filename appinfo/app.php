@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use OCA\Invitation\AppInfo\InvitationApp;
+use OCP\Util;
 
 // FIXME: SHOULD this be necessary ?
 require __DIR__ . '/../vendor/autoload.php';
@@ -37,8 +38,8 @@ if (
             ];
         }
     );
-
     $app = \OC::$server->query(\OCA\Invitation\AppInfo\InvitationApp::class);
+    Util::addScript(InvitationApp::APP_NAME, 'invitation-notifications');
 } else {
     \OC::$server->getLogger()->error('Error: not installed. Invitations app requires: Federated File Sharing app, Notifications app', ['app' => InvitationApp::APP_NAME]);
     $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {

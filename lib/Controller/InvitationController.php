@@ -237,12 +237,11 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite?token=$token", 'GET');
+            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite", 'PUT');
 
         $declineAction = $notification->createAction();
-        // TODO: implement /decline-invite
         $declineAction->setLabel('decline')
-            ->setLink('/apps/' . InvitationApp::APP_NAME . '/decline-invite', 'DELETE');
+            ->setLink('/apps/' . InvitationApp::APP_NAME . "/#", 'GET');
 
         $notification->setApp(InvitationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
@@ -336,7 +335,10 @@ class InvitationController extends Controller
         if ($updateResult == false) {
             $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
-                ['error_message' => 'Failed to accept the invitation'],
+                [
+                    'success' => false,
+                    'error_message' => 'Failed to accept the invitation'
+                ],
                 Http::STATUS_NOT_FOUND
             );
         }
@@ -356,7 +358,27 @@ class InvitationController extends Controller
         }
 
         return new DataResponse(
-            [],
+            [
+                'success' => true
+            ],
+            Http::STATUS_OK
+        );
+    }
+
+    /**
+     *
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     *
+     * @param string $token the token of the invite we want to decline
+     * @return DataResponse
+     */
+    public function declineInvite(string $token = ''): DataResponse
+    {
+        // TODO: decline invote and remove notification
+        $this->logger->debug(" - invite declined, and notification removed:");
+        return new DataResponse(
+            ['success' => true],
             Http::STATUS_OK
         );
     }
