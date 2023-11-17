@@ -1,6 +1,9 @@
 name: PHP Codesniffer
 # Please use the same settings as make lint-check-errors.
 # See: https://github.com/marketplace/actions/php-code-sniffer-php-actions
+#
+# Note: Putting more than one sources in path (like: 'path: appinfo/ lib/ templates/') doesn't seem to work.
+#       So we split this into separate steps.
 on: [push]
 
 jobs:
