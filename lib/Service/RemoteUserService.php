@@ -9,6 +9,7 @@ namespace OCA\Invitation\Service;
 
 use Exception;
 use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Federation\RemoteUser;
 use OCA\Invitation\Federation\RemoteUserMapper;
 use OCP\IConfig;
 use OCP\ILogger;
@@ -74,8 +75,8 @@ class RemoteUserService implements IRemoteShareesSearch
             ];
             if (
                 $this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_NON_INVITED_USERS)
-                    && strpos($search, '@') !== false
-                    && count($remoteUsers) < 1
+                && strpos($search, '@') !== false
+                && count($remoteUsers) < 1
             ) {
                 array_push($result, $nonInvitedUser);
             }
@@ -84,6 +85,25 @@ class RemoteUserService implements IRemoteShareesSearch
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error searching for remote users.');
+        }
+    }
+
+    /**
+     * Returns the remote user with the specified cloud ID.
+     * @param string $cloudID
+     * @return RemoteUser 
+     * @throws NotFoundException in case the remote user could not be found
+     * @throws Exception in case of an unexpected exception
+     */
+    public function getRemoteUser(string $cloudID): RemoteUser
+    {
+        try {
+            return $this->remoteUserMapper->getRemoteUser($cloudID);
+        } catch (NotFoundException $e) {
+            throw $e;
+        } catch (Exception $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error retrieving remote user.');
         }
     }
 }

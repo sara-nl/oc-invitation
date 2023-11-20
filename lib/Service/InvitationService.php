@@ -125,7 +125,6 @@ class InvitationService
      * @param array $fieldsAndValues one of which must be the id
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return bool true if update succeeded, otherwise false
-     * @throws
      */
     public function update(array $fieldsAndValues, bool $loginRequired = true): bool
     {

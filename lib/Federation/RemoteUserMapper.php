@@ -7,7 +7,9 @@
 namespace OCA\Invitation\Federation;
 
 use Exception;
+use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;
@@ -32,6 +34,7 @@ class RemoteUserMapper extends Mapper
      */
     public function search(string $search): array
     {
+        // allow search in the context of the current logged in user only
         $userCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
 
         $parameter = '%' . $this->db->escapeLikeParameter($search) . '%';
@@ -45,33 +48,78 @@ class RemoteUserMapper extends Mapper
 
         $remoteUsers = [];
         try {
-            $remoteUsers = $this->newRemoteUsers($query->execute()->fetchAllAssociative());
+            $remoteUsers = $this->_getRemoteUsers($query->execute()->fetchAllAssociative());
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString());
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new Exception("Error searching for remote users with search string '$search'");
         }
         return $remoteUsers;
     }
 
     /**
-     * Builds and returns an array of new remote users objects from the specified the associatives array.
+     * Returns the remote user with the specified cloud ID in the context of the current logged in user.
+     * @param string $cloudID
+     * @return RemoteUser
+     * @throws NotFoundException if the remote user could not be found
+     * @throws Exception if an exception occurred
+     */
+    public function getRemoteUser(string $cloudID): RemoteUser
+    {
+        try {
+            $userCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
+            $qb = $this->db->getQueryBuilder();
+            $query = $qb->select('*')->from(Schema::VIEW_REMOTEUSERS, 'i');
+            $and = $qb->expr()->andX();
+            $and->add($qb->expr()->eq(Schema::REMOTEUSER_USER_CLOUD_ID, $qb->createPositionalParameter($userCloudID)));
+            $and->add($qb->expr()->eq(Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID, $qb->createPositionalParameter($cloudID)));
+            $result = $query->where($and)->execute()->fetchAssociative();
+            $remoteUser = null;
+            if (is_array($result) && count($result) > 0) {
+                $remoteUser = $this->_getRemoteUser($result);
+            }
+            if ($remoteUser == null) {
+                throw new NotFoundException("Could not retrieve remote user with cloudID '$cloudID'.");
+            }
+            return $remoteUser;
+        } catch (Exception $e) {
+            $this->logger->error("Could not retrieve remote user with cloudID '$cloudID'. Stack trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw $e;
+        }
+    }
+
+    /**
+     * Builds and returns an array of new RemoteUser objects from the specified associatives array.
      * @param array $associativeArrays
      * @return array
      */
-    private function newRemoteUsers(array $associativeArrays): array
+    private function _getRemoteUsers(array $associativeArrays): array
     {
         $remoteUsers = [];
         if (isset($associativeArrays) && count($associativeArrays) > 0) {
             foreach ($associativeArrays as $associativeArray) {
-                $remoteUser = new RemoteUser();
-                $remoteUser->setInvitationID($associativeArray[Schema::REMOTEUSER_INVITATION_ID]);
-                $remoteUser->setUserCloudID($associativeArray[Schema::REMOTEUSER_USER_CLOUD_ID]);
-                $remoteUser->setUserCloudID($associativeArray[Schema::REMOTEUSER_USER_NAME]);
-                $remoteUser->setRemoteUserCloudID($associativeArray[Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID]);
-                $remoteUser->setRemoteUserName($associativeArray[Schema::REMOTEUSER_REMOTE_USER_NAME]);
-                array_push($remoteUsers, $remoteUser);
+                array_push($remoteUsers, $this->_getRemoteUser($associativeArray));
             }
         }
         return $remoteUsers;
+    }
+
+    /**
+     * Builds and returns a new RemoteUser objects from the specified associative arrays.
+     *
+     * @param array $associativeArray
+     * @return RemoteUser
+     */
+    private function _getRemoteUser(array $associativeArray): RemoteUser
+    {
+        if (count($associativeArray) > 0) {
+            $remoteUser = new RemoteUser();
+            $remoteUser->setInvitationID($associativeArray[Schema::REMOTEUSER_INVITATION_ID]);
+            $remoteUser->setUserCloudID($associativeArray[Schema::REMOTEUSER_USER_CLOUD_ID]);
+            $remoteUser->setUserName($associativeArray[Schema::REMOTEUSER_USER_NAME]);
+            $remoteUser->setRemoteUserCloudID($associativeArray[Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID]);
+            $remoteUser->setRemoteUserName($associativeArray[Schema::REMOTEUSER_REMOTE_USER_NAME]);
+            return $remoteUser;
+        }
+        return null;
     }
 }

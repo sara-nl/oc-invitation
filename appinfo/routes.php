@@ -9,7 +9,6 @@ return [
         // bespoke API - invites
         ['name' => 'invitation#generate_invite', 'url' => '/generate-invite', 'verb' => 'GET'],
         ['name' => 'invitation#handle_invite', 'url' => '/handle-invite', 'verb' => 'GET'],
-        // TODO: change method to PUT
         ['name' => 'invitation#accept_invite', 'url' => '/accept-invite', 'verb' => 'GET'],
         ['name' => 'invitation#decline_invite', 'url' => '/decline-invite', 'verb' => 'PUT'],
         ['name' => 'invitation#index', 'url' => '/index', 'verb' => 'GET'],
@@ -19,11 +18,14 @@ return [
         ['name' => 'invitation#update', 'url' => '/update-invitation', 'verb' => 'GET'],
         ['name' => 'invitation#find_all', 'url' => '/find-all-invitations', 'verb' => 'GET'],
 
+        ['name' => 'remote_user#search', 'url' => '/remote-user/search', 'verb' => 'GET'],
+        ['name' => 'remote_user#get_remote_user', 'url' => '/remote-user', 'verb' => 'GET'],
+
         // bespoke API - mesh registry
         ['name' => 'mesh_registry#forward_invite', 'url' => '/registry/forward-invite', 'verb' => 'GET'],
         ['name' => 'mesh_registry#providers', 'url' => '/registry/providers', 'verb' => 'GET'],
         // TODO: public info endpoint that returns relevant info of this mesh node/server
-        //       returns: full host url (=trusted server url), name, logo, ...
+        //       returns: ... to decide
 
         // OCM - Open Cloud Mesh protocol
         ['name' => 'ocm#invite_accepted', 'url' => '/ocm/invite-accepted', 'verb' => 'POST'],

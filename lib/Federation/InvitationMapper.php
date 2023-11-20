@@ -156,7 +156,7 @@ class InvitationMapper extends Mapper
     }
 
     /**
-     * Builds and returns a new VInvitation from specified associative array.
+     * Builds and returns a new VInvitation object from specified associative array.
      *
      * @param array $associativeArray
      * @return VInvitation
@@ -189,7 +189,7 @@ class InvitationMapper extends Mapper
     }
 
     /**
-     * Builds and returns an array with new VInvitations from the specified associative arrays.
+     * Builds and returns an array with new VInvitation objects from the specified associative arrays.
      *
      * @param array $associativeArrays
      * @return array

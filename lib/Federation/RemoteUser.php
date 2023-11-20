@@ -39,7 +39,6 @@ class RemoteUser extends Entity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
             $this->columnToProperty(Schema::REMOTEUSER_INVITATION_ID) => $this->invitationID,
             $this->columnToProperty(Schema::REMOTEUSER_USER_CLOUD_ID) => $this->userCloudID,
             $this->columnToProperty(Schema::REMOTEUSER_USER_NAME) => $this->userName,

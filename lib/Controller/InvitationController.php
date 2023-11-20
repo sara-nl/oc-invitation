@@ -237,7 +237,7 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite", 'PUT');
+            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite?token=$token", 'GET');
 
         $declineAction = $notification->createAction();
         $declineAction->setLabel('decline')
@@ -318,6 +318,8 @@ class InvitationController extends Controller
             );
         }
 
+        // check if there is not already an accepted invitation forremote user, and if there is decline this invitation
+
         // all's well, update the invitation
         $updateResult = $this->invitationService->update(
             [
@@ -375,12 +377,54 @@ class InvitationController extends Controller
      */
     public function declineInvite(string $token = ''): DataResponse
     {
-        // TODO: decline invote and remove notification
-        $this->logger->debug(" - invite declined, and notification removed:");
-        return new DataResponse(
-            ['success' => true],
-            Http::STATUS_OK
-        );
+        try {
+            $invitation = $this->invitationService->findByToken($token);
+
+            $updateResult = $this->invitationService->update([
+                Schema::ID => $invitation->getId(),
+                Schema::INVITATION_STATUS => Invitation::STATUS_DECLINED,
+            ]);
+
+            if ($updateResult == true) {
+                // remove notification
+                $manager = \OC::$server->getNotificationManager();
+                $notification = $manager->createNotification();
+                $notification
+                    ->setApp(InvitationApp::APP_NAME)
+                    ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
+                    ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
+                $manager->markProcessed($notification);
+
+                return new DataResponse(
+                    [
+                        'success' => true,
+                    ],
+                    Http::STATUS_OK,
+                );
+            }
+            return new DataResponse(
+                [
+                    'success' => false,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        } catch (NotFoundException $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::INVITATION_NOT_FOUND,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        } catch (Exception $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
     }
 
     /**
@@ -410,7 +454,6 @@ class InvitationController extends Controller
      *
      * @NoCSRFRequired
      */
-    // TODO: dev endpoint, may need to be removed
     public function find(int $id = null): DataResponse
     {
         if (!isset($id)) {
@@ -483,7 +526,6 @@ class InvitationController extends Controller
      *
      * @NoCSRFRequired
      */
-    // TODO: dev endpoint, may need to be removed
     public function findByToken(string $token = null): DataResponse
     {
         if (!isset($token)) {
@@ -529,7 +571,6 @@ class InvitationController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      */
-    // TODO: dev endpoint, may need to be removed
     public function update(int $id, string $status): DataResponse
     {
         $fieldsAndValues = [];

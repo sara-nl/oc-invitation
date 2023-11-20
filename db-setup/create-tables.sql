@@ -68,12 +68,14 @@ select distinct
      i.sender_cloud_id as user_cloud_id, i.sender_name as user_name, 
      i.recipient_cloud_id as remote_user_cloud_id, i.recipient_name as remote_user_name 
   from oc_mesh_invitations i
+    where i.status='accepted'
    union all
   select 
      ii.id as invitation_id, ii.recipient_domain as provider_domain, 
      ii.recipient_cloud_id as user_cloud_id, ii.recipient_name as user_name, 
      ii.sender_cloud_id as remote_user_cloud_id, ii.sender_name as remote_user_name 
   from oc_mesh_invitations ii
+    where ii.status='accepted'
  ) s
 join oc_appconfig c
  on c.configvalue=s.provider_domain
