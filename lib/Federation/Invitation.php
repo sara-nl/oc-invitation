@@ -56,6 +56,7 @@ class Invitation extends Entity implements JsonSerializable
     public const STATUS_OPEN = 'open';
     public const STATUS_ACCEPTED = 'accepted';
     public const STATUS_DECLINED = 'declined';
+    public const STATUS_REVOKED = 'revoked';
     public const STATUS_INVALID = 'invalid';
 
     public function jsonSerialize()

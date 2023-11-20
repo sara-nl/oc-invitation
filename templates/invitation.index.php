@@ -32,26 +32,7 @@ style($appName, 'invitation');
     </div>
     <div class="pure-u-1-1 invites">
         <div class="pure-g">
-            <div class="pure-u-1-2">
-                <div class="pure-g">
-                    <div class="pure-u-1-1 accepted">
-                        <h2>Accepted invitations</h2>
-                        <table class="pure-table">
-                            <thead>
-                                <tr>
-                                    <th>Sent/Received</th>
-                                    <th>Remote user name</th>
-                                    <th>Remote user cloud ID</th>
-                                    <th>Remote user email</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            <div class="pure-u-1-2">
+            <div class="pure-u-13-24">
                 <div class="pure-g">
                     <div class="pure-u-1-1 open">
                         <h2>Open invitations</h2>
@@ -60,6 +41,27 @@ style($appName, 'invitation');
                                 <tr>
                                     <th>Sent/Received</th>
                                     <th>Token</th>
+                                    <th>Remote user name</th>
+                                    <th>Remote user cloud ID</th>
+                                    <th>Remote user email</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="pure-u-11-24">
+                <div class="pure-g">
+                    <div class="pure-u-1-1 accepted">
+                        <h2>Accepted invitations</h2>
+                        <table class="pure-table">
+                            <thead>
+                                <tr>
+                                    <th>Sent/Received</th>
                                     <th>Remote user name</th>
                                     <th>Remote user cloud ID</th>
                                     <th>Remote user email</th>

@@ -122,7 +122,7 @@ class InvitationService
     /**
      * Updates the invitation according to the specified fields and values.
      *
-     * @param array $fieldsAndValues one of which must be the id
+     * @param array $fieldsAndValues one of which must be the token
      * @param bool $loginRequired true if we need session user access check, default is true
      * @return bool true if update succeeded, otherwise false
      */

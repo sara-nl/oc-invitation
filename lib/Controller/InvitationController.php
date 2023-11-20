@@ -323,7 +323,7 @@ class InvitationController extends Controller
         // all's well, update the invitation
         $updateResult = $this->invitationService->update(
             [
-                Schema::ID => $invitation->getId(),
+                Schema::INVITATION_TOKEN => $invitation->getToken(),
                 Schema::INVITATION_RECIPIENT_DOMAIN => $recipientDomain,
                 Schema::INVITATION_RECIPIENT_EMAIL => $recipientEmail,
                 Schema::INVITATION_RECIPIENT_NAME => $recipientName,
@@ -378,10 +378,8 @@ class InvitationController extends Controller
     public function declineInvite(string $token = ''): DataResponse
     {
         try {
-            $invitation = $this->invitationService->findByToken($token);
-
             $updateResult = $this->invitationService->update([
-                Schema::ID => $invitation->getId(),
+                Schema::INVITATION_TOKEN => $token,
                 Schema::INVITATION_STATUS => Invitation::STATUS_DECLINED,
             ]);
 
@@ -571,26 +569,35 @@ class InvitationController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      */
-    public function update(int $id, string $status): DataResponse
+    public function update(string $token, string $status): DataResponse
     {
-        $fieldsAndValues = [];
-        if (isset($id)) {
-            $fieldsAndValues['id'] = $id;
-        }
-        if (isset($status)) {
-            $fieldsAndValues[Schema::INVITATION_STATUS] = $status;
+        if (!isset($token) && !isset($status)) {
+            return new DataResponse(
+                [
+                    'success' => false
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
         }
 
-        $result = $this->invitationService->update($fieldsAndValues);
+        $result = $this->invitationService->update([
+            Schema::INVITATION_TOKEN => $token,
+            Schema::INVITATION_STATUS => $status,
+        ]);
 
         if ($result === true) {
             return new DataResponse(
-                ['result' => $result],
+                [
+                    'success' => true,
+                    'result' => $result
+                ],
                 Http::STATUS_OK,
             );
         }
         return new DataResponse(
-            ['result' => $result],
+            [
+                'success' => false
+            ],
             Http::STATUS_NOT_FOUND,
         );
     }

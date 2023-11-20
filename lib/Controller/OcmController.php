@@ -145,7 +145,7 @@ class OcmController extends Controller
 
         // update the invitation with the receiver's info
         $updateResult = $this->invitationService->update([
-            'id' => $invitation->getId(),
+            Schema::VINVITATION_TOKEN => $invitation->getToken(),
             Schema::VINVITATION_RECIPIENT_DOMAIN => $recipientProvider,
             Schema::VINVITATION_RECIPIENT_CLOUD_ID => $userID,
             Schema::VINVITATION_RECIPIENT_EMAIL => $email,

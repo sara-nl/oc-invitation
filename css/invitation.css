@@ -4,6 +4,10 @@ div#invitation {
     margin-right: 2em;
 }
 
+div#invitation button {
+    border-radius: 4px;
+}
+
 div#invitation input,
 textarea {
     color: black;
@@ -28,6 +32,12 @@ div.invites div .open {
 
 div.invites div.accepted {
     background-color: aliceblue;
+}
+
+div.invites td.button-holder a {
+    width: 4em;
+    padding-left: .3em;
+    padding-right: .3em;
 }
 
 div.invites h2 {

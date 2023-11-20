@@ -121,7 +121,7 @@ class InvitationMapper extends Mapper
 
     /**
      * Updates the invitation according to the specified fields and values.
-     * The id of the invitation must be specified as one of the fields and values.
+     * The token of the invitation must be specified as one of the fields and values.
      *
      * @param array $fieldsAndValues
      * @param string @userCloudID if set only the invitations owned by the user with this cloud ID can be updated
@@ -132,14 +132,14 @@ class InvitationMapper extends Mapper
         try {
             $qb = $this->db->getQueryBuilder();
             $updateQuery = $qb->update(Schema::TABLE_INVITATIONS, 'i');
-            if (isset($fieldsAndValues['id']) && count($fieldsAndValues) > 1) {
+            if (isset($fieldsAndValues[Schema::INVITATION_TOKEN]) && count($fieldsAndValues) > 1) {
                 foreach ($fieldsAndValues as $field => $value) {
-                    if ($field != 'id') {
+                    if ($field != Schema::INVITATION_TOKEN) {
                         $updateQuery->set("i.$field", $qb->createNamedParameter($value));
                     }
                 }
                 $andWhere = $qb->expr()->andX();
-                $andWhere->add($qb->expr()->eq('i.id', $qb->createNamedParameter($fieldsAndValues['id'])));
+                $andWhere->add($qb->expr()->eq('i.' . Schema::INVITATION_TOKEN, $qb->createNamedParameter($fieldsAndValues[Schema::INVITATION_TOKEN])));
                 if ($userCloudID !== '') {
                     $andWhere->add($qb->expr()->eq('i.' . Schema::INVITATION_USER_CLOUD_ID, $qb->createNamedParameter($userCloudID)));
                 }
