@@ -91,7 +91,7 @@ class RemoteUserService implements IRemoteShareesSearch
     /**
      * Returns the remote user with the specified cloud ID.
      * @param string $cloudID
-     * @return RemoteUser 
+     * @return RemoteUser
      * @throws NotFoundException in case the remote user could not be found
      * @throws Exception in case of an unexpected exception
      */
