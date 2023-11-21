@@ -48,7 +48,7 @@ class RemoteUserMapper extends Mapper
 
         $remoteUsers = [];
         try {
-            $remoteUsers = $this->_getRemoteUsers($query->execute()->fetchAllAssociative());
+            $remoteUsers = $this->createRemoteUsers($query->execute()->fetchAllAssociative());
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new Exception("Error searching for remote users with search string '$search'");
@@ -75,7 +75,7 @@ class RemoteUserMapper extends Mapper
             $result = $query->where($and)->execute()->fetchAssociative();
             $remoteUser = null;
             if (is_array($result) && count($result) > 0) {
-                $remoteUser = $this->_getRemoteUser($result);
+                $remoteUser = $this->createRemoteUser($result);
             }
             if ($remoteUser == null) {
                 throw new NotFoundException("Could not retrieve remote user with cloudID '$cloudID'.");
@@ -92,12 +92,12 @@ class RemoteUserMapper extends Mapper
      * @param array $associativeArrays
      * @return array
      */
-    private function _getRemoteUsers(array $associativeArrays): array
+    private function createRemoteUsers(array $associativeArrays): array
     {
         $remoteUsers = [];
         if (isset($associativeArrays) && count($associativeArrays) > 0) {
             foreach ($associativeArrays as $associativeArray) {
-                array_push($remoteUsers, $this->_getRemoteUser($associativeArray));
+                array_push($remoteUsers, $this->createRemoteUser($associativeArray));
             }
         }
         return $remoteUsers;
@@ -109,7 +109,7 @@ class RemoteUserMapper extends Mapper
      * @param array $associativeArray
      * @return RemoteUser
      */
-    private function _getRemoteUser(array $associativeArray): RemoteUser
+    private function createRemoteUser(array $associativeArray): RemoteUser
     {
         if (count($associativeArray) > 0) {
             $remoteUser = new RemoteUser();
