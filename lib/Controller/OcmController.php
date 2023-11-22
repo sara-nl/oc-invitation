@@ -112,9 +112,10 @@ class OcmController extends Controller
                 [Schema::VINVITATION_SENDER_CLOUD_ID => $invitation->getSenderCloudId()],
                 [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $userID],
                 [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
+                [Schema::VINVITATION_STATUS => Invitation::STATUS_REVOKED],
             ], false);
             if (count($existingInvitations) > 0) {
-                $this->logger->error("An accepted invitation already exists for remote user with name '$name'", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error("Invitation for remote user with name '$name' has been revoked or already accepted.", ['app' => InvitationApp::APP_NAME]);
                 return new DataResponse(
                     [
                         'success' => false,
