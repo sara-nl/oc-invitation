@@ -130,18 +130,27 @@ class InvitationController extends Controller
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_NEW);
 
-        // TODO: send an email with the invitation link to the recipient ($email)
-        //       note that the status of the invitation should change to 'invalid' in case of failure
-        // $mailer = \OC::$server->getMailer();
-        // $message = $mailer->createMessage();
-        // $message->setSubject('Your Subject');
-        // $message->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
-        // $message->setTo(array('recipient@domain.org' => 'Recipient'));
-        // $message->setBody('The message text');
-        // $mailer->send($message);
-        // $mailer = new Mailer();
-
-        // This message can then be passed to send() of \OC\Mail\Mailer
+        // send the email: this should work if the oc instance is configured correctly
+        // TODO: complete email settings
+        $mailer = \OC::$server->getMailer();
+        $mail = $mailer->createMessage();
+        $mail->setSubject("You've been invited to exchange cloud IDs.");
+        // $mail->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
+        $mail->setTo(array($email => $email));
+        $mail->setBody($message, '');
+        try {
+            $failedRecipients = $mailer->send($mail);
+            $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::CREATE_INVITATION_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND
+            );
+        }
 
         // when all's well set status to open and persist
         $invitation->setStatus(Invitation::STATUS_OPEN);
