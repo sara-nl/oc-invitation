@@ -33,6 +33,8 @@
         let generateInviteButton = document.getElementById('create-invitation');
         generateInviteButton.addEventListener(
             "click", function (event) {
+                event.preventDefault();
+                event.stopPropagation();
                 generateInvite(
                     document.getElementById('create-invitation-email').value,
                     document.getElementById('create-invitation-message').value
@@ -133,22 +135,46 @@
                 );
         };
 
+        let invitationButton = function (status, token) {
+            if (status === 'accepted') {
+                var acceptButton = $('<a class="pure-button" href="#">accept</a>');
+                acceptButton.on(
+                    "click", function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        acceptInvite(token, 'accepted')
+                    }
+                );
+                return acceptButton;
+            }
+            if (status === 'declined') {
+                var declineButton = $('<a class="pure-button" href="#">decline</a>');
+                declineButton.on(
+                    "click", function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        updateInvite(token, 'declined')
+                    }
+                );
+                return declineButton;
+            }
+            if (status === 'revoked') {
+                var revokeButton = $('<a class="pure-button" href="#">revoke</a>');
+                revokeButton.on(
+                    "click", function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        updateInvite(token, 'revoked')
+                    }
+                );
+                return revokeButton;
+            }
+        }
+
         let renderOpenInvitations = function (invitations) {
             table = $('div.invites div.open tbody');
             table.empty();
             invitations.forEach((invitation) => {
-                var acceptButton = $('<a class="pure-button" href="#">accept</a>');
-                acceptButton.on(
-                    "click", function (event) {
-                        acceptInvite(invitation.token, 'accepted')
-                    }
-                );
-                var declineButton = $('<a class="pure-button" href="#">decline</a>');
-                declineButton.on(
-                    "click", function (event) {
-                        updateInvite(invitation.token, 'declined')
-                    }
-                );
                 table.append(
                     '<tr><td>' + invitation.sentReceived
                     + '</td><td>' + invitation.token.substring(0, 12) + '...'
@@ -156,10 +182,15 @@
                     + '</td><td>' + invitation.remoteUserCloudId
                     + '</td><td>' + invitation.remoteUserEmail
                     + '</td><td class="button-holder" data-accept-invite="' + invitation.token + '">'
-                    + '</td><td class="button-holder" data-decline-invite="' + invitation.token + '">'
+                    + '</td><td class="button-holder" data-decline-revoke-invite="' + invitation.token + '">'
                     + '</td></tr>');
-                $('td[data-accept-invite="' + invitation.token + '"]').append(acceptButton);
-                $('td[data-decline-invite="' + invitation.token + '"]').append(declineButton);
+                if (invitation.sentReceived === 'received') {
+                    $('td[data-accept-invite="' + invitation.token + '"]').append(invitationButton('accepted', invitation.token));
+                    $('td[data-decline-revoke-invite="' + invitation.token + '"]').append(invitationButton('declined', invitation.token));
+                }
+                if (invitation.sentReceived === 'sent') {
+                    $('td[data-decline-revoke-invite="' + invitation.token + '"]').append(invitationButton('revoked', invitation.token));
+                }
             });
         };
 
