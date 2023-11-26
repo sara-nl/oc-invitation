@@ -106,7 +106,7 @@ class MeshRegistryController extends Controller
 
     /**
      * Returns the domain provider of this instance.
-     * 
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
      * @return DataResponse ['data' => :DomainProvider]
@@ -135,9 +135,9 @@ class MeshRegistryController extends Controller
 
     /**
      * Sets the domain of this instance's domain provider.
-     * 
+     *
      * @NoCSRFRequired
-     * 
+     *
      * @param $domain
      * @return DataResponse
      */

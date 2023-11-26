@@ -26,7 +26,7 @@ class DomainProviderMapper extends Mapper
 
     /**
      * Returns the domain provider with the specified domain.
-     * 
+     *
      * @param string $domain
      * @return DomainProvider
      * @throws NotFoundException

@@ -135,7 +135,7 @@ class MeshRegistryService
 
     /**
      * Sets the domain of this instance's domain provider and returns the domain provider object.
-     * 
+     *
      * @param string $domain
      * @return DomainProvider
      * @throws ServiceException
@@ -167,7 +167,7 @@ class MeshRegistryService
 
     /**
      * Returns the domain provider of this instance.
-     * 
+     *
      * @return DomainProvider
      * @throws NotFoundException
      */
@@ -177,9 +177,9 @@ class MeshRegistryService
     }
 
     /**
-     * Find and returns the domain provider with the specified domain, 
-     * or throws a NotFoundException if it could not be found. 
-     * 
+     * Find and returns the domain provider with the specified domain,
+     * or throws a NotFoundException if it could not be found.
+     *
      * @param $domain
      * @throws NotFoundException
      */
@@ -190,7 +190,7 @@ class MeshRegistryService
 
     /**
      * Adds the specified domain provider and returns it, also if it exists already.
-     * 
+     *
      * @param $domain
      * @return DomainProvider
      * @throws ServiceException in case of error
@@ -221,7 +221,7 @@ class MeshRegistryService
      * Checks:
      *  - domain should be without scheme
      *  - domain should not end with '/'
-     * 
+     *
      * @param string $domain
      * @return bool true if the domain validates, false otherwise
      */

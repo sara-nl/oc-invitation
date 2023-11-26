@@ -2,16 +2,13 @@
 
 namespace OCA\Invitation\Settings;
 
-
 use OCP\Settings\ISettings;
 use OCP\Template;
 
 class Admin implements ISettings
 {
-
-    public  function __construct()
+    public function __construct()
     {
-
     }
 
     /**
@@ -21,10 +18,10 @@ class Admin implements ISettings
      */
     public function getPanel()
     {
-		$template = new Template('invitation', 'settings/admin');
-		$template->assign('domain', );
-		$template->assign('allow_sharing_with_non_invited_users', $trustedServers->getAutoAddServers());
-		return $template;
+        $template = new Template('invitation', 'settings/admin');
+        // $template->assign('domain', );
+        // $template->assign('allow_sharing_with_non_invited_users', $trustedServers->getAutoAddServers());
+        return $template;
     }
 
     /**
