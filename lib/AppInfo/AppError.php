@@ -18,7 +18,7 @@ class AppError
     /* the invitation cannot be found */
     public const INVITATION_NOT_FOUND = 'INVITATION_NOT_FOUND';
 
-    /* create invitation errors */
+    /* Create invitation errors */
     /* unspecified create invitation error */
     public const CREATE_INVITATION_ERROR = 'CREATE_INVITATION_ERROR';
     /* the recipient's mail is required */
@@ -28,7 +28,7 @@ class AppError
     /* an invitation already exists */
     public const CREATE_INVITATION_EXISTS = 'CREATE_INVITATION_EXISTS';
 
-    /* handle recieved invitation errors */
+    /* Handle recieved invitation errors */
     /* unspecified handle invitation error */
     public const HANDLE_INVITATION_ERROR = 'HANDLE_INVITATION_ERROR';
     /* an invitation already exists */
@@ -42,11 +42,18 @@ class AppError
     /* The domain provider of the invitation is unknown */
     public const HANDLE_INVITATION_PROVIDER_UNKNOWN = 'HANDLE_INVITATION_PROVIDER_UNKNOWN';
 
-    /* unspecified error retrieving all providers */
+    /* Mesh Registry errors */
+    /* error retrieving all providers */
     public const MESH_REGISTRY_ALL_PROVIDERS_ERROR = 'MESH_REGISTRY_ALL_PROVIDERS_ERROR';
+    /* error adding the domain provider */
+    public const MESH_REGISTRY_ADD_PROVIDER_ERROR = 'MESH_REGISTRY_ADD_PROVIDER_ERROR';
+    /* error retrieving the domain provider */
+    public const MESH_REGISTRY_GET_PROVIDER_ERROR = 'MESH_REGISTRY_GET_PROVIDER_ERROR';
+    /* error setting the domain */
+    public const MESH_REGISTRY_SET_DOMAIN_ERROR = 'MESH_REGISTRY_SET_DOMAIN_ERROR';
 
-    /* ocm invite accepted errors */
-    /* ocm invite accepted unspecified error */
+    /* OCM invite errors */
+    /* invite accepted error */
     public const OCM_INVITE_ACCEPTED_ERROR = 'OCM_INVITE_ACCEPTED_ERROR';
     /* the invite cannot be found */
     public const OCM_INVITE_ACCEPTED_NOT_FOUND = 'OCM_INVITE_ACCEPTED_NOT_FOUND';

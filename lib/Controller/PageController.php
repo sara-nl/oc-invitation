@@ -6,7 +6,7 @@
 
 namespace OCA\Invitation\Controller;
 
-use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCP\AppFramework\Controller;
 use OCP\IRequest;
 

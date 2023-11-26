@@ -7,7 +7,7 @@
 namespace OCA\Invitation\Service;
 
 use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCP\ILogger;
 use OCP\Notification\INotification;
 use OCP\Notification\INotifier;

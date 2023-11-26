@@ -9,8 +9,9 @@ namespace OCA\Invitation\Controller;
 
 use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCA\Invitation\Service\NotFoundException;
+use OCA\Invitation\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -104,20 +105,79 @@ class MeshRegistryController extends Controller
     }
 
     /**
+     * Returns the domain provider of this instance.
+     * 
+     * @NoAdminRequired
+     * @NoCSRFRequired
+     * @return DataResponse ['data' => :DomainProvider]
+     */
+    public function domainProvider(): DataResponse
+    {
+        try {
+            $domainProvider = $this->meshRegistryService->getDomainProvider();
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'data' => $domainProvider
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (NotFoundException $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_GET_PROVIDER_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+    }
+
+    /**
+     * Sets the domain of this instance's domain provider.
+     * 
+     * @NoCSRFRequired
+     * 
+     * @param $domain
+     * @return DataResponse
+     */
+    public function setDomain(string $domain): DataResponse
+    {
+        try {
+            $domainProvider = $this->meshRegistryService->setDomain($domain);
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'data' => $domainProvider,
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (ServiceException $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_SET_DOMAIN_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+    }
+
+    /**
      * Returns all registered domain providers.
      *
      * @NoCSRFRequired
      * @PublicPage
-     * @return DataResponse
+     * @return DataResponse ['data' => [:DomainProvider](an array of DomainProvider objects)]
      */
-    public function providers(): DataResponse
+    public function domainProviders(): DataResponse
     {
         try {
             $providers = $this->meshRegistryService->allDomainProviders();
             return new DataResponse(
                 [
                     'success' => true,
-                    'providers' => $providers,
+                    'data' => $providers,
                 ],
                 Http::STATUS_OK,
             );
@@ -125,11 +185,22 @@ class MeshRegistryController extends Controller
             $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
-                    'success' => true,
+                    'success' => false,
                     'error_message' => AppError::MESH_REGISTRY_ALL_PROVIDERS_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
             );
         }
+    }
+
+    public function addDomainProvider(): DataResponse
+    {
+        return new DataResponse(
+            [
+                'success' => false,
+                'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
+            ],
+            Http::STATUS_NOT_FOUND,
+        );
     }
 }

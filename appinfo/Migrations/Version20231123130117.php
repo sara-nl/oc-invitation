@@ -1,19 +1,22 @@
 <?php
 
-namespace OCA\Invitation\Migration;
+namespace OCA\invitation\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use OCP\Migration\ISchemaMigration;
 
-class Version0001Date20231009154348 implements ISchemaMigration
+/**
+ * Auto-generated migration step: Please modify to your needs!
+ */
+class Version20231123130117 implements ISchemaMigration
 {
     private string $prefix;
 
     public function changeSchema(Schema $schema, array $options)
     {
-        $this->prefix = $options['mesh'];
-        if (!$schema->hasTable("{$this->prefix}invitations")) {
-            $table = $schema->createTable("{$this->prefix}invitations");
+        $this->prefix = $options['tablePrefix'];
+        if (!$schema->hasTable("{$this->prefix}test")) {
+            $table = $schema->createTable("{$this->prefix}test");
             $table->addColumn('id', 'integer', [
                 'autoincrement' => true,
                 'unsigned' => true,

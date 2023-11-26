@@ -23,7 +23,9 @@ return [
 
         // bespoke API - mesh registry
         ['name' => 'mesh_registry#forward_invite', 'url' => '/registry/forward-invite', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#providers', 'url' => '/registry/providers', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#domain_providers', 'url' => '/registry/domainproviders', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#domain_provider', 'url' => '/registry/domainprovider', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_domain', 'url' => '/registry/domainprovider', 'verb' => 'PUT'],
         // TODO: public info endpoint that returns relevant info of this mesh node/server
         //       returns: ... to decide
 

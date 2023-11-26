@@ -33,7 +33,10 @@
         <owncloud min-version="10" max-version="13"/>
     </dependencies>
 
-    <!-- FIXME: uncomment when migration works -->
+    <settings>
+        OCA\Invitation\Settings\Admin
+    </settings>
+
     <!-- <use-migrations>true</use-migrations> -->
 
 </info>

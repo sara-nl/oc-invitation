@@ -11,7 +11,7 @@ use OCA\Invitation\Federation\InvitationMapper;
 use OCA\Invitation\Federation\RemoteUserMapper;
 use OCA\Invitation\Service\InvitationNotifier;
 use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Federation\Service\MeshRegistryService;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 

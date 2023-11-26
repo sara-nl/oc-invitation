@@ -5,17 +5,23 @@
  *
  */
 
-namespace OCA\Invitation\Federation\Service;
+namespace OCA\Invitation\Service\MeshRegistry;
 
+use Exception;
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Federation\DomainProvider;
 use OCA\Invitation\Federation\DomainProviderMapper;
 use OCA\Invitation\Service\NotFoundException;
+use OCA\Invitation\Service\ServiceException;
 use OCP\IConfig;
+use OCP\ILogger;
 
 class MeshRegistryService
 {
     private string $appName;
     private IConfig $config;
     private DomainProviderMapper $domainProviderMapper;
+    private ILogger $logger;
 
     // TODO: move all this to a more appropriate class
     private const ENDPOINT_FORWARD_INVITE = '/registry/forward-invite';
@@ -39,6 +45,7 @@ class MeshRegistryService
         $this->appName = $appName;
         $this->config = $config;
         $this->domainProviderMapper = $domainProviderMapper;
+        $this->logger = \OC::$server->getLogger();
     }
 
     /**
@@ -116,7 +123,7 @@ class MeshRegistryService
     }
 
     /**
-     * Returns the domain of this mesh node as configured.
+     * Returns the domain of this instance's domain provider.
      *
      * @return string the domain
      */
@@ -124,6 +131,114 @@ class MeshRegistryService
     {
         $domain = $this->getAppValue('domain');
         return $domain;
+    }
+
+    /**
+     * Sets the domain of this instance's domain provider and returns the domain provider object.
+     * 
+     * @param string $domain
+     * @return DomainProvider
+     * @throws ServiceException
+     */
+    public function setDomain(string $domain): DomainProvider
+    {
+        if (!$this->isDomainValid($domain)) {
+            throw new ServiceException("Invalid domain '$domain'");
+        }
+
+        $domainProvider = $this->getDomainProvider();
+        if ($domainProvider->getDomain() === $domain) {
+            return $domainProvider;
+        }
+
+        // first: update the configuration domain property
+        $this->setAppValue('domain', $domain);
+
+        // next: update this instance's domain provider
+        $domainProvider->setDomain($domain);
+        try {
+            $this->domainProviderMapper->update($domainProvider);
+            return $domainProvider;
+        } catch (Exception $e) {
+            $this->logger->error("Unable to set the domain of this instance's domain provider to '$domain'.", ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException();
+        }
+    }
+
+    /**
+     * Returns the domain provider of this instance.
+     * 
+     * @return DomainProvider
+     * @throws NotFoundException
+     */
+    public function getDomainProvider(): DomainProvider
+    {
+        return $this->domainProviderMapper->getDomainProvider($this->getDomain());
+    }
+
+    /**
+     * Find and returns the domain provider with the specified domain, 
+     * or throws a NotFoundException if it could not be found. 
+     * 
+     * @param $domain
+     * @throws NotFoundException
+     */
+    public function findDomainProvider(string $domain): DomainProvider
+    {
+        return $this->domainProviderMapper->getDomainProvider($domain);
+    }
+
+    /**
+     * Adds the specified domain provider and returns it, also if it exists already.
+     * 
+     * @param $domain
+     * @return DomainProvider
+     * @throws ServiceException in case of error
+     */
+    public function addDomainProvider(string $domain): DomainProvider
+    {
+        if (!$this->isDomainValid($domain)) {
+            throw new ServiceException("Invalid domain '$domain'");
+        }
+        $domainProvider = null;
+        try {
+            $domainProvider = $this->findDomainProvider($domain);
+        } catch (NotFoundException $e) {
+            $this->logger->debug("Will create domain provider with domain '$domain'.", ['app' => InvitationApp::APP_NAME]);
+        }
+        if (isset($domainProvider)) {
+            return $domainProvider;
+        }
+        // FIXME: really insert it
+        $domainProvider = new DomainProvider();
+        $domainProvider->setId(100000);
+        $domainProvider->setDomain($domain);
+        return $domainProvider;
+    }
+
+    /**
+     * Very basic validation of the specified domain.
+     * Checks:
+     *  - domain should be without scheme
+     *  - domain should not end with '/'
+     * 
+     * @param string $domain
+     * @return bool true if the domain validates, false otherwise
+     */
+    private function isDomainValid(string $domain): bool
+    {
+        $url = parse_url($domain);
+        if (
+            $url === false
+            || isset($url['scheme'])
+        ) {
+            return false;
+        }
+        // check for some accidental characters left at beginning and end
+        if (strlen($domain) != strlen(trim($domain, ":/"))) {
+            return false;
+        }
+        return true;
     }
 
     /**

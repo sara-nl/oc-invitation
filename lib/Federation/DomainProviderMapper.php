@@ -25,6 +25,31 @@ class DomainProviderMapper extends Mapper
     }
 
     /**
+     * Returns the domain provider with the specified domain.
+     * 
+     * @param string $domain
+     * @return DomainProvider
+     * @throws NotFoundException
+     */
+    public function getDomainProvider(string $domain): DomainProvider
+    {
+        try {
+            $qb = $this->db->getQueryBuilder();
+            $result = $qb->select('*')
+                ->from(Schema::TABLE_DOMAINPROVIDERS, 'dp')
+                ->where($qb->expr()->eq('dp.' . Schema::DOMAINPROVIDER_DOMAIN, $qb->createNamedParameter($domain)))
+                ->execute()->fetchAssociative();
+            if (is_array($result)) {
+                return $this->createDomainProvider($result);
+            }
+            throw new NotFoundException("Error retrieving the domain provider with domain '$domain'");
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new NotFoundException("Error retrieving the domain provider with domain '$domain'");
+        }
+    }
+
+    /**
      * Returns all domain domain providers
      *
      * @return array
@@ -36,7 +61,7 @@ class DomainProviderMapper extends Mapper
             $qb = $this->db->getQueryBuilder();
             $qb->select('*')
                 ->from(Schema::TABLE_DOMAINPROVIDERS, 'dp');
-            return $this->getDomainProviders($qb->execute()->fetchAllAssociative());
+            return $this->createDomainProviders($qb->execute()->fetchAllAssociative());
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException('Error retrieving all domain providers');
@@ -48,7 +73,7 @@ class DomainProviderMapper extends Mapper
      * @param array $associativeArray
      * @return DomainProvider
      */
-    private function getDomainProvider(array $associativeArray): DomainProvider
+    private function createDomainProvider(array $associativeArray): DomainProvider
     {
         if (isset($associativeArray) && count($associativeArray) > 0) {
             $domainProvider = new DomainProvider();
@@ -65,12 +90,12 @@ class DomainProviderMapper extends Mapper
      * @param array $associativeArrays
      * @return array
      */
-    private function getDomainProviders(array $associativeArrays): array
+    private function createDomainProviders(array $associativeArrays): array
     {
         $domainProviders = [];
         if (isset($associativeArrays) && count($associativeArrays) > 0) {
             foreach ($associativeArrays as $associativeArray) {
-                array_push($domainProviders, $this->getDomainProvider($associativeArray));
+                array_push($domainProviders, $this->createDomainProvider($associativeArray));
             }
         }
         return $domainProviders;
