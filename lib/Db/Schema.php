@@ -59,5 +59,4 @@ class Schema
     public const TABLE_DOMAINPROVIDERS = 'mesh_domain_providers';
 
     public const DOMAINPROVIDER_DOMAIN = 'domain';
-    public const DOMAINPROVIDER_IS_LOCAL = 'is_local';
 }
