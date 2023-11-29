@@ -39,7 +39,8 @@ if (
         }
     );
     $app = \OC::$server->query(\OCA\Invitation\AppInfo\InvitationApp::class);
-    Util::addScript(InvitationApp::APP_NAME, 'invitation-notifications');
+    // TODO: consider reactivation when we can make the notification 'decline' button confirmation dialog to work
+    // Util::addScript(InvitationApp::APP_NAME, 'invitation-notifications');
 } else {
     \OC::$server->getLogger()->error('Error: not installed. Invitations app requires: Federated File Sharing app, Notifications app', ['app' => InvitationApp::APP_NAME]);
     $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {

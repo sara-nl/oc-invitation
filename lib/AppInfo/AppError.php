@@ -49,6 +49,8 @@ class AppError
     public const MESH_REGISTRY_ADD_PROVIDER_ERROR = 'MESH_REGISTRY_ADD_PROVIDER_ERROR';
     /* error retrieving the domain provider */
     public const MESH_REGISTRY_GET_PROVIDER_ERROR = 'MESH_REGISTRY_GET_PROVIDER_ERROR';
+    /* error getting the domain */
+    public const MESH_REGISTRY_GET_DOMAIN_ERROR = 'MESH_REGISTRY_GET_DOMAIN_ERROR';
     /* error setting the domain */
     public const MESH_REGISTRY_SET_DOMAIN_ERROR = 'MESH_REGISTRY_SET_DOMAIN_ERROR';
 

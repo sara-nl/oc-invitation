@@ -82,7 +82,7 @@ class InvitationController extends Controller
 
         $params = [
             MeshRegistryService::PARAM_NAME_TOKEN => $token,
-            MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getDomain(),
+            MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getDomainProvider()->getDomain(),
             MeshRegistryService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
         ];
 
@@ -122,7 +122,7 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
-        $invitation->setProviderDomain($this->meshRegistryService->getDomain());
+        $invitation->setProviderDomain($this->meshRegistryService->getDomainProvider()->getDomain());
         $invitation->setSenderCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(\OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
@@ -143,13 +143,14 @@ class InvitationController extends Controller
             $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            return new DataResponse(
-                [
-                    'success' => false,
-                    'error_message' => AppError::CREATE_INVITATION_ERROR,
-                ],
-                Http::STATUS_NOT_FOUND
-            );
+            // FIXME: just continue for now
+            // return new DataResponse(
+            //     [
+            //         'success' => false,
+            //         'error_message' => AppError::CREATE_INVITATION_ERROR,
+            //     ],
+            //     Http::STATUS_NOT_FOUND
+            // );
         }
 
         // when all's well set status to open and persist
@@ -229,7 +230,7 @@ class InvitationController extends Controller
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
         $invitation->setSenderName($name);
-        $invitation->setRecipientDomain($this->meshRegistryService->getDomain());
+        $invitation->setRecipientDomain($this->meshRegistryService->getDomainProvider()->getDomain());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
@@ -246,11 +247,11 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite?token=$token", 'GET');
+            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite/$token", 'POST');
 
         $declineAction = $notification->createAction();
         $declineAction->setLabel('decline')
-            ->setLink('/apps/' . InvitationApp::APP_NAME . "/#", 'GET');
+            ->setLink('/apps/' . InvitationApp::APP_NAME . "/decline-invite/$token", 'POST');
 
         $notification->setApp(InvitationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
@@ -299,7 +300,7 @@ class InvitationController extends Controller
             );
         }
 
-        $recipientDomain = $this->meshRegistryService->getDomain();
+        $recipientDomain = $this->meshRegistryService->getDomainProvider()->getDomain();
         $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
         $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
         $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();

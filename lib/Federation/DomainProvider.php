@@ -16,6 +16,7 @@ use OCP\AppFramework\Db\Entity;
  */
 class DomainProvider extends Entity implements JsonSerializable
 {
+    /** The domain that is provided */
     protected $domain;
 
     public function jsonSerialize()

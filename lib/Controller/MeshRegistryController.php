@@ -134,7 +134,36 @@ class MeshRegistryController extends Controller
     }
 
     /**
-     * Sets the domain of this instance's domain provider.
+     * Returnes this instance's domain.
+     *
+     * @NoCSRFRequired
+     *
+     * @return DataResponse
+     */
+    public function getDomain(): DataResponse
+    {
+        try {
+            $domain = $this->meshRegistryService->getDomain();
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'data' => $domain,
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (ServiceException $e) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_GET_DOMAIN_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+    }
+
+    /**
+     * Updates the domain of this instance's domain provider to the specified domain.
      *
      * @NoCSRFRequired
      *
@@ -144,11 +173,11 @@ class MeshRegistryController extends Controller
     public function setDomain(string $domain): DataResponse
     {
         try {
-            $domainProvider = $this->meshRegistryService->setDomain($domain);
+            $domain = $this->meshRegistryService->setDomain($domain);
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $domainProvider,
+                    'data' => $domain,
                 ],
                 Http::STATUS_OK,
             );
@@ -181,7 +210,7 @@ class MeshRegistryController extends Controller
                 ],
                 Http::STATUS_OK,
             );
-        } catch (NotFoundException $e) {
+        } catch (ServiceException $e) {
             $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
@@ -193,14 +222,64 @@ class MeshRegistryController extends Controller
         }
     }
 
-    public function addDomainProvider(): DataResponse
+    /**
+     * Adds a new domain provider with the specified domain.
+     *
+     * @NoCSRFRequired
+     *
+     * @param string $domain the domain of the new domain provider
+     * @return DataResponse [ ..., 'data' => :DomainProvider ]
+     */
+    public function addDomainProvider(string $domain): DataResponse
     {
-        return new DataResponse(
-            [
-                'success' => false,
-                'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
-            ],
-            Http::STATUS_NOT_FOUND,
-        );
+        try {
+            $domainProvider = $this->meshRegistryService->addDomainProvider($domain);
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'data' => $domainProvider,
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (ServiceException $e) {
+            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+    }
+
+    /**
+     * Adds the domain provider with the specified domain.
+     *
+     * @NoCSRFRequired
+     *
+     * @param string $domain the domain of the domain provider to delete
+     * @return DataResponse
+     */
+    public function deleteDomainProvider(string $domain): DataResponse
+    {
+        try {
+            $domainProvider = $this->meshRegistryService->deleteDomainProvider($domain);
+            return new DataResponse(
+                [
+                    'success' => isset($domainProvider) ? true : false,
+                ],
+                Http::STATUS_OK,
+            );
+        } catch (ServiceException $e) {
+            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
     }
 }

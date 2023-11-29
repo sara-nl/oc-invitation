@@ -1,3 +1,6 @@
+// TODO: This currently does not work. 
+// Consider reactivation when we can make the notification 'decline' button confirmation dialog to work
+
 (function (document, $) {
     $(document).ready(function () {
         let declineInvitationUrl = OC.generateUrl('/apps/invitation/decline-invite');
@@ -5,23 +8,19 @@
         $('body').on('OCA.Notification.Action', function (e) {
             if (e.notification.app === 'invitation') {
                 var token = e.notification.object_id;
-                var declineLink;
-                _.each(e.notification.actions, function (actionData) {
-                    if (actionData.label.toLowerCase() == 'decline') {
-                        declineLink = actionData.link;
-                    }
-                });
-
-                OC.dialogs.confirm(
-                    e.notification.subject + '\n'
-                    + 'Do you want to decline?',
-                    'Decline invitation?',
-                    function (confirmed) {
-                        if (confirmed) {
-                            response = declineInvitation(declineInvitationUrl, declineInvitationMethod, token);
+                // FIXME: both action routes may use the same method, so we should probably differentiate on the route instead
+                if (e.action.type === "PUT") {
+                    OC.dialogs.confirm(
+                        e.notification.subject + '\n'
+                        + 'Do you want to decline?',
+                        'Decline invitation?',
+                        function (confirmed) {
+                            if (confirmed) {
+                                response = declineInvitation(declineInvitationUrl, declineInvitationMethod, token);
+                            }
                         }
-                    }
-                );
+                    );
+                }
             }
         });
 

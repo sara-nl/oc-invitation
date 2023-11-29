@@ -52,13 +52,19 @@ class MeshRegistryService
      * Returns the full 'https://...host.../forward-invite' endpoint of this EFSS instance
      *
      * @return string
+     * @throws ServiceException
      */
     public function getFullForwardInviteEndpoint()
     {
-        $domain = $this->getDomain();
-        $appName = $this->appName;
-        $forwardInviteEndpoint = trim(self::ENDPOINT_FORWARD_INVITE, "/");
-        return "https://$domain/apps/$appName/$forwardInviteEndpoint";
+        try {
+            $domain = $this->getDomain();
+            $appName = $this->appName;
+            $forwardInviteEndpoint = trim(self::ENDPOINT_FORWARD_INVITE, "/");
+            return "https://$domain/apps/$appName/$forwardInviteEndpoint";
+        } catch (ServiceException $e) {
+            $this->logger->error("getFullForwardInviteEndpoint failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Could not retrieve full 'forward invite' endpoint.");
+        }
     }
 
     /**
@@ -79,10 +85,15 @@ class MeshRegistryService
      */
     public function getFullAcceptInviteEndpointURL(): string
     {
-        $host = $this->getDomain();
-        $appName = $this->appName;
-        $acceptInviteEndpoint = trim(self::ENDPOINT_ACCEPT_INVITE, "/");
-        return "https://$host/apps/$appName/$acceptInviteEndpoint";
+        try {
+            $host = $this->getDomain();
+            $appName = $this->appName;
+            $acceptInviteEndpoint = trim(self::ENDPOINT_ACCEPT_INVITE, "/");
+            return "https://$host/apps/$appName/$acceptInviteEndpoint";
+        } catch (ServiceException $e) {
+            $this->logger->error("getFullAcceptInviteEndpointURL failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Could not retrieve full 'accept invite' endpoint.");
+        }
     }
 
     /**
@@ -123,46 +134,45 @@ class MeshRegistryService
     }
 
     /**
-     * Returns the domain of this instance's domain provider.
+     * Returns the domain of the local (this instance's) domain provider.
      *
      * @return string the domain
+     * @throws ServiceException if the domain has not been set
      */
     public function getDomain(): string
     {
         $domain = $this->getAppValue('domain');
+        if (!isset($domain) || trim($domain) == "") {
+            throw new ServiceException('Domain is not set.');
+        }
         return $domain;
     }
 
     /**
-     * Sets the domain of this instance's domain provider and returns the domain provider object.
+     * Sets the domain of the local (this instance's) domain provider and returns the domain.
      *
      * @param string $domain
-     * @return DomainProvider
+     * @return string
      * @throws ServiceException
      */
-    public function setDomain(string $domain): DomainProvider
+    public function setDomain(string $domain): string
     {
         if (!$this->isDomainValid($domain)) {
             throw new ServiceException("Invalid domain '$domain'");
         }
 
-        $domainProvider = $this->getDomainProvider();
-        if ($domainProvider->getDomain() === $domain) {
-            return $domainProvider;
-        }
-
-        // first: update the configuration domain property
-        $this->setAppValue('domain', $domain);
-
-        // next: update this instance's domain provider
-        $domainProvider->setDomain($domain);
         try {
-            $this->domainProviderMapper->update($domainProvider);
-            return $domainProvider;
+            $domainProvider = $this->getDomainProvider();
+            $domainProvider->setDomain($domain);
+            $domainProvider = $this->domainProviderMapper->update($domainProvider);
+        } catch (NotFoundException $e) {
+            $this->logger->info("A local domain provider does not exist (yet). Setting the domain to '$domain'", ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
-            $this->logger->error("Unable to set the domain of this instance's domain provider to '$domain'.", ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException();
+            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Unable to set the domain to '$domain'.");
         }
+        $this->setAppValue('domain', $domain);
+        return $domain;
     }
 
     /**
@@ -173,7 +183,11 @@ class MeshRegistryService
      */
     public function getDomainProvider(): DomainProvider
     {
-        return $this->domainProviderMapper->getDomainProvider($this->getDomain());
+        try {
+            return $this->domainProviderMapper->getDomainProvider($this->getDomain());
+        } catch (ServiceException $e) {
+            throw new NotFoundException($e->getMessage());
+        }
     }
 
     /**
@@ -204,18 +218,41 @@ class MeshRegistryService
         try {
             $domainProvider = $this->findDomainProvider($domain);
         } catch (NotFoundException $e) {
-            $this->logger->debug("Will create domain provider with domain '$domain'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("Will create domain provider with domain '$domain'.", ['app' => InvitationApp::APP_NAME]);
         }
         if (isset($domainProvider)) {
             return $domainProvider;
         }
-        // FIXME: really insert it
         $domainProvider = new DomainProvider();
-        $domainProvider->setId(100000);
         $domainProvider->setDomain($domain);
-        return $domainProvider;
+        try {
+            return $this->domainProviderMapper->insert($domainProvider);
+        } catch (Exception $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error inserting the domain provider.');
+        }
     }
 
+    /**
+     * Deletes the domain provider with the specified domain.
+     *
+     * @param $domain
+     * @return DomainProvider the deleted entity
+     * @throws ServiceException in case of error
+     */
+    public function deleteDomainProvider(string $domain): DomainProvider
+    {
+        try {
+            $domainProvider = $this->domainProviderMapper->getDomainProvider($domain);
+            return $this->domainProviderMapper->delete($domainProvider);
+        } catch (NotFoundException $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error deleting the domain provider: Not found.');
+        } catch (Exception $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error deleting the domain provider.');
+        }
+    }
     /**
      * Very basic validation of the specified domain.
      * Checks:
@@ -227,6 +264,9 @@ class MeshRegistryService
      */
     private function isDomainValid(string $domain): bool
     {
+        if (!isset($domain) || trim($domain) === "") {
+            return false;
+        }
         $url = parse_url($domain);
         if (
             $url === false
@@ -245,14 +285,15 @@ class MeshRegistryService
      * Returns all domain providers of the mesh.
      *
      * @return array[DomainProvider] all domain providers
-     * @throws NotFoundException
+     * @throws ServiceException
      */
     public function allDomainProviders(): array
     {
         try {
             return $this->domainProviderMapper->allDomainProviders();
         } catch (NotFoundException $e) {
-            throw $e;
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error retrieving all domain providers.');
         }
     }
 
@@ -276,7 +317,7 @@ class MeshRegistryService
      *
      * @return mixed
      */
-    public function getAppValue($key)
+    private function getAppValue($key)
     {
         return $this->config->getAppValue($this->appName, $key);
     }
@@ -284,7 +325,7 @@ class MeshRegistryService
     /**
      * Sets the value of the specified application key.
      */
-    public function setAppValue($key, $value): void
+    private function setAppValue($key, $value): void
     {
         $this->config->setAppValue($this->appName, $key, $value);
     }
