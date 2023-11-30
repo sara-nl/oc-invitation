@@ -37,6 +37,6 @@
         OCA\Invitation\Settings\Admin
     </settings>
 
-    <use-migrations>true</use-migrations>
+    <!-- <use-migrations>true</use-migrations> -->
 
 </info>
