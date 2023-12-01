@@ -4,7 +4,7 @@
     <id>invitation</id>
     <name>Invitation App</name>
     <description>Invitation App</description>
-    <version>0.001</version>
+    <version>0.002</version>
     <!-- TODO: check licence-->
     <licence>mit</licence>
     <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
