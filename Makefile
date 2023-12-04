@@ -5,7 +5,7 @@ build_tools_directory=$(CURDIR)/build/tools
 source_build_directory=$(CURDIR)/build/artifacts/source
 source_package_name=$(source_build_directory)/$(app_name)
 appstore_build_directory=$(CURDIR)/build/artifacts/appstore
-appstore_package_name=$(appstore_build_directory)/${app_name}_${VERSION}
+appstore_package_name=$(appstore_build_directory)/$(app_name)_$(VERSION)
 
 # Code sniffing: PSR-12 is followed 
 # full check, gives all errors and warnings
