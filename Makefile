@@ -1,10 +1,11 @@
 app_name=invitation
+VERSION=please_set_version
 app_dir_name=$(notdir $(CURDIR))
 build_tools_directory=$(CURDIR)/build/tools
 source_build_directory=$(CURDIR)/build/artifacts/source
 source_package_name=$(source_build_directory)/$(app_name)
 appstore_build_directory=$(CURDIR)/build/artifacts/appstore
-appstore_package_name=$(appstore_build_directory)/$(app_name)
+appstore_package_name=$(appstore_build_directory)/${app_name}_${VERSION}
 
 # Code sniffing: PSR-12 is followed 
 # full check, gives all errors and warnings
