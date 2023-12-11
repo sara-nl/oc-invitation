@@ -17,26 +17,26 @@
 
 
     <documentation>
-    	<user>https://github.com/SURFnet/oc-invitation/README.md</user>
-        <admin>https://github.com/SURFnet/oc-invitation/README.md</admin>
-        <developer>https://github.com/SURFnet/oc-invitation/README.md</developer>
+    	<user>https://github.com/sara-nl/oc-invitation/tree/main#readme</user>
+        <admin>https://github.com/sara-nl/oc-invitation/tree/main#readme</admin>
+        <developer>https://github.com/sara-nl/oc-invitation/tree/main#readme</developer>
     </documentation>
 
 
     <author>Antoon Prins</author>
     <namespace>Invitation</namespace>
-    <website>https://github.com/SURFnet/oc-invitation</website>
-    <bugs>https://github.com/SURFnet/oc-invitation/issues</bugs>
-    <repository type="git">https://github.com/SURFnet/oc-invitation.git</repository>
+    <website>https://github.com/sara-nl/oc-invitation</website>
+    <bugs>https://github.com/sara-nl/oc-invitation/issues</bugs>
+    <repository type="git">https://github.com/sara-nl/oc-invitation.git</repository>
 
     <dependencies>
         <owncloud min-version="10" max-version="13"/>
     </dependencies>
 
     <settings>
-        OCA\Invitation\Settings\Admin
+        <admin>OCA\Invitation\Settings\Admin</admin>
     </settings>
 
-    <use-migrations>true</use-migrations>
+    <!-- <use-migrations>true</use-migrations> -->
 
 </info>

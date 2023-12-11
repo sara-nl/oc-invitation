@@ -32,7 +32,11 @@ return [
         ['name' => 'mesh_registry#delete_domain_provider',  'url' => '/registry/domainprovider', 'verb' => 'DELETE'],
         ['name' => 'mesh_registry#get_domain',              'url' => '/registry/domain', 'verb' => 'GET'],
         // assumes the domain key exists
-        ['name' => 'mesh_registry#set_domain',              'url' => '/registry/domain/{domain}', 'verb' => 'PUT'],
+        ['name' => 'mesh_registry#set_domain',              'url' => '/registry/domain', 'verb' => 'PUT'],
+        [
+            'name' => 'mesh_registry#set_allow_sharing_with_invited_users_only',
+            'url' => 'service-provider/share-with-invited-users-only', 'verb' => 'PUT'
+        ],
         // TODO: ... public info endpoint that returns relevant info of this mesh node/server
         //       returns: ... to decide
 

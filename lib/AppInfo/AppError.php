@@ -53,6 +53,8 @@ class AppError
     public const MESH_REGISTRY_GET_DOMAIN_ERROR = 'MESH_REGISTRY_GET_DOMAIN_ERROR';
     /* error setting the domain */
     public const MESH_REGISTRY_SET_DOMAIN_ERROR = 'MESH_REGISTRY_SET_DOMAIN_ERROR';
+    /* error setting the allow_sharing_with_invited_users_only config param */
+    public const MESH_REGISTRY_SET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR = 'MESH_REGISTRY_SET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR';
 
     /* OCM invite errors */
     /* invite accepted error */

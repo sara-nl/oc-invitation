@@ -74,7 +74,7 @@ class RemoteUserService implements IRemoteShareesSearch
                 ]
             ];
             if (
-                $this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_NON_INVITED_USERS)
+                $this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)
                 && strpos($search, '@') !== false
                 && count($remoteUsers) < 1
             ) {

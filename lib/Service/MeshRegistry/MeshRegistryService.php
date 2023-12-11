@@ -313,6 +313,28 @@ class MeshRegistryService
     }
 
     /**
+     * Set whether it is allowed to share with invited users only.
+     * 
+     * @param bool $allowSharingWithInvitedUsersOnly
+     * @return bool the new value
+     */
+    public function setAllowSharingWithInvitedUsersOnly(bool $allow): bool
+    {
+        $this->setAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $allow ? 'yes' : 'no');
+        return $this->getAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY) === 'yes';
+    }
+
+    /**
+     * Returns whether it is allowed to share with invited users only.
+     * 
+     * @return bool
+     */
+    public function getAllowSharingWithInvitedUsersOnly(): bool
+    {
+        return strtolower($this->getAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === 'yes';
+    }
+
+    /**
      * Returns the value of the specified application key.
      *
      * @return mixed

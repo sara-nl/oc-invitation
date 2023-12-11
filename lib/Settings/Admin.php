@@ -2,13 +2,21 @@
 
 namespace OCA\Invitation\Settings;
 
+use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
+use OCP\ILogger;
 use OCP\Settings\ISettings;
 use OCP\Template;
 
 class Admin implements ISettings
 {
-    public function __construct()
+    private MeshRegistryService $meshRegistryService;
+    private ILogger $logger;
+
+    public function __construct(MeshRegistryService $meshRegistryService)
     {
+        $this->meshRegistryService = $meshRegistryService;
+        $this->logger = \OC::$server->getLogger();
     }
 
     /**
@@ -19,8 +27,8 @@ class Admin implements ISettings
     public function getPanel()
     {
         $template = new Template('invitation', 'settings/admin');
-        // $template->assign('domain', );
-        // $template->assign('allow_sharing_with_non_invited_users', $trustedServers->getAutoAddServers());
+        $template->assign('domain', $this->meshRegistryService->getDomain());
+        $template->assign(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $this->meshRegistryService->getAllowSharingWithInvitedUsersOnly());
         return $template;
     }
 
@@ -31,7 +39,7 @@ class Admin implements ISettings
      */
     public function getSectionID(): string
     {
-        return 'invitation';
+        return 'sharing';
     }
 
     /**
@@ -41,6 +49,6 @@ class Admin implements ISettings
      */
     public function getPriority(): int
     {
-        return "20";
+        return 30;
     }
 }

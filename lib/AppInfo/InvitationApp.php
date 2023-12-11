@@ -19,7 +19,7 @@ class InvitationApp extends App
 {
     public const APP_NAME = 'invitation';
 
-    public const CONFIG_ALLOW_SHARING_WITH_NON_INVITED_USERS = 'allow_sharing_with_non_invited_users';
+    public const CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY = 'allow_sharing_with_invited_users_only';
 
     public function __construct()
     {

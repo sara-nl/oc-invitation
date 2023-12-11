@@ -7,6 +7,7 @@
 
 namespace OCA\Invitation\Controller;
 
+use Exception;
 use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
@@ -279,6 +280,37 @@ class MeshRegistryController extends Controller
                     'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
+            );
+        }
+    }
+
+    /**
+     * Whether only sharing with invited users is allowed.
+     * 
+     * @NoCSRFRequired
+     * 
+     * @param bool $allow
+     * @return DataResponse
+     */
+    public function setAllowSharingWithInvitedUsersOnly(bool $allow): DataResponse
+    {
+        try {
+            $result = $this->meshRegistryService->setAllowSharingWithInvitedUsersOnly(boolval($allow));
+            return new DataResponse(
+                [
+                    'success' => true,
+                    'data' => $result,
+                ],
+                Http::STATUS_OK
+            );
+        } catch (Exception $e) {
+            $this->logger->error("Unable to 'set allow_sharing_with_invited_users_only' config param. " . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_SET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR
+                ],
+                Http::STATUS_NOT_FOUND
             );
         }
     }
