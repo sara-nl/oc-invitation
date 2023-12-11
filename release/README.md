@@ -8,4 +8,4 @@ Go into the `release` folder and execute:
 
 This will generate from the _some_branch_ branch something like _invitation_version_number.tar_ in the `build` folder.
 
-This file can now used in a release, or/and be un-tarred straight into the `apps` folder and the app should be ready.
+This file can now be used in a release, or/and be extracted after which you can copy the `invitation` folder straight into the `apps` folder. The app should then be ready to be activated.

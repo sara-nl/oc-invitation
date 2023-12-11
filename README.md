@@ -16,6 +16,15 @@ This app gives an enhanced federated sharing user experience by implementing an 
 #### Development
 * [How to build the app](#build-the-app)
 
+#### Contributing
+Please run `make php-codesniffer-errors` and fix the errors before committing to the repo.
+
+For your convenience `make php-codesniffer-errors-fix` will take care of most errors.
+
+
+#### CI/CD
+* [Building a release .tar file](release/README.md)
+
 #### Installation and running the app
 After building extract `build/artifacts/appstore/invitation.tar.gz` and place the `invitation` folder into the `app` folder of your owncloud instance.
 
