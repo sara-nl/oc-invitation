@@ -314,7 +314,7 @@ class MeshRegistryService
 
     /**
      * Set whether it is allowed to share with invited users only.
-     * 
+     *
      * @param bool $allowSharingWithInvitedUsersOnly
      * @return bool the new value
      */
@@ -326,7 +326,7 @@ class MeshRegistryService
 
     /**
      * Returns whether it is allowed to share with invited users only.
-     * 
+     *
      * @return bool
      */
     public function getAllowSharingWithInvitedUsersOnly(): bool

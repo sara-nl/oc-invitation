@@ -286,9 +286,9 @@ class MeshRegistryController extends Controller
 
     /**
      * Whether only sharing with invited users is allowed.
-     * 
+     *
      * @NoCSRFRequired
-     * 
+     *
      * @param bool $allow
      * @return DataResponse
      */
