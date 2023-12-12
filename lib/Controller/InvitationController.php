@@ -77,19 +77,19 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
-        // generate the token
-        $token = Uuid::uuid4();
-
-        $params = [
-            MeshRegistryService::PARAM_NAME_TOKEN => $token,
-            MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getDomainProvider()->getDomain(),
-            MeshRegistryService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
-        ];
-
-        // Check for existing open and accepted invitations for the same recipient email
-        // Note that accepted invitations might have another recipient's email set, so there might still already be an existing invitation
-        // but this will be dealt with upon acceptance of this new invitation
         try {
+            // generate the token
+            $token = Uuid::uuid4();
+
+            $params = [
+                MeshRegistryService::PARAM_NAME_TOKEN => $token,
+                MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getInvitationServiceProvider()->getDomain(),
+                MeshRegistryService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
+            ];
+
+            // Check for existing open and accepted invitations for the same recipient email
+            // Note that accepted invitations might have another recipient's email set, so there might still already be an existing invitation
+            // but this will be dealt with upon acceptance of this new invitation
             $fieldsAndValues = [];
             array_push($fieldsAndValues, [Schema::INVITATION_SENDER_CLOUD_ID => \OC::$server->getUserSession()->getUser()->getCloudId()]);
             array_push($fieldsAndValues, [Schema::INVITATION_RECIPIENT_EMAIL => $email]);
@@ -122,7 +122,7 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
-        $invitation->setProviderDomain($this->meshRegistryService->getDomainProvider()->getDomain());
+        $invitation->setProviderDomain($this->meshRegistryService->getInvitationServiceProvider()->getDomain());
         $invitation->setSenderCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(\OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
@@ -207,7 +207,7 @@ class InvitationController extends Controller
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
-        if (!$this->meshRegistryService->isKnowDomainProvider($providerDomain)) {
+        if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerDomain)) {
             \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
@@ -230,7 +230,7 @@ class InvitationController extends Controller
         $invitation->setToken($token);
         $invitation->setProviderDomain($providerDomain);
         $invitation->setSenderName($name);
-        $invitation->setRecipientDomain($this->meshRegistryService->getDomainProvider()->getDomain());
+        $invitation->setRecipientDomain($this->meshRegistryService->getInvitationServiceProvider()->getDomain());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
@@ -300,7 +300,7 @@ class InvitationController extends Controller
             );
         }
 
-        $recipientDomain = $this->meshRegistryService->getDomainProvider()->getDomain();
+        $recipientDomain = $this->meshRegistryService->getInvitationServiceProvider()->getDomain();
         $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
         $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
         $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
