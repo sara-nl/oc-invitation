@@ -25,6 +25,7 @@ php-codesniffer-errors-fix:
 	$(CURDIR)/vendor/bin/phpcbf appinfo/ lib/ templates/ --standard=PSR12
 
 # Builds the source package for the app store, ignores php and js tests
+# command: make version={version_number} buildapp
 .PHONY: buildapp
 buildapp:
 	rm -rf $(appstore_build_directory)
