@@ -17,7 +17,7 @@ Depends on the following apps: _Federated File Sharing_, _Notifications_
 #### Building and running locally
 Clone the project. The app runs in Owncloud so have a local Owncloud instance running. To deploy the app in your local Owncloud instance build it by first running `composer` from the project root folder as you would for any php project. This will create the `vendor` dependencies folder.<br>
 Next build the project by executing the command: `make version={version_number} buildapp`<br>
-This will create the `invitation_version_number.tar.gz` file. After extracting you should place the resulting `invitation` folder in the `apps` folder of your local Owncloud instance. This should make Owncloud aware of the app.<br>
+This will create the `invitation_version_number.tar.gz` file in the `build/artifacts/app` folder. After extracting you should place the resulting `invitation` folder in the `apps` folder of your local Owncloud instance. This should make Owncloud aware of the app.<br>
 Now you can activate it and start experimenting. For a full experience you should setup 2 instances between which you can send invitations and create federated shares.
 
 #### Contributing
