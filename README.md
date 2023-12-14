@@ -2,7 +2,9 @@
 
 ---
 ### Enhanced federated sharing between Owncloud instances.
-This app gives an enhanced federated sharing user experience by implementing an Invitation Workflow. Through a simple invitation by email to a user of another owncloud instance the federated user (cloud) IDs are automatically exchanged and saved on each other's systems. From thereon both users can easily start federated sharing with each other via the regular file sharing dialog.
+This app gives an enhanced federated sharing user experience by implementing an Invitation Workflow. Through a simple invitation by email to a user of another owncloud instance the federated user (cloud) IDs are automatically exchanged and saved on each other's systems. From thereon both users can easily start federated sharing with each other via the regular file sharing dialog, because the share dialog will also search for and display invited remote users.<br><br>
+![Invited remote user Lex](img/invited-remote-user-Lex.png "Invited remote user Lex")
+Fig. 1 Invited remote user Lex. 
 <br>
 <br>
 #### Dependencies: 
@@ -40,4 +42,5 @@ To do ...
 
 ---
 ### Invitation Workflow
-![Invitation Workflow](invitation-flow-user-info-exchange.png "Invitation Workflow") 
+![Invitation Workflow](img/invitation-flow-user-info-exchange.png "Invitation Workflow")
+Fig.2 The invitation workflow as it is implemented.
