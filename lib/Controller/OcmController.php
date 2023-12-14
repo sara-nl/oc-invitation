@@ -43,7 +43,7 @@ class OcmController extends Controller
      *
      * @NoCSRFRequired
      * @PublicPage
-     * @param string $recipientProvider maps to recipient_domain in the Invitation entity
+     * @param string $recipientProvider maps to recipient_endpoint in the Invitation entity
      * @param string $token the invite token
      * @param string $userID the recipient cloud ID
      * @param string $email the recipient email
@@ -57,7 +57,7 @@ class OcmController extends Controller
         string $email = '',
         string $name = ''
     ): DataResponse {
-        if ($recipientProvider == '') {
+        if (trim($recipientProvider) == '') {
             return new DataResponse(
                 [
                     'success' => false,
@@ -147,7 +147,7 @@ class OcmController extends Controller
         // update the invitation with the receiver's info
         $updateResult = $this->invitationService->update([
             Schema::VINVITATION_TOKEN => $invitation->getToken(),
-            Schema::VINVITATION_RECIPIENT_DOMAIN => $recipientProvider,
+            Schema::VINVITATION_RECIPIENT_ENDPOINT => $recipientProvider,
             Schema::VINVITATION_RECIPIENT_CLOUD_ID => $userID,
             Schema::VINVITATION_RECIPIENT_EMAIL => $email,
             Schema::VINVITATION_RECIPIENT_NAME => $name,

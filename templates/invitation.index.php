@@ -5,7 +5,7 @@ use OCA\Invitation\AppInfo\InvitationApp;
 $appName = InvitationApp::APP_NAME;
 // FIXME: decide whether the user display name is appropriate (as default)
 $userDisplayName = \OC::$server->getUserSession()->getUser()->getDisplayName();
-
+script($appName, 'inv');
 script($appName, 'invitation');
 style($appName, 'pure-min-css-3.0.0');
 style($appName, 'invitation');

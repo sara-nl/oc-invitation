@@ -83,7 +83,7 @@ class InvitationController extends Controller
 
             $params = [
                 MeshRegistryService::PARAM_NAME_TOKEN => $token,
-                MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $this->meshRegistryService->getInvitationServiceProvider()->getDomain(),
+                MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT => $this->meshRegistryService->getInvitationServiceProvider()->getEndpoint(),
                 MeshRegistryService::PARAM_NAME_NAME => \OC::$server->getUserSession()->getUser()->getDisplayName()
             ];
 
@@ -122,7 +122,7 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
-        $invitation->setProviderDomain($this->meshRegistryService->getInvitationServiceProvider()->getDomain());
+        $invitation->setProviderEndpoint($this->meshRegistryService->getInvitationServiceProvider()->getEndpoint());
         $invitation->setSenderCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setSenderEmail(\OC::$server->getUserSession()->getUser()->getEMailAddress());
         $invitation->setRecipientEmail($email);
@@ -186,11 +186,11 @@ class InvitationController extends Controller
      * @NoAdminRequired
      * @NoCSRFRequired
      * @param string $token the token
-     * @param string $senderDomain the domain of the sender
+     * @param string $senderEndpoint the endpoint of the sender
      * @param string $senderEmail the email of the sender
      * @return RedirectResponse
      */
-    public function handleInvite(string $token = '', string $providerDomain = '', string $name = ''): RedirectResponse
+    public function handleInvite(string $token = '', string $providerEndpoint = '', string $name = ''): RedirectResponse
     {
         $urlGenerator = \OC::$server->getURLGenerator();
 
@@ -198,8 +198,8 @@ class InvitationController extends Controller
             \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
-        if ($providerDomain == '') {
-            \OC::$server->getLogger()->error('Invite is missing the provider domain.', ['app' => InvitationApp::APP_NAME]);
+        if ($providerEndpoint == '') {
+            \OC::$server->getLogger()->error('Invite is missing the invitation service provider endpoint.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
         if ($name == '') {
@@ -207,8 +207,8 @@ class InvitationController extends Controller
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
-        if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerDomain)) {
-            \OC::$server->getLogger()->error('Provider domain is unknown.', ['app' => InvitationApp::APP_NAME]);
+        if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerEndpoint)) {
+            \OC::$server->getLogger()->error('Invitation service provider endpoint is unknown.', ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
@@ -228,9 +228,9 @@ class InvitationController extends Controller
         $invitation = new Invitation();
         $invitation->setUserCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setToken($token);
-        $invitation->setProviderDomain($providerDomain);
+        $invitation->setProviderEndpoint($providerEndpoint);
         $invitation->setSenderName($name);
-        $invitation->setRecipientDomain($this->meshRegistryService->getInvitationServiceProvider()->getDomain());
+        $invitation->setRecipientEndpoint($this->meshRegistryService->getInvitationServiceProvider()->getEndpoint());
         $invitation->setRecipientCloudId(\OC::$server->getUserSession()->getUser()->getCloudId());
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_OPEN);
@@ -260,7 +260,7 @@ class InvitationController extends Controller
             ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token)
             ->setSubject('invitation', [
                 MeshRegistryService::PARAM_NAME_TOKEN => $token,
-                MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN => $providerDomain,
+                MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT => $providerEndpoint,
                 MeshRegistryService::PARAM_NAME_NAME => $name,
             ])
             ->addAction($acceptAction)
@@ -283,75 +283,88 @@ class InvitationController extends Controller
      */
     public function acceptInvite(string $token = ''): DataResponse
     {
-        if ($token == '') {
-            return new DataResponse(
-                ['error_message' => 'sender token missing'],
-                Http::STATUS_NOT_FOUND
-            );
-        }
-
-        $invitation = null;
         try {
-            $invitation = $this->invitationService->findByToken($token);
-        } catch (NotFoundException $e) {
-            return new DataResponse(
-                ['error_message' => 'acceptInvite failed'],
-                Http::STATUS_NOT_FOUND
+            if ($token == '') {
+                return new DataResponse(
+                    ['error_message' => 'sender token missing'],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
+
+            $invitation = null;
+            try {
+                $invitation = $this->invitationService->findByToken($token);
+            } catch (NotFoundException $e) {
+                return new DataResponse(
+                    ['error_message' => 'acceptInvite failed'],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
+
+            $recipientEndpoint = $this->meshRegistryService->getEndpoint();
+            $this->logger->debug(" recipientEndpoint (this endpoint) = $recipientEndpoint");
+            $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
+            $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
+            $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
+            $params = [
+                MeshRegistryService::PARAM_NAME_RECIPIENT_PROVIDER => $recipientEndpoint,
+                MeshRegistryService::PARAM_NAME_TOKEN => $token,
+                MeshRegistryService::PARAM_NAME_USER_ID => $recipientCloudID,
+                MeshRegistryService::PARAM_NAME_EMAIL => $recipientEmail,
+                MeshRegistryService::PARAM_NAME_NAME => $recipientName,
+            ];
+
+            $url = $this->meshRegistryService->getFullInviteAcceptedEndpointURL($invitation->getProviderEndpoint());
+            $httpClient = new HttpClient();
+            // FIXME: in case of error it seems that $response['response'] is not set, we need to check for that.
+            $response = $httpClient->curlPost($url, $params);
+            $resArray = (array)$response['response'];
+
+            if (
+                $response['success'] == false
+                || $this->verifiedInviteAcceptedResponse($resArray) == false
+            ) {
+                $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                return new DataResponse(
+                    ['error_message' => 'Failed to accept the invitation'],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
+
+            // check if there is not already an accepted invitation forremote user, and if there is decline this invitation
+
+            // all's well, update the invitation
+            $updateResult = $this->invitationService->update(
+                [
+                    Schema::INVITATION_TOKEN => $invitation->getToken(),
+                    Schema::INVITATION_RECIPIENT_ENDPOINT => $recipientEndpoint,
+                    Schema::INVITATION_RECIPIENT_EMAIL => $recipientEmail,
+                    Schema::INVITATION_RECIPIENT_NAME => $recipientName,
+                    Schema::INVITATION_SENDER_CLOUD_ID => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
+                    Schema::INVITATION_SENDER_EMAIL => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
+                    Schema::INVITATION_SENDER_NAME => $resArray[MeshRegistryService::PARAM_NAME_NAME],
+                    Schema::INVITATION_STATUS => Invitation::STATUS_ACCEPTED,
+                ],
+                true
             );
-        }
-
-        $recipientDomain = $this->meshRegistryService->getInvitationServiceProvider()->getDomain();
-        $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
-        $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
-        $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
-        $params = [
-            MeshRegistryService::PARAM_NAME_RECIPIENT_PROVIDER => $recipientDomain,
-            MeshRegistryService::PARAM_NAME_TOKEN => $token,
-            MeshRegistryService::PARAM_NAME_USER_ID => $recipientCloudID,
-            MeshRegistryService::PARAM_NAME_EMAIL => $recipientEmail,
-            MeshRegistryService::PARAM_NAME_NAME => $recipientName,
-        ];
-
-        $url = $this->meshRegistryService->getFullInviteAcceptedEndpointURL($invitation->getProviderDomain());
-        $httpClient = new HttpClient();
-        $response = $httpClient->curlPost($url, $params);
-        $resArray = (array)$response['response'];
-
-        if (
-            $response['success'] == false
-            || $this->verifiedInviteAcceptedResponse($resArray) == false
-        ) {
-            $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
-            return new DataResponse(
-                ['error_message' => 'Failed to accept the invitation'],
-                Http::STATUS_NOT_FOUND
-            );
-        }
-
-        // check if there is not already an accepted invitation forremote user, and if there is decline this invitation
-
-        // all's well, update the invitation
-        $updateResult = $this->invitationService->update(
-            [
-                Schema::INVITATION_TOKEN => $invitation->getToken(),
-                Schema::INVITATION_RECIPIENT_DOMAIN => $recipientDomain,
-                Schema::INVITATION_RECIPIENT_EMAIL => $recipientEmail,
-                Schema::INVITATION_RECIPIENT_NAME => $recipientName,
-                Schema::INVITATION_SENDER_CLOUD_ID => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
-                Schema::INVITATION_SENDER_EMAIL => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
-                Schema::INVITATION_SENDER_NAME => $resArray[MeshRegistryService::PARAM_NAME_NAME],
-                Schema::INVITATION_STATUS => Invitation::STATUS_ACCEPTED,
-            ],
-            true
-        );
-        if ($updateResult == false) {
-            $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => InvitationApp::APP_NAME]);
+            if ($updateResult == false) {
+                $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => InvitationApp::APP_NAME]);
+                return new DataResponse(
+                    [
+                        'success' => false,
+                        'error_message' => 'Failed to accept the invitation'
+                    ],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_message' => 'Failed to accept the invitation'
+                    'error_message' => AppError::ERROR,
                 ],
-                Http::STATUS_NOT_FOUND
+                Http::STATUS_NOT_FOUND,
             );
         }
 
@@ -395,13 +408,7 @@ class InvitationController extends Controller
 
             if ($updateResult == true) {
                 // remove notification
-                $manager = \OC::$server->getNotificationManager();
-                $notification = $manager->createNotification();
-                $notification
-                    ->setApp(InvitationApp::APP_NAME)
-                    ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
-                    ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
-                $manager->markProcessed($notification);
+                $this->removeInvitationNotification($token);
 
                 return new DataResponse(
                     [
@@ -425,6 +432,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -433,6 +441,24 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         }
+    }
+
+    /**
+     * Removes the notification that is associated with the invitation with specified token.
+     *
+     * @param string $token
+     * @return void
+     */
+    private function removeInvitationNotification(string $token): void
+    {
+        $this->logger->debug(" - removing notification for invitation with token '$token'");
+        $manager = \OC::$server->getNotificationManager();
+        $notification = $manager->createNotification();
+        $notification
+            ->setApp(InvitationApp::APP_NAME)
+            ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
+            ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
+        $manager->markProcessed($notification);
     }
 
     /**
@@ -576,8 +602,14 @@ class InvitationController extends Controller
     }
 
     /**
+     * Update the invitation. Only the status can be updated.
+     *
      * @NoAdminRequired
      * @NoCSRFRequired
+     *
+     * @param string $token the token of the invitation
+     * @param string $status the new status
+     * @return DataResponse
      */
     public function update(string $token, string $status): DataResponse
     {
@@ -594,6 +626,14 @@ class InvitationController extends Controller
             Schema::INVITATION_TOKEN => $token,
             Schema::INVITATION_STATUS => $status,
         ]);
+
+        if (
+            $status === Invitation::STATUS_DECLINED
+            || $status === Invitation::STATUS_REVOKED
+        ) {
+            // remove possible associated notification
+            $this->removeInvitationNotification($token);
+        }
 
         if ($result === true) {
             return new DataResponse(

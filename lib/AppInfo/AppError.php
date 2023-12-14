@@ -35,26 +35,38 @@ class AppError
     public const HANDLE_INVITATION_EXISTS = 'HANDLE_INVITATION_EXISTS';
     /* invitation is missing the token */
     public const HANDLE_INVITATION_MISSING_TOKEN = 'HANDLE_INVITATION_MISSING_TOKEN';
-    /* invitation is missing the provider domain */
-    public const HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN = 'HANDLE_INVITATION_MISSING_PROVIDER_DOMAIN';
+    /* invitation is missing the provider endpoint */
+    public const HANDLE_INVITATION_MISSING_PROVIDER_ENDPOINT = 'HANDLE_INVITATION_MISSING_PROVIDER_ENDPOINT';
     /* invitation is missing the sender name */
     public const HANDLE_INVITATION_MISSING_SENDER_NAME = 'HANDLE_INVITATION_MISSING_SENDER_NAME';
-    /* The domain provider of the invitation is unknown */
+    /* The invitation service provider of the invitation is unknown */
     public const HANDLE_INVITATION_PROVIDER_UNKNOWN = 'HANDLE_INVITATION_PROVIDER_UNKNOWN';
 
     /* Mesh Registry errors */
     /* error retrieving all providers */
     public const MESH_REGISTRY_ALL_PROVIDERS_ERROR = 'MESH_REGISTRY_ALL_PROVIDERS_ERROR';
-    /* error adding the domain provider */
+    /* error adding the invitation service provider */
     public const MESH_REGISTRY_ADD_PROVIDER_ERROR = 'MESH_REGISTRY_ADD_PROVIDER_ERROR';
-    /* error retrieving the domain provider */
+    /* error deleting the invitation service provider */
+    public const MESH_REGISTRY_DELETE_PROVIDER_ERROR = 'MESH_REGISTRY_DELETE_PROVIDER_ERROR';
+    /* error retrieving the invitation service provider */
     public const MESH_REGISTRY_GET_PROVIDER_ERROR = 'MESH_REGISTRY_GET_PROVIDER_ERROR';
-    /* error getting the domain */
-    public const MESH_REGISTRY_GET_DOMAIN_ERROR = 'MESH_REGISTRY_GET_DOMAIN_ERROR';
-    /* error setting the domain */
-    public const MESH_REGISTRY_SET_DOMAIN_ERROR = 'MESH_REGISTRY_SET_DOMAIN_ERROR';
+    /* error getting the endpoint */
+    public const MESH_REGISTRY_GET_ENDPOINT_ERROR = 'MESH_REGISTRY_GET_ENDPOINT_ERROR';
+    /* error setting the name */
+    public const MESH_REGISTRY_SET_NAME_ERROR = 'MESH_REGISTRY_SET_NAME_ERROR';
+    /* error getting the name */
+    public const MESH_REGISTRY_GET_NAME_ERROR = 'MESH_REGISTRY_GET_NAME_ERROR';
+    /* error setting the endpoint */
+    public const MESH_REGISTRY_SET_ENDPOINT_ERROR = 'MESH_REGISTRY_SET_ENDPOINT_ERROR';
     /* error setting the allow_sharing_with_invited_users_only config param */
     public const MESH_REGISTRY_SET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR = 'MESH_REGISTRY_SET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR';
+    /* error getting the allow_sharing_with_invited_users_only config param */
+    public const MESH_REGISTRY_GET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR = 'MESH_REGISTRY_GET_ALLOW_SHARING_WITH_INVITED_USERS_ONLY_ERROR';
+    /* error updating the invitation service provider, endpoint is required */
+    public const MESH_REGISTRY_UPDATE_PROVIDER_ENDPOINT_NOT_SET_ERROR = 'MESH_REGISTRY_UPDATE_PROVIDER_ENDPOINT_NOT_SET_ERROR';
+    /* error updating the this invitation service provider, route not allowed */
+    public const MESH_REGISTRY_UPDATE_PROVIDER_ROUTE_NOT_ALLOWED_ERROR = 'MESH_REGISTRY_UPDATE_PROVIDER_ROUTE_NOT_ALLOWED_ERROR';
 
     /* OCM invite errors */
     /* invite accepted error */

@@ -9,8 +9,9 @@ namespace OCA\Invitation\Service\MeshRegistry;
 
 use Exception;
 use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Federation\DomainProvider;
-use OCA\Invitation\Federation\DomainProviderMapper;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\Federation\InvitationServiceProvider;
+use OCA\Invitation\Federation\InvitationServiceProviderMapper;
 use OCA\Invitation\Service\NotFoundException;
 use OCA\Invitation\Service\ServiceException;
 use OCP\IConfig;
@@ -20,7 +21,7 @@ class MeshRegistryService
 {
     private string $appName;
     private IConfig $config;
-    private DomainProviderMapper $domainProviderMapper;
+    private InvitationServiceProviderMapper $invitationServiceProviderMapper;
     private ILogger $logger;
 
     // TODO: move all this to a more appropriate class
@@ -29,10 +30,17 @@ class MeshRegistryService
     public const ENDPOINT_HANDLE_INVITE = '/handle-invite';
     public const ENDPOINT_INVITE_ACCEPTED = '/ocm/invite-accepted';
     private const ROUTE_PAGE_WAYF = 'page.wayf';
-    /** The domain of the sender's provider */
+    /** @depricated The domain of the sender's provider */
     public const PARAM_NAME_PROVIDER_DOMAIN = 'providerDomain';
-    /** The domain of the recipient's provider */
+    /** The endpoint of the sender's provider */
+    // TODO: check if this param is still relevant
+    public const PARAM_NAME_PROVIDER_ENDPOINT = 'providerEndpoint';
+    /** OCM param recipientProvider */
     public const PARAM_NAME_RECIPIENT_PROVIDER = 'recipientProvider';
+    /** @depricated The domain of the recipient's provider */
+    public const PARAM_NAME_RECIPIENT_DOMAIN = 'recipientDomain';
+    /** The endpoint of the recipient's provider */
+    public const PARAM_NAME_RECIPIENT_ENDPOINT = 'recipientEndpoint';
     public const PARAM_NAME_TOKEN = 'token';
     public const PARAM_NAME_USER_ID = 'userID';
     public const PARAM_NAME_EMAIL = 'email';
@@ -40,16 +48,16 @@ class MeshRegistryService
     public const PARAM_NAME_NAME = 'name';
 
 
-    public function __construct($appName, IConfig $config, DomainProviderMapper $domainProviderMapper)
+    public function __construct($appName, IConfig $config, InvitationServiceProviderMapper $invitationServiceProviderMapper)
     {
         $this->appName = $appName;
         $this->config = $config;
-        $this->domainProviderMapper = $domainProviderMapper;
+        $this->invitationServiceProviderMapper = $invitationServiceProviderMapper;
         $this->logger = \OC::$server->getLogger();
     }
 
     /**
-     * Returns the full 'https://...host.../forward-invite' endpoint of this EFSS instance
+     * Returns the full 'https://{invitation_service_provider}/forward-invite' endpoint of this EFSS instance
      *
      * @return string
      * @throws ServiceException
@@ -57,13 +65,12 @@ class MeshRegistryService
     public function getFullForwardInviteEndpoint()
     {
         try {
-            $domain = $this->getDomain();
-            $appName = $this->appName;
+            $invitationServiceEndpoint = $this->getEndpoint();
             $forwardInviteEndpoint = trim(self::ENDPOINT_FORWARD_INVITE, "/");
-            return "https://$domain/apps/$appName/$forwardInviteEndpoint";
+            return "$invitationServiceEndpoint/$forwardInviteEndpoint";
         } catch (ServiceException $e) {
             $this->logger->error("getFullForwardInviteEndpoint failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException("Could not retrieve full 'forward invite' endpoint.");
+            throw new ServiceException("Could not retrieve full '/forward-invite' endpoint.");
         }
     }
 
@@ -79,37 +86,36 @@ class MeshRegistryService
     }
 
     /**
-     * Returns the full 'https://...host.../accept-invite' endpoint URL of this EFSS instance.
+     * Returns the full 'https://{invitation_service_provider}/accept-invite' endpoint URL of this EFSS instance.
      *
      * @return string the full /accept-invite endpoint URL
      */
     public function getFullAcceptInviteEndpointURL(): string
     {
         try {
-            $host = $this->getDomain();
-            $appName = $this->appName;
+            $invitationServiceEndpoint = $this->getEndpoint();
             $acceptInviteEndpoint = trim(self::ENDPOINT_ACCEPT_INVITE, "/");
-            return "https://$host/apps/$appName/$acceptInviteEndpoint";
+            return "$invitationServiceEndpoint/$acceptInviteEndpoint";
         } catch (ServiceException $e) {
             $this->logger->error("getFullAcceptInviteEndpointURL failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException("Could not retrieve full 'accept invite' endpoint.");
+            throw new ServiceException("Could not retrieve full '/accept-invite' endpoint.");
         }
     }
 
     /**
-     * Returns the full 'https://...host.../invite-accepted' endpoint URL of this EFSS instance.
+     * Returns the full 'https://{invitation_service_provider}/invite-accepted' endpoint URL of this EFSS instance.
      *
      * @param string $senderHost the host of the sender of the invitation
      * @return string the full /invite-accepted endpoint URL
      */
-    public function getFullInviteAcceptedEndpointURL(string $senderHost = ""): string
+    public function getFullInviteAcceptedEndpointURL(string $senderInvitationServiceProviderEndpoint = ""): string
     {
-        if ($senderHost == "") {
-            return ['error' => 'unable to build full intive-accepted endpoint URL, senderHost not specified'];
+        if ($senderInvitationServiceProviderEndpoint == "") {
+            return ['error' => "unable to build full '/invite-accepted' endpoint URL, sender invitation service provider endpoint not specified"];
         }
-        $appName = $this->appName;
+        $endpoint = trim($senderInvitationServiceProviderEndpoint, '/');
         $inviteAcceptedEndpoint = trim(self::ENDPOINT_INVITE_ACCEPTED, "/");
-        return "https://$senderHost/apps/$appName/$inviteAcceptedEndpoint";
+        return "$endpoint/$inviteAcceptedEndpoint";
     }
 
     /**
@@ -134,182 +140,289 @@ class MeshRegistryService
     }
 
     /**
-     * Returns the domain of the local (this instance's) domain provider.
+     * Returns the endpoint of the local (this instance's) invitation service provider.
      *
-     * @return string the domain
-     * @throws ServiceException if the domain has not been set
+     * @return string the endpoint
+     * @throws ServiceException if the endpoint has not been set
      */
-    public function getDomain(): string
+    public function getEndpoint(): string
     {
-        $domain = $this->getAppValue('domain');
-        if (!isset($domain) || trim($domain) == "") {
-            throw new ServiceException('Domain is not set.');
+        $endpoint = $this->getAppValue('endpoint');
+        if (!isset($endpoint) || trim($endpoint) == "") {
+            throw new ServiceException('Endpoint is not set.');
         }
-        return $domain;
+        return $endpoint;
     }
 
     /**
-     * Sets the domain of the local (this instance's) domain provider and returns the domain.
+     * Sets the endpoint of the local (this instance's) invitation service provider and returns the endpoint.
      *
-     * @param string $domain
+     * @param string $endpoint
      * @return string
      * @throws ServiceException
      */
-    public function setDomain(string $domain): string
+    public function setEndpoint(string $endpoint): string
     {
-        if (!$this->isDomainValid($domain)) {
-            throw new ServiceException("Invalid domain '$domain'");
+        if (!$this->isEndpointValid($endpoint)) {
+            throw new ServiceException("Invalid endpoint '$endpoint'");
         }
 
         try {
-            $domainProvider = $this->getDomainProvider();
-            $domainProvider->setDomain($domain);
-            $domainProvider = $this->domainProviderMapper->update($domainProvider);
+            $invitationServiceProvider = $this->getInvitationServiceProvider();
+            $invitationServiceProvider->setEndpoint($endpoint);
+            $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
         } catch (NotFoundException $e) {
-            $this->logger->info("A local domain provider does not exist (yet). Setting the domain to '$domain'", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("A local invitation service provider does not exist (yet). Setting the endpoint to '$endpoint'", ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException("Unable to set the domain to '$domain'.");
+            throw new ServiceException("Unable to set the endpoint to '$endpoint'.");
         }
-        $this->setAppValue('domain', $domain);
-        return $domain;
+        $this->setAppValue('endpoint', $endpoint);
+        return $endpoint;
     }
 
     /**
-     * Returns the domain provider of this instance.
+     * Returns the invitation service provider of this instance.
      *
-     * @return DomainProvider
+     * @return InvitationServiceProvider
      * @throws NotFoundException
      */
-    public function getDomainProvider(): DomainProvider
+    public function getInvitationServiceProvider(): InvitationServiceProvider
     {
         try {
-            return $this->domainProviderMapper->getDomainProvider($this->getDomain());
+            return $this->invitationServiceProviderMapper->getInvitationServiceProvider($this->getEndpoint());
         } catch (ServiceException $e) {
             throw new NotFoundException($e->getMessage());
         }
     }
 
     /**
-     * Find and returns the domain provider with the specified domain,
+     * Find and returns the invitation service provider with the specified endpoint,
      * or throws a NotFoundException if it could not be found.
      *
-     * @param $domain
+     * @param $endpoint
      * @throws NotFoundException
      */
-    public function findDomainProvider(string $domain): DomainProvider
+    public function findInvitationServiceProvider(string $endpoint): InvitationServiceProvider
     {
-        return $this->domainProviderMapper->getDomainProvider($domain);
+        return $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
     }
 
     /**
-     * Adds the specified domain provider and returns it, also if it exists already.
+     * Adds the specified invitation service provider and returns it, also if it exists already.
      *
-     * @param $domain
-     * @return DomainProvider
+     * @param string $endpoint
+     * @param string $name
+     * @return InvitationServiceProvider
      * @throws ServiceException in case of error
      */
-    public function addDomainProvider(string $domain): DomainProvider
+    public function addInvitationServiceProvider(string $endpoint, string $name): InvitationServiceProvider
     {
-        if (!$this->isDomainValid($domain)) {
-            throw new ServiceException("Invalid domain '$domain'");
+        if (!$this->isEndpointValid($endpoint)) {
+            throw new ServiceException("Invalid endpoint '$endpoint'");
         }
-        $domainProvider = null;
+        $invitationServiceProvider = null;
         try {
-            $domainProvider = $this->findDomainProvider($domain);
+            $invitationServiceProvider = $this->findInvitationServiceProvider($endpoint);
         } catch (NotFoundException $e) {
-            $this->logger->info("Will create domain provider with domain '$domain'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("Creating invitation service provider with endpoint '$endpoint' and name '$name'.", ['app' => InvitationApp::APP_NAME]);
         }
-        if (isset($domainProvider)) {
-            return $domainProvider;
+        if (isset($invitationServiceProvider)) {
+            return $invitationServiceProvider;
         }
-        $domainProvider = new DomainProvider();
-        $domainProvider->setDomain($domain);
         try {
-            return $this->domainProviderMapper->insert($domainProvider);
+            $invitationServiceProvider = new InvitationServiceProvider();
+            $invitationServiceProvider->setEndpoint($endpoint);
+            $invitationServiceProvider->setName($name);
+            $invitationServiceProvider->setDomain($this->getDomain($endpoint));
+            return $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException('Error inserting the domain provider.');
+            throw new ServiceException('Error inserting the invitation service provider.');
         }
     }
 
     /**
-     * Deletes the domain provider with the specified domain.
+     * Updates the fields of invitation service provider with the specified endpoint.
      *
-     * @param $domain
-     * @return DomainProvider the deleted entity
-     * @throws ServiceException in case of error
+     * @param string endpoint
+     * @param array $fields
+     * @return InvitationServiceProvider the updated provider
+     * @throws ServiceException
      */
-    public function deleteDomainProvider(string $domain): DomainProvider
+    public function updateInvitationServiceProvider($endpoint, $fields): InvitationServiceProvider
     {
         try {
-            $domainProvider = $this->domainProviderMapper->getDomainProvider($domain);
-            return $this->domainProviderMapper->delete($domainProvider);
-        } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException('Error deleting the domain provider: Not found.');
+            $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
+            foreach ($fields as $field => $value) {
+                switch ($field) {
+                    case Schema::INVITATION_SERVICE_PROVIDER_ENDPOINT:
+                        if (is_string($value) == true) {
+                            $invitationServiceProvider->setEndpoint($value);
+                        } else {
+                            $this->logger->debug("Value '$value' is of wrong type");
+                        }
+                        break;
+                    case Schema::INVITATION_SERVICE_PROVIDER_NAME:
+                        if (is_string($value) == true) {
+                            $invitationServiceProvider->setName($value);
+                        } else {
+                            $this->logger->debug("Value '$value' is of wrong type");
+                        }
+                        break;
+                    case Schema::INVITATION_SERVICE_PROVIDER_DOMAIN:
+                        if (is_string($value) == true) {
+                            $invitationServiceProvider->setDomain($value);
+                        } else {
+                            $this->logger->debug("Value '$value' is of wrong type");
+                        }
+                        break;
+                    default:
+                        $this->logger->debug("Field '$field' is not a property of entity InvitationServiceProvider");
+                }
+            }
+            $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
+            return $invitationServiceProvider;
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException('Error deleting the domain provider.');
+            throw new ServiceException("Error updating invitation service provider with endpoint '$endpoint'");
+        }
+    }
+
+    /**
+     * Deletes the invitation service provider with the specified endpoint.
+     *
+     * @param $endpoint
+     * @return InvitationServiceProvider the deleted entity
+     * @throws ServiceException in case of error
+     */
+    public function deleteInvitationServiceProvider(string $endpoint): InvitationServiceProvider
+    {
+        try {
+            $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
+            return $this->invitationServiceProviderMapper->delete($invitationServiceProvider);
+        } catch (NotFoundException $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error deleting the invitation service provider: Not found.');
+        } catch (Exception $e) {
+            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException('Error deleting the invitation service provider.');
         }
     }
     /**
-     * Very basic validation of the specified domain.
+     * Very basic validation of the specified endpoint.
      * Checks:
-     *  - domain should be without scheme
-     *  - domain should not end with '/'
+     *  - endpoint should be with https scheme
+     *  - endpoint should not end with '/'
      *
-     * @param string $domain
-     * @return bool true if the domain validates, false otherwise
+     * @param string $endpoint
+     * @return bool true if the endpoint validates, false otherwise
      */
-    private function isDomainValid(string $domain): bool
+    private function isEndpointValid(string $endpoint): bool
     {
-        if (!isset($domain) || trim($domain) === "") {
+        if (!isset($endpoint) || trim($endpoint) === "") {
             return false;
         }
-        $url = parse_url($domain);
+        $url = parse_url($endpoint);
         if (
             $url === false
-            || isset($url['scheme'])
+            || !isset($url['scheme'])
+            || $url['scheme'] != 'https'
         ) {
             return false;
         }
         // check for some accidental characters left at beginning and end
-        if (strlen($domain) != strlen(trim($domain, ":/"))) {
+        if (strlen($endpoint) != strlen(trim($endpoint, ":/"))) {
             return false;
         }
         return true;
     }
 
     /**
-     * Returns all domain providers of the mesh.
+     * Retrieves and returns the domain from the specified endpoint.
      *
-     * @return array[DomainProvider] all domain providers
+     * @param string endpoint
+     * @return string the domain
      * @throws ServiceException
      */
-    public function allDomainProviders(): array
+    private function getDomain(string $endpoint): string
+    {
+        if (!$this->isEndpointValid($endpoint)) {
+            throw new ServiceException("Endpoint invalid. Could not retrieve domain from endpoint '$endpoint'");
+        }
+        $url = parse_url($endpoint);
+        return $url['host'];
+    }
+
+    /**
+     * Returns all invitation service providers of the mesh.
+     *
+     * @return array[InvitationServiceProvider] all invitation service providers
+     * @throws ServiceException
+     */
+    public function allInvitationServiceProviders(): array
     {
         try {
-            return $this->domainProviderMapper->allDomainProviders();
+            return $this->invitationServiceProviderMapper->allInvitationServiceProviders();
         } catch (NotFoundException $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException('Error retrieving all domain providers.');
+            throw new ServiceException('Error retrieving all invitation service providers.');
         }
     }
 
     /**
-     * Returns true if the specified domain is of a known domain provider
+     * Returns true if the specified endpoint is of a known invitation service provider
      *
      * @return bool
      */
-    public function isKnowDomainProvider(string $domain): bool
+    public function isKnowInvitationServiceProvider(string $endpoint): bool
     {
-        foreach ($this->allDomainProviders() as $domainProvider) {
-            if ($domainProvider->getDomain() === $domain) {
+        foreach ($this->allInvitationServiceProviders() as $invitationServiceProvider) {
+            if ($invitationServiceProvider->getEndpoint() === $endpoint) {
                 return true;
             }
         }
         return false;
+    }
+
+    /**
+     * Set the name associated with this invitation service provider instance.
+     *
+     * @param string $name
+     * @return string the new name
+     * @throws ServiceException
+     */
+    public function setName(string $name): string
+    {
+        try {
+            $invitationServiceProvider = $this->getInvitationServiceProvider();
+            $invitationServiceProvider->setName($name);
+            $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
+            return $invitationServiceProvider->getName();
+        } catch (NotFoundException $e) {
+            $this->logger->error("Unable to find this instance's invitation service provider. Could not set name to '$name'.", ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Unable to find this instance's invitation service provider. Could not set name to '$name'.");
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Could not set name to '$name'.");
+        }
+    }
+
+    /**
+     * Get the name associated with this invitation service provider instance.
+     *
+     * @return string the name
+     * @throws ServiceException
+     */
+    public function getName(): string
+    {
+        try {
+            $invitationServiceProvider = $this->getInvitationServiceProvider();
+            return $invitationServiceProvider->getName();
+        } catch (NotFoundException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Unable to find this instance's invitation service provider.");
+        }
     }
 
     /**

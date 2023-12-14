@@ -1,5 +1,8 @@
-(function (document, $) {
-    $(document).ready(function () {
+(function (window, $) {
+    $(window.document).ready(function () {
+        var document = window.document;
+        // TODO: use the inv library for the calls
+
         let generateInvite = function (email, message) {
             $('#invitation-message span').text("");
             let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
@@ -25,7 +28,7 @@
                     }
                 ).catch(
                     (response) => {
-                        $('#invitation-error span').text('ERROR_UNSPECIFIED');
+                        $('#invitation-message span.error').text('ERROR_UNSPECIFIED');
                     }
                 );
         };
@@ -107,9 +110,9 @@
         };
 
         let acceptInvite = function (token) {
-            let endpoint = OC.generateUrl('/apps/invitation/accept-invite?token=' + token);
+            let endpoint = OC.generateUrl('/apps/invitation/accept-invite/' + token);
             let options = {
-                method: 'GET',
+                method: 'POST',
                 headers: {
                     'Content-type': 'application/json;charset=utf-8'
                 }
@@ -210,4 +213,4 @@
         getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
         getInvitations([{ "status": "open" }], renderOpenInvitations);
     });
-})(document, jQuery);
+})(window, jQuery);

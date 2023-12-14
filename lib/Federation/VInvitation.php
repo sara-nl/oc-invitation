@@ -16,10 +16,10 @@ use OCP\AppFramework\Db\Entity;
  * @method void setToken(string $token)
  * @method string getSentReceived()
  * @method void setSentReceived(string sentReceived)
- * @method string getProviderDomain()
- * @method void setProviderDomain(string $providerDomain)
- * @method string getRecipientDomain()
- * @method void setRecipientDomain(string $recipientDomain)
+ * @method string getProviderEndpoint()
+ * @method void setProviderEndpoint(string $providerEndpoint)
+ * @method string getRecipientEndpoint()
+ * @method void setRecipientEndpoint(string $recipientEndpoint)
  * @method string getSenderCloudId()
  * @method void setSenderCloudId(string $senderCloudId)
  * @method string getSenderEmail()
@@ -52,8 +52,8 @@ class VInvitation extends Entity implements JsonSerializable
     protected $status;
     protected $userCloudID;
     protected $sentReceived;
-    protected $providerDomain;
-    protected $recipientDomain;
+    protected $providerEndpoint;
+    protected $recipientEndpoint;
     protected $senderCloudId;
     protected $senderEmail;
     protected $senderName;
@@ -73,8 +73,8 @@ class VInvitation extends Entity implements JsonSerializable
             $this->columnToProperty(Schema::VINVITATION_STATUS) => $this->status,
             $this->columnToProperty(Schema::VINVITATION_USER_CLOUD_ID) => $this->userCloudID,
             $this->columnToProperty(Schema::VINVITATION_SEND_RECEIVED) => $this->sentReceived,
-            $this->columnToProperty(Schema::VINVITATION_PROVIDER_DOMAIN) => $this->providerDomain,
-            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_DOMAIN) => $this->recipientDomain,
+            $this->columnToProperty(Schema::VINVITATION_PROVIDER_ENDPOINT) => $this->providerEndpoint,
+            $this->columnToProperty(Schema::VINVITATION_RECIPIENT_ENDPOINT) => $this->recipientEndpoint,
             $this->columnToProperty(Schema::VINVITATION_SENDER_CLOUD_ID) => $this->senderCloudId,
             $this->columnToProperty(Schema::VINVITATION_SENDER_NAME) => $this->senderName,
             $this->columnToProperty(Schema::VINVITATION_SENDER_EMAIL) => $this->senderEmail,

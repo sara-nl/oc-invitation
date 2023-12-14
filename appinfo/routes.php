@@ -26,17 +26,27 @@ return [
 
         // bespoke API - mesh registry
         ['name' => 'mesh_registry#forward_invite',          'url' => '/registry/forward-invite', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#domain_providers',        'url' => '/registry/domainproviders', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#domain_provider',         'url' => '/registry/domainprovider', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#add_domain_provider',     'url' => '/registry/domainprovider', 'verb' => 'POST'],
-        ['name' => 'mesh_registry#delete_domain_provider',  'url' => '/registry/domainprovider', 'verb' => 'DELETE'],
-        ['name' => 'mesh_registry#get_domain',              'url' => '/registry/domain', 'verb' => 'GET'],
-        // assumes the domain key exists
-        ['name' => 'mesh_registry#set_domain',              'url' => '/registry/domain', 'verb' => 'PUT'],
-        [
-            'name' => 'mesh_registry#set_allow_sharing_with_invited_users_only',
-            'url' => 'service-provider/share-with-invited-users-only', 'verb' => 'PUT'
-        ],
+
+        // route '/registry/invitation-service-provider' concerns other invitation service providers
+        ['name' => 'mesh_registry#add_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'POST'],
+        ['name' => 'mesh_registry#update_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'PUT'],
+        ['name' => 'mesh_registry#delete_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'DELETE'],
+
+        // route '/registry/invitation-service-providers' returns all providers
+        ['name' => 'mesh_registry#invitation_service_providers',        'url' => '/registry/invitation-service-providers', 'verb' => 'GET'],
+
+        // route '/endpoint' of this instance
+        ['name' => 'mesh_registry#get_endpoint', 'url' => '/endpoint', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_endpoint', 'url' => '/endpoint', 'verb' => 'PUT'],
+
+        // route '/name' of this instance
+        ['name' => 'mesh_registry#get_name', 'url' => '/name', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_name', 'url' => '/name', 'verb' => 'PUT'],
+
+        // route '/share-with-invited-users-only' of this instance
+        ['name' => 'mesh_registry#get_allow_sharing_with_invited_users_only', 'url' => '/share-with-invited-users-only', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_allow_sharing_with_invited_users_only', 'url' => '/share-with-invited-users-only', 'verb' => 'PUT'],
+
         // TODO: ... public info endpoint that returns relevant info of this mesh node/server
         //       returns: ... to decide
 

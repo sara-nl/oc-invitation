@@ -18,8 +18,10 @@ class Version20231130102037 implements ISchemaMigration
     {
         $prefix = $options['tablePrefix'];
 
+        //----------------------
         // The invitations table
-        $table = $schema->createTable("{$prefix}mesh_invitations");
+        //----------------------
+        $table = $schema->createTable("{$prefix}invitation_invitations");
         $table->addColumn('id', Types::BIGINT, [
             'autoincrement' => true,
             'unsigned' => true,
@@ -36,12 +38,12 @@ class Version20231130102037 implements ISchemaMigration
             'notnull' => true,
             'default' => '',
         ]);
-        $table->addColumn('provider_domain', Types::STRING, [
+        $table->addColumn('provider_endpoint', Types::STRING, [
             'length' => 255,
             'notnull' => true,
             'default' => '',
         ]);
-        $table->addColumn('recipient_domain', Types::STRING, [
+        $table->addColumn('recipient_endpoint', Types::STRING, [
             'length' => 255,
             'notnull' => true,
             'default' => '',
@@ -87,10 +89,11 @@ class Version20231130102037 implements ISchemaMigration
             'default' => '',
         ]);
         $table->setPrimaryKey(['id']);
-        $table->addUniqueIndex(['user_cloud_id'], 'user_cloud_id_index');
 
-        // the domain_providers table
-        $table = $schema->createTable("{$prefix}mesh_domain_providers");
+        //---------------------------------------
+        // the invitation_service_providers table
+        //---------------------------------------
+        $table = $schema->createTable("{$prefix}invitation_invitation_service_providers");
         $table->addColumn('id', Types::BIGINT, [
             'autoincrement' => true,
             'unsigned' => true,
@@ -102,7 +105,19 @@ class Version20231130102037 implements ISchemaMigration
             'notnull' => true,
             'default' => '',
         ]);
+        // the endpoint of this invitation service provider
+        $table->addColumn('endpoint', Types::STRING, [
+            'length' => 255,
+            'notnull' => true,
+            'default' => '',
+        ]);
+        // the endpoint of this invitation service provider
+        $table->addColumn('name', Types::STRING, [
+            'length' => 255,
+            'notnull' => true,
+            'default' => '',
+        ]);
         $table->setPrimaryKey(['id']);
-        $table->addUniqueIndex(['domain'], 'domain_index');
+        $table->addUniqueIndex(['endpoint'], 'endpoint_index');
     }
 }

@@ -16,10 +16,10 @@ use OCP\AppFramework\Db\Entity;
  * @method void setUserCloudId(string $userCloudId)
  * @method string getToken()
  * @method void setToken(string $token)
- * @method string getProviderDomain()
- * @method void setProviderDomain(string $providerDomain)
- * @method string getRecipientDomain()
- * @method void setRecipientDomain(string $recipientDomain)
+ * @method string getProviderEndpoint()
+ * @method void setProviderEndpoint(string $providerEndpoint)
+ * @method string getRecipientEndpoint()
+ * @method void setRecipientEndpoint(string $recipientEndpoint)
  * @method string getSenderCloudId()
  * @method void setSenderCloudId(string $senderCloudId)
  * @method string getSenderEmail()
@@ -41,8 +41,8 @@ class Invitation extends Entity implements JsonSerializable
 {
     protected $userCloudId;
     protected $token;
-    protected $providerDomain;
-    protected $recipientDomain;
+    protected $providerEndpoint;
+    protected $recipientEndpoint;
     protected $senderCloudId;
     protected $senderEmail;
     protected $senderName;
@@ -65,8 +65,8 @@ class Invitation extends Entity implements JsonSerializable
             'id' => $this->id,
             $this->columnToProperty(Schema::INVITATION_USER_CLOUD_ID) => $this->userCloudId,
             $this->columnToProperty(Schema::INVITATION_TOKEN) => $this->token,
-            $this->columnToProperty(Schema::INVITATION_PROVIDER_DOMAIN) => $this->providerDomain,
-            $this->columnToProperty(Schema::INVITATION_RECIPIENT_DOMAIN) => $this->recipientDomain,
+            $this->columnToProperty(Schema::INVITATION_PROVIDER_ENDPOINT) => $this->providerEndpoint,
+            $this->columnToProperty(Schema::INVITATION_RECIPIENT_ENDPOINT) => $this->recipientEndpoint,
             $this->columnToProperty(Schema::INVITATION_SENDER_CLOUD_ID) => $this->senderCloudId,
             $this->columnToProperty(Schema::INVITATION_SENDER_EMAIL) => $this->senderEmail,
             $this->columnToProperty(Schema::INVITATION_SENDER_NAME) => $this->senderName,
