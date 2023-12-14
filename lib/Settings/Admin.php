@@ -27,7 +27,7 @@ class Admin implements ISettings
     public function getPanel()
     {
         $template = new Template('invitation', 'settings/admin');
-        $template->assign('domain', $this->meshRegistryService->getDomain());
+        $template->assign('endpoint', $this->meshRegistryService->getEndpoint());
         $template->assign(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $this->meshRegistryService->getAllowSharingWithInvitedUsersOnly());
         return $template;
     }

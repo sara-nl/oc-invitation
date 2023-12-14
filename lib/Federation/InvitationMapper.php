@@ -171,8 +171,8 @@ class InvitationMapper extends Mapper
             $invitation->setStatus($associativeArray[Schema::INVITATION_STATUS]);
             $invitation->setUserCloudID($associativeArray[Schema::VINVITATION_USER_CLOUD_ID]);
             $invitation->setSentReceived($associativeArray[Schema::VINVITATION_SEND_RECEIVED]);
-            $invitation->setProviderDomain($associativeArray[Schema::VINVITATION_PROVIDER_DOMAIN]);
-            $invitation->setRecipientDomain($associativeArray[Schema::VINVITATION_RECIPIENT_DOMAIN]);
+            $invitation->setProviderEndpoint($associativeArray[Schema::VINVITATION_PROVIDER_ENDPOINT]);
+            $invitation->setRecipientEndpoint($associativeArray[Schema::VINVITATION_RECIPIENT_ENDPOINT]);
             $invitation->setSenderCloudId($associativeArray[Schema::VINVITATION_SENDER_CLOUD_ID]);
             $invitation->setSenderEmail($associativeArray[Schema::VINVITATION_SENDER_EMAIL]);
             $invitation->setSenderName($associativeArray[Schema::VINVITATION_SENDER_NAME]);

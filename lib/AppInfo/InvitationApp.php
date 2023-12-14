@@ -6,7 +6,7 @@
 
 namespace OCA\Invitation\AppInfo;
 
-use OCA\Invitation\Federation\DomainProviderMapper;
+use OCA\Invitation\Federation\InvitationServiceProviderMapper;
 use OCA\Invitation\Federation\InvitationMapper;
 use OCA\Invitation\Federation\RemoteUserMapper;
 use OCA\Invitation\Service\InvitationNotifier;
@@ -33,7 +33,7 @@ class InvitationApp extends App
                 return new MeshRegistryService(
                     self::APP_NAME,
                     $c->query('Config'),
-                    new DomainProviderMapper(
+                    new InvitationServiceProviderMapper(
                         \OC::$server->getDatabaseConnection()
                     )
                 );
@@ -64,7 +64,7 @@ class InvitationApp extends App
                     new MeshRegistryService(
                         self::APP_NAME,
                         $this->getContainer()->query('Config'),
-                        new DomainProviderMapper(
+                        new InvitationServiceProviderMapper(
                             \OC::$server->getDatabaseConnection()
                         )
                     )

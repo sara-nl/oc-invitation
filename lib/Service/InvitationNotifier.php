@@ -40,10 +40,9 @@ class InvitationNotifier implements INotifier
             case 'invitation':
                 $notification->setParsedSubject(
                     (string) $l->t(
-                        'You received an invitation from "%s" (domain: "%s").',
+                        'You received an invitation from "%s".',
                         [
                             $notification->getSubjectParameters()[MeshRegistryService::PARAM_NAME_NAME],
-                            $notification->getSubjectParameters()[MeshRegistryService::PARAM_NAME_PROVIDER_DOMAIN],
                         ]
                     )
                 );

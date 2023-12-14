@@ -1,43 +1,6 @@
-(function (document, $) {
-    $(document).ready(function () {
-
-
-        /**
-         * 
-         * @param {*} route 
-         * @param {*} method 
-         * @param {*} paramsObject 
-         * @param {*} callback calls callBack(response.json)
-         * @param {*} errorCallback calls errorCallback(response)
-         */
-        var call = function (route, method, paramsObject, callback, errorCallback) {
-            var path = trimSlashes(route);
-            var endpoint = OC.generateUrl('/apps/invitation/' + path);
-            var options = {
-                method: method,
-                headers: {
-                    'Content-type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify(paramsObject)
-            };
-            fetch(endpoint, options).then((response) => {
-                return response.json();
-            }).then((json) => {
-                if (json.success == true || json.success == false) {
-                    callback(json);
-                } else {
-                    console.log('could not set the domain');
-                    errorCallback(JSON.stringify(json));
-                }
-            }).catch((response) => {
-                console.log('status: ' + response.status);
-                errorCallback(response);
-            });
-        }
-
-        var trimSlashes = function (text) {
-            return text.trim().replace(/^\/+|\/+$/g, '');
-        }
+(function (window, $) {
+    $(window.document).ready(function () {
+        var document = window.document;
 
         let toggleAllowSharingWithInvitedUsersOnlyButton = document.getElementById('allow-sharing-with-invited-users-only');
         toggleAllowSharingWithInvitedUsersOnlyButton.addEventListener(
@@ -50,8 +13,8 @@
                     _allow = false;
                 }
 
-                call(
-                    '/service-provider/share-with-invited-users-only',
+                window.INVITATION.call(
+                    '/share-with-invited-users-only',
                     'PUT',
                     { allow: _allow },
                     (result) => {
@@ -78,10 +41,10 @@
                 $('[id="invitation-service-settings-endpoint-success"]').removeClass('fade-out');
                 document.getElementById('invitation-service-settings-endpoint-error').innerText = "";
 
-                call(
-                    '/registry/domain',
+                window.INVITATION.call(
+                    '/endpoint',
                     'PUT',
-                    { domain: document.getElementById('invitation-service-endpoint').value },
+                    { endpoint: document.getElementById('invitation-service-endpoint').value },
                     (result) => {
                         if (result.success == true) {
                             console.log('endpoint updated to "' + result.data + '"');
@@ -100,4 +63,4 @@
         );
 
     });
-})(document, jQuery);
+})(window, jQuery);

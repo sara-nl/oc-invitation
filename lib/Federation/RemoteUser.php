@@ -15,7 +15,7 @@ use OCP\AppFramework\Db\Entity;
  * @method integer getInvitationID()
  * @method void setInvitationID(string $invitationID)
  * @method string getUserCloudID()
- * @method void setUserCloudID(string userCloudID)
+ * @method void setUserCloudID(string $userCloudID)
  * @method string getUserName();
  * @method void setUserName(string $userName);
  * @method string getRemoteUserCloudID();
