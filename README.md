@@ -5,7 +5,8 @@
 This app gives an enhanced federated sharing user experience by implementing an Invitation Workflow. Through a simple invitation by email to a user of another owncloud instance the federated (cloud) IDs are automatically exchanged and saved on the each other's systems. From thereon both users can easily start federated sharing with each other via the common file sharing dialog.
 <br>
 <br>
-! Depends on the following apps: Federation, Share Files
+#### Dependencies: 
+Depends on the following apps: _Federated File Sharing_, _Notifications_
 
 ---
 
