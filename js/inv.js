@@ -19,8 +19,12 @@
             headers: {
                 'Content-type': 'application/json;charset=utf-8'
             },
-            body: JSON.stringify(paramsObject)
+            body: null
         };
+        // Ignore body when method is GET
+        if (method.toLowerCase() !== 'get') {
+            options.body = JSON.stringify(paramsObject);
+        }
         fetch(endpoint, options).then((response) => {
             return response.json();
         }).then((json) => {

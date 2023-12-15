@@ -76,8 +76,32 @@ div.app-invitation div.error a {
     color: darkblue !important;
 }
 
-input#invitation-service-endpoint {
+input.invitation-endpoint {
     width: 30em;
+}
+
+div#invitation-add-remote-service-provider.hide {
+    display: none;
+}
+
+ul#invitation-remote-service-providers span.icon-delete {
+    cursor: pointer;
+    position: absolute;
+    right: 0em;
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 10px;
+}
+
+ul#invitation-remote-service-providers li {
+    position: relative;
+    width: 20em;
+}
+
+ul#invitation-remote-service-providers span.settings-error {
+    position: absolute;
+    left: 21em;
+    width: 50em;
 }
 
 span.invitation-service-settings-endpoint-success.fade-out {
