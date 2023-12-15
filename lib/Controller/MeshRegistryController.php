@@ -107,24 +107,30 @@ class MeshRegistryController extends Controller
     }
 
     /**
-     * Returns the invitation service provider of this instance.
+     * Returns the properties of the this invitation service provider.
      *
-     * @NoAdminRequired
+     * @PublicPage
      * @NoCSRFRequired
+     *
      * @return DataResponse ['data' => :InvitationServiceProvider]
      */
     public function invitationServiceProvider(): DataResponse
     {
         try {
-            $invitationServiceProvider = $this->meshRegistryService->getInvitationServiceProvider();
+            $isp = $this->meshRegistryService->getInvitationServiceProvider();
+            $properties = [];
+            $properties['name'] = $isp->getName();
+            $properties['endpoint'] = $isp->getEndpoint();
+            $properties['domain'] = $isp->getDomain();
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $invitationServiceProvider
+                    'data' => $properties,
                 ],
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

@@ -27,8 +27,12 @@ return [
         // bespoke API - mesh registry
         ['name' => 'mesh_registry#forward_invite',          'url' => '/registry/forward-invite', 'verb' => 'GET'],
 
-        // route '/registry/invitation-service-provider' concerns other invitation service providers
+        // route '/registry/invitation-service-provider' concerns remote invitation service providers
+        // returns the properties of the invitation service provider like endpoint, domain, name
+        ['name' => 'mesh_registry#invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'GET'],
+        // adds a remote invitation service provider
         ['name' => 'mesh_registry#add_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'POST'],
+        // @depricated remote services cannot be updated, they update themselves and we retrieve the properties from them
         ['name' => 'mesh_registry#update_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'PUT'],
         ['name' => 'mesh_registry#delete_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'DELETE'],
 
