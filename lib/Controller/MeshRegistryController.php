@@ -10,6 +10,8 @@ namespace OCA\Invitation\Controller;
 use Exception;
 use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Db\Schema;
+use OCA\Invitation\HttpClient;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCA\Invitation\Service\NotFoundException;
 use OCA\Invitation\Service\ServiceException;
@@ -231,25 +233,65 @@ class MeshRegistryController extends Controller
 
     /**
      * Adds a new invitation service provider with the specified endpoint.
+     * The properties of the provider will be requested through the specified endpoint.
+     * If this fails an HTTP error will be returned.
+     *
+     * Note: if the provider already exists it's properties will become updated
+     * through the remote provider /registry/invitation-service-provider call.
      *
      * @NoCSRFRequired
      *
      * @param string $endpoint the endpoint of the new invitation service provider
      * @return DataResponse [ ..., 'data' => :InvitationServiceProvider ]
      */
-    public function addInvitationServiceProvider(string $endpoint, string $name = ''): DataResponse
+    public function addInvitationServiceProvider(string $endpoint): DataResponse
     {
         try {
-            $invitationServiceProvider = $this->meshRegistryService->addInvitationServiceProvider($endpoint, $name);
+            $invitationServiceProvider = $this->meshRegistryService->addInvitationServiceProvider($endpoint);
+
+            $url = $this->meshRegistryService->getFullInvitationServiceProviderEndpointUrl($endpoint);
+            $httpClient = new HttpClient();
+            $response = $httpClient->curlGet($url);
+            if ($response['success'] == false) {
+                $this->logger->error('Failed to call ' . MeshRegistryService::ENDPOINT_INVITATION_SERVICE_PROVIDER . " on endpoint '$endpoint'. Response: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                throw new ServiceException("Failed to call endpoint '$endpoint'");
+            }
+
+            $result = (array)$response['response'];
+            if (!isset($result['success']) || $result['success'] == false) {
+                throw new ServiceException(AppError::MESH_REGISTRY_ENDPOINT_INVITATION_SERVICE_PROVIDER_RESPONSE_INVALID);
+            }
+            $verifiedResponse = $this->verifyInvitationServiceProviderResponse((array)$result['data'])->getData();
+            if ($verifiedResponse['success'] == true) {
+                // update the provider with the returned properties. Note: with the exception of the endpoint
+                $invitationServiceProvider = $this->meshRegistryService->updateInvitationServiceProvider($endpoint, [
+                    Schema::INVITATION_SERVICE_PROVIDER_DOMAIN => $verifiedResponse['data'][Schema::INVITATION_SERVICE_PROVIDER_DOMAIN],
+                    Schema::INVITATION_SERVICE_PROVIDER_NAME => $verifiedResponse['data'][Schema::INVITATION_SERVICE_PROVIDER_NAME],
+                ]);
+                return new DataResponse(
+                    [
+                        'success' => true,
+                        'data' => $invitationServiceProvider,
+                    ]
+                );
+            }
+
+            throw new ServiceException(AppError::MESH_REGISTRY_ENDPOINT_INVITATION_SERVICE_PROVIDER_RESPONSE_INVALID);
+        } catch (ServiceException $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            // try to delete the previously inserted new provider
+            $this->meshRegistryService->deleteInvitationServiceProvider($endpoint);
             return new DataResponse(
                 [
-                    'success' => true,
-                    'data' => $invitationServiceProvider,
+                    'success' => false,
+                    'error_message' => AppError::MESH_REGISTRY_ADD_PROVIDER_ERROR,
                 ],
-                Http::STATUS_OK,
+                Http::STATUS_NOT_FOUND,
             );
-        } catch (ServiceException $e) {
-            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            // final effort trying to delete the previously inserted new provider
+            $this->meshRegistryService->deleteInvitationServiceProvider($endpoint);
             return new DataResponse(
                 [
                     'success' => false,
@@ -258,6 +300,36 @@ class MeshRegistryController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         }
+    }
+
+    /**
+     * Returns a DataResponse object that informs about the result of the verification:
+     * DataResponse:
+     *  [
+     *      'success' => true|false,
+     *          one of:
+     *      'data' => $params (in case of success)
+     *      'error_message': '...MESSAGE' (in case of failure)
+     *  ]
+     *
+     * @param array $params
+     * @return DataResponse
+     */
+    private function verifyInvitationServiceProviderResponse(array $params): DataResponse
+    {
+        if (
+            is_array($params)
+            && isset($params[Schema::INVITATION_SERVICE_PROVIDER_ENDPOINT])
+            && isset($params[Schema::INVITATION_SERVICE_PROVIDER_DOMAIN])
+            && isset($params[Schema::INVITATION_SERVICE_PROVIDER_NAME])
+        ) {
+            return new DataResponse(['success' => true, 'data' => $params], Http::STATUS_OK);
+        }
+        $this->logger->error('Could not validate the response fields. Fields: ' . print_r($params, true), ['app' => InvitationApp::APP_NAME]);
+        return new DataResponse([
+            'success' => false,
+            'error_message' => AppError::MESH_REGISTRY_ENDPOINT_INVITATION_SERVICE_PROVIDER_RESPONSE_INVALID,
+        ], Http::STATUS_NOT_FOUND);
     }
 
     /**

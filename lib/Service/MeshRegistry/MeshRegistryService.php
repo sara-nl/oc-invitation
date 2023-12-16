@@ -29,6 +29,7 @@ class MeshRegistryService
     public const ENDPOINT_ACCEPT_INVITE = '/accept-invite';
     public const ENDPOINT_HANDLE_INVITE = '/handle-invite';
     public const ENDPOINT_INVITE_ACCEPTED = '/ocm/invite-accepted';
+    public const ENDPOINT_INVITATION_SERVICE_PROVIDER = '/registry/invitation-service-provider';
     private const ROUTE_PAGE_WAYF = 'page.wayf';
     /** @depricated The domain of the sender's provider */
     public const PARAM_NAME_PROVIDER_DOMAIN = 'providerDomain';
@@ -113,9 +114,22 @@ class MeshRegistryService
         if ($senderInvitationServiceProviderEndpoint == "") {
             return ['error' => "unable to build full '/invite-accepted' endpoint URL, sender invitation service provider endpoint not specified"];
         }
-        $endpoint = trim($senderInvitationServiceProviderEndpoint, '/');
-        $inviteAcceptedEndpoint = trim(self::ENDPOINT_INVITE_ACCEPTED, "/");
+        $endpoint = trim(trim($senderInvitationServiceProviderEndpoint), '/');
+        $inviteAcceptedEndpoint = trim(trim(self::ENDPOINT_INVITE_ACCEPTED), "/");
         return "$endpoint/$inviteAcceptedEndpoint";
+    }
+
+    /**
+     * Returns the full invitation service provider url based on the specified host endpoint.
+     *
+     * @param string $endpoint
+     * @return string
+     */
+    public function getFullInvitationServiceProviderEndpointUrl(string $endpoint): string
+    {
+        $ep = trim(trim($endpoint), '/');
+        $ispEndpoint = trim(trim(self::ENDPOINT_INVITATION_SERVICE_PROVIDER), '/');
+        return "$ep/$ispEndpoint";
     }
 
     /**
@@ -212,11 +226,10 @@ class MeshRegistryService
      * Adds the specified invitation service provider and returns it, also if it exists already.
      *
      * @param string $endpoint
-     * @param string $name
      * @return InvitationServiceProvider
      * @throws ServiceException in case of error
      */
-    public function addInvitationServiceProvider(string $endpoint, string $name): InvitationServiceProvider
+    public function addInvitationServiceProvider(string $endpoint): InvitationServiceProvider
     {
         if (!$this->isEndpointValid($endpoint)) {
             throw new ServiceException("Invalid endpoint '$endpoint'");
@@ -225,7 +238,7 @@ class MeshRegistryService
         try {
             $invitationServiceProvider = $this->findInvitationServiceProvider($endpoint);
         } catch (NotFoundException $e) {
-            $this->logger->info("Creating invitation service provider with endpoint '$endpoint' and name '$name'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("Creating invitation service provider with endpoint '$endpoint'.", ['app' => InvitationApp::APP_NAME]);
         }
         if (isset($invitationServiceProvider)) {
             return $invitationServiceProvider;
@@ -233,8 +246,6 @@ class MeshRegistryService
         try {
             $invitationServiceProvider = new InvitationServiceProvider();
             $invitationServiceProvider->setEndpoint($endpoint);
-            $invitationServiceProvider->setName($name);
-            $invitationServiceProvider->setDomain($this->getDomain($endpoint));
             return $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
@@ -336,22 +347,6 @@ class MeshRegistryService
             return false;
         }
         return true;
-    }
-
-    /**
-     * Retrieves and returns the domain from the specified endpoint.
-     *
-     * @param string endpoint
-     * @return string the domain
-     * @throws ServiceException
-     */
-    private function getDomain(string $endpoint): string
-    {
-        if (!$this->isEndpointValid($endpoint)) {
-            throw new ServiceException("Endpoint invalid. Could not retrieve domain from endpoint '$endpoint'");
-        }
-        $url = parse_url($endpoint);
-        return $url['host'];
     }
 
     /**

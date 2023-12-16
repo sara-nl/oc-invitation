@@ -166,7 +166,7 @@
                         },
                         (response) => {
                             console.log(response.toString());
-                            document.getElementById('iinvitation-remote-service-provider-save-error').innerText = 'UNSPECIFIED ERROR';
+                            document.getElementById('invitation-remote-service-provider-save-error').innerText = 'UNSPECIFIED ERROR';
                         }
                     );
                 }
