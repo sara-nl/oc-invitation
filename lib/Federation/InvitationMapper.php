@@ -9,6 +9,7 @@ use OCA\Invitation\Federation\Invitation;
 use OCA\Invitation\Federation\VInvitation;
 use OCA\Invitation\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
+use OCP\DB\QueryBuilder\IQueryBuilder;
 use OCP\IDBConnection;
 use OCP\ILogger;
 
@@ -153,6 +154,27 @@ class InvitationMapper extends Mapper
             $this->logger->error('updateInvitation failed with error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
         }
         return false;
+    }
+
+    /**
+     * Delete all invitations that have one of the specified statuses.
+     *
+     * @param array $statusses
+     * @return void
+     * @throws Exception
+     */
+    public function deleteForStatus(array $statuses): void
+    {
+        try {
+            $qb = $this->db->getQueryBuilder();
+            $qb->delete(Schema::TABLE_INVITATIONS)
+                ->where($qb->expr()->in(Schema::INVITATION_STATUS, $qb->createParameter(Schema::INVITATION_STATUS)));
+            $qb->setParameter(Schema::INVITATION_STATUS, $statuses, IQueryBuilder::PARAM_STR_ARRAY);
+            $qb->execute();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new Exception('An error occurred trying to delete invitations.');
+        }
     }
 
     /**

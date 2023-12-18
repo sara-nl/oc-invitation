@@ -37,6 +37,10 @@
         <admin>OCA\Invitation\Settings\Admin</admin>
     </settings>
 
+	<background-jobs>
+        <job>OCA\Invitation\Job\CleanupInvitations</job>
+	</background-jobs>
+
     <use-migrations>true</use-migrations>
 
 </info>

@@ -138,4 +138,20 @@ class InvitationService
             return $this->mapper->updateInvitation($fieldsAndValues);
         }
     }
+
+    /**
+     * Delete all invitations that have one of the specified statuses.
+     *
+     * @param array $statusses
+     * @return void
+     * @throws ServiceException
+     */
+    public function deleteForStatus(array $statuses): void
+    {
+        try {
+            $this->mapper->deleteForStatus($statuses);
+        } catch (Exception $e) {
+            throw new ServiceException($e->getMessage());
+        }
+    }
 }
