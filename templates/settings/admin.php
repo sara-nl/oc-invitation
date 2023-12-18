@@ -4,7 +4,6 @@ use OCA\Invitation\AppInfo\InvitationApp;
 
 $appName = InvitationApp::APP_NAME;
 $allowSharingWithInvitedUsersOnly = $_[InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY];
-$remoteProviders = $_['remoteInvitationServiceProviders'];
 script($appName, 'inv');
 script($appName, 'settings');
 style($appName, 'invitation'); ?>
