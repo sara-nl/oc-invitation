@@ -76,6 +76,7 @@
                         _ul = $('#invitation-remote-service-providers');
                         _ul.empty();
                         result.data.forEach((isp) => {
+                            // TODO: it should be possible to display all properties, eg. in expanded view
                             _li = $('<li>' + isp.name + '</li>');
                             _deleteButton = $('<span class="icon icon-delete"></span>');
                             _errorElement = $('<span class="settings-error"></span>');
