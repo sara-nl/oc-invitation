@@ -39,7 +39,7 @@ select distinct
  from (
   select 
    i.id as id, i.token as token, i.timestamp as timestamp, i.status as status, 
-   i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, 'sent' as sent_received,
+   i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, 'sent' COLLATE utf8mb4_bin as sent_received,
    i.provider_endpoint as provider_endpoint, i.recipient_endpoint as recipient_endpoint, 
    i.sender_cloud_id as sender_cloud_id, i.sender_name as sender_name, i.sender_email as sender_email, 
    i.recipient_cloud_id as recipient_cloud_id, i.recipient_name as recipient_name, i.recipient_email as recipient_email,
@@ -48,7 +48,7 @@ select distinct
     union all
   select 
    ii.id as id, ii.token as token, ii.timestamp as timestamp, ii.status as status, 
-   ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, 'received' as sent_received,
+   ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, 'received' COLLATE utf8mb4_bin as sent_received,
    ii.provider_endpoint as provider_endpoint, ii.recipient_endpoint as recipient_endpoint, 
    ii.sender_cloud_id as sender_cloud_id, ii.sender_name as sender_name, ii.sender_email as sender_email, 
    ii.recipient_cloud_id as recipient_cloud_id, ii.recipient_name as recipient_name, ii.recipient_email as recipient_email,
