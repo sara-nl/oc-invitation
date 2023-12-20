@@ -20,7 +20,7 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            $('#invitation-message span.message').text(json.message);
+                            $('#invitation-message span.message').html(json.message);
                         } else {
                             $('#invitation-message span.error').text(json.error_message);
                         }

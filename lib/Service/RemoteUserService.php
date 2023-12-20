@@ -56,7 +56,7 @@ class RemoteUserService implements IRemoteShareesSearch
 
             foreach ($remoteUsers as $i => $remoteUser) {
                 array_push($result, [
-                    'label' => $remoteUser->getRemoteUserName(),
+                    'label' => $remoteUser->getRemoteUserName() . " (Invited)",
                     'value' => [
                         'shareType' => Share::SHARE_TYPE_REMOTE,
                         'shareWith' => $remoteUser->getRemoteUserCloudID(),

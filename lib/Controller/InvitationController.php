@@ -172,8 +172,8 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    // FIXME: this will not be needed when the link is actually send by email
-                    'message' => "The invite $inviteLink has been send to $email"
+                    // FIXME: the link and message should be part of the the persisted invitation
+                    'message' => "The following invite (link) has been send to $email: <a style=\"color: blue;\" href=\"$inviteLink\">$inviteLink</a>"
                 ],
                 Http::STATUS_OK
             );
@@ -302,7 +302,6 @@ class InvitationController extends Controller
             }
 
             $recipientEndpoint = $this->meshRegistryService->getEndpoint();
-            $this->logger->debug(" recipientEndpoint (this endpoint) = $recipientEndpoint");
             $recipientCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
             $recipientEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
             $recipientName = \OC::$server->getUserSession()->getUser()->getDisplayName();
