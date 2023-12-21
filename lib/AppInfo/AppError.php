@@ -8,6 +8,7 @@ namespace OCA\Invitation\AppInfo;
 
 class AppError
 {
+
     /** unspecified error */
     public const ERROR = 'ERROR';
 
@@ -77,4 +78,9 @@ class AppError
     public const OCM_INVITE_ACCEPTED_NOT_FOUND = 'OCM_INVITE_ACCEPTED_NOT_FOUND';
     /** the invite has been accepted already */
     public const OCM_INVITE_ACCEPTED_EXISTS = 'OCM_INVITE_ACCEPTED_EXISTS';
+
+    /** there are no providers found to display on the wayf page */
+    public const WAYF_NO_PROVIDERS_FOUND = 'WAYF_NO_PROVIDERS_FOUND';
+    /** an unspecified error occurred trying to build the wayf page */
+    public const WAYF_ERROR = 'WAYF_ERROR';
 }

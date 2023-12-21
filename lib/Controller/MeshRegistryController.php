@@ -323,7 +323,10 @@ class MeshRegistryController extends Controller
             && isset($params[Schema::INVITATION_SERVICE_PROVIDER_DOMAIN])
             && isset($params[Schema::INVITATION_SERVICE_PROVIDER_NAME])
         ) {
-            return new DataResponse(['success' => true, 'data' => $params], Http::STATUS_OK);
+            return new DataResponse([
+                'success' => true,
+                'data' => $params
+            ], Http::STATUS_OK);
         }
         $this->logger->error('Could not validate the response fields. Fields: ' . print_r($params, true), ['app' => InvitationApp::APP_NAME]);
         return new DataResponse([

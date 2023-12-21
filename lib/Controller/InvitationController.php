@@ -317,6 +317,13 @@ class InvitationController extends Controller
             $httpClient = new HttpClient();
             // FIXME: in case of error it seems that $response['response'] is not set, we need to check for that.
             $response = $httpClient->curlPost($url, $params);
+            if(!isset($response['response'])) {
+                $this->logger->error('Curl POST responded with error - response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                return new DataResponse(
+                    ['error_message' => 'Failed to accept the invitation'],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
             $resArray = (array)$response['response'];
 
             if (
@@ -412,6 +419,7 @@ class InvitationController extends Controller
                 return new DataResponse(
                     [
                         'success' => true,
+                        // TODO consider returning the updated invitation
                     ],
                     Http::STATUS_OK,
                 );
@@ -503,7 +511,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'invitation' => $invitation,
+                    'data' => $invitation,
                 ]
             );
         } catch (NotFoundException $e) {
@@ -540,7 +548,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'invitations' => $invitations,
+                    'data' => $invitations,
                 ],
                 Http::STATUS_OK
             );
@@ -575,7 +583,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'invitation' => $invitation,
+                    'data' => $invitation,
                 ],
                 Http::STATUS_OK,
             );
@@ -638,7 +646,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'result' => $result
+                    'data' => $result
                 ],
                 Http::STATUS_OK,
             );

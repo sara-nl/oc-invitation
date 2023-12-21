@@ -65,8 +65,8 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            if (json.invitations) {
-                                renderer(json.invitations);
+                            if (json.data) {
+                                renderer(json.data);
                             }
                         } else {
                             $('#invitation-error span').text(json.error_message);

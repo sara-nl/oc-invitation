@@ -6,6 +6,8 @@
 
 namespace OCA\Invitation\Controller;
 
+use Exception;
+use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCA\Invitation\Service\ServiceException;
@@ -36,51 +38,85 @@ class PageController extends Controller
      */
     public function wayf(string $token, string $providerEndpoint, string $name): void
     {
-        $allWAYFURLs = null;
+        // TODO: use template for this
+
+        $title = '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
         try {
-            $allWAYFURLs = $this->getWAYFURLs($token, $providerEndpoint, $name);
+            $wayfItems = $this->getWayfItems($token, $providerEndpoint, $name);
+            $this->logger->debug(print_r($wayfItems, true));
+            if (sizeof($wayfItems) == 0) {
+                throw new ServiceException(AppError::WAYF_NO_PROVIDERS_FOUND);
+            }
+            $html = $title;
+            foreach ($wayfItems as $wayfItem) {
+                $this->logger->debug(print_r($wayfItem, true));
+                $url = $wayfItem['handleInviteUrl'];
+                $name = $wayfItem['providerName'];
+                $html .= print_r("<p><a href=\"$url\">$name</a></p>", true) . '</html>';
+            }
+            $html .= '</html>';
+            echo $html;
         } catch (ServiceException $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            echo "Could not display WAYF page.";
-            exit(0);
+            $html = $title;
+            $html .= '<div>' . $e->getMessage() . '</div></html>';
+            echo $html;
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $html = $title;
+            $html .= '<div>' . AppError::WAYF_ERROR . '</div></html>';
+            echo $html;
         }
-        // TODO: use template for this
-        echo '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
-        foreach ($allWAYFURLs as $i => $url) {
-            $endpoint = parse_url($url, PHP_URL_HOST);
-            echo print_r("<p><a href=\"$url\">$endpoint</a></p>", true) . '</html>';
-        }
-        echo '</html>';
-
         exit(0);
     }
 
     /**
-     * Returns the WAYF URLs.\
+     * Returns an array from which the WAYF page can be build in the following format:
+     * [
+     *      [
+     *          "handleInviteUrl" => url,
+     *          "providerName" => providerName
+     *      ],
+     *      [
+     *          ...
+     *      ]
+     * ]
      *
+     * @param string $token
+     * @param string $providerEndpoint
+     * @param string $name
+     * @return array
      * @throws ServiceException
      */
-    private function getWAYFURLs(string $token, string $providerEndpoint, string $name): array
+    private function getWayfItems(string $token, string $providerEndpoint, string $name): array
     {
-        $invitationServiceProviders = $this->meshRegistryService->allInvitationServiceProviders();
-        $wayfList = [];
-        foreach ($invitationServiceProviders as $i => $invitationServiceProvider) {
-            if ($invitationServiceProvider->getEndpoint() != $this->meshRegistryService->getEndpoint()) {
-                // TODO: optional: check if the server supports the invitation workflow
-                //       This should be done via the ocm /ocm-provider endpoint which must return the '/invite-accepted' capability
-                //       to inform us it supports handling invitations.
-                //       More likely is that we already know it should,
-                //       so this would be more like a sanity check (eg. the service may be down)
+        try {
+            $invitationServiceProviders = $this->meshRegistryService->allInvitationServiceProviders();
+            $wayfItems = [];
+            foreach ($invitationServiceProviders as $i => $invitationServiceProvider) {
+                if ($invitationServiceProvider->getEndpoint() != $this->meshRegistryService->getEndpoint()) {
+                    // TODO: optional: check if the server supports the invitation workflow
+                    //       This should be done via the ocm /ocm-provider endpoint which must return the '/invite-accepted' capability
+                    //       to inform us it supports handling invitations.
+                    //       More likely is that we already know it should,
+                    //       so this would be more like a sanity check (eg. the service may be down)
 
-                $serviceEndpoint = $invitationServiceProvider->getEndpoint();
-                $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
-                $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;
-                $providerEndpointParam = MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT;
-                $nameParam = MeshRegistryService::PARAM_NAME_NAME;
-                $link = "$serviceEndpoint/$handleInviteEndpoint?$tokenParam=$token&$providerEndpointParam=$providerEndpoint&$nameParam=$name";
-                $wayfList[$i] = $link;
+                    $serviceEndpoint = $invitationServiceProvider->getEndpoint();
+                    $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
+                    $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;
+                    $providerEndpointParam = MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT;
+                    $nameParam = MeshRegistryService::PARAM_NAME_NAME;
+                    $link = "$serviceEndpoint/$handleInviteEndpoint?$tokenParam=$token&$providerEndpointParam=$providerEndpoint&$nameParam=$name";
+                    $wayfItems[$i] = [
+                        "handleInviteUrl" => $link,
+                        "providerName" => $invitationServiceProvider->getName(),
+                    ];
+                }
             }
+            return $wayfItems;
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException(AppError::WAYF_ERROR);
         }
-        return $wayfList;
     }
 }
