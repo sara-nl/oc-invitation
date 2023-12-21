@@ -8,7 +8,6 @@ namespace OCA\Invitation\AppInfo;
 
 class AppError
 {
-
     /** unspecified error */
     public const ERROR = 'ERROR';
 

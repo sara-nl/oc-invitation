@@ -58,6 +58,7 @@ class OcmController extends Controller
         string $name = ''
     ): DataResponse {
         if (trim($recipientProvider) == '') {
+            $this->logger->error('recipient provider missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -67,6 +68,7 @@ class OcmController extends Controller
             );
         }
         if ($token == '') {
+            $this->logger->error('sender token missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -76,6 +78,7 @@ class OcmController extends Controller
             );
         }
         if ($userID == '') {
+            $this->logger->error('recipient user ID missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -85,6 +88,7 @@ class OcmController extends Controller
             );
         }
         if ($email == '') {
+            $this->logger->error('recipient email missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -94,6 +98,7 @@ class OcmController extends Controller
             );
         }
         if ($name == '') {
+            $this->logger->error('recipient name missing');
             return new DataResponse(
                 [
                     'success' => false,
