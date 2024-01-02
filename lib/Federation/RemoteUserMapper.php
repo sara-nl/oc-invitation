@@ -50,7 +50,7 @@ class RemoteUserMapper extends Mapper
         try {
             $remoteUsers = $this->createRemoteUsers($query->execute()->fetchAllAssociative());
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new Exception("Error searching for remote users with search string '$search'");
         }
         return $remoteUsers;

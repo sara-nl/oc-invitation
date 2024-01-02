@@ -44,7 +44,7 @@ class InvitationServiceProviderMapper extends Mapper
             }
             throw new NotFoundException("Error retrieving the invitation service provider with endpoint '$endpoint'");
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException("Error retrieving the endpoint provider with endpoint '$endpoint'");
         }
     }
@@ -63,7 +63,7 @@ class InvitationServiceProviderMapper extends Mapper
                 ->from(Schema::TABLE_INVITATION_SERVICE_PROVIDERS, 'dp');
             return $this->createInvitationServiceProviders($qb->execute()->fetchAllAssociative());
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException('Error retrieving all invitation service providers');
         }
     }

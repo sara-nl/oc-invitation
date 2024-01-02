@@ -6,7 +6,6 @@ use Exception;
 
 class HttpException extends Exception
 {
-
     private const HTTP_EXCEPTION = 'HTTP_EXCEPTION';
 
     public function __construct(string $message = "")

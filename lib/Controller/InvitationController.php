@@ -132,17 +132,17 @@ class InvitationController extends Controller
 
         // send the email: this should work if the oc instance is configured correctly
         // TODO: complete email settings
-        $mailer = \OC::$server->getMailer();
-        $mail = $mailer->createMessage();
-        $mail->setSubject("You've been invited to exchange cloud IDs.");
-        // $mail->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
-        $mail->setTo(array($email => $email));
-        $mail->setBody($message, '');
         try {
+            $mailer = \OC::$server->getMailer();
+            $mail = $mailer->createMessage();
+            $mail->setSubject("You've been invited to exchange cloud IDs.");
+            // $mail->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
+            $mail->setTo(array($email => $email));
+            $mail->setBody($message, '');
             $failedRecipients = $mailer->send($mail);
             $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             // FIXME: just continue for now
             // return new DataResponse(
             //     [
@@ -285,8 +285,9 @@ class InvitationController extends Controller
     {
         try {
             if ($token == '') {
+                $this->logger->error('acceptInvite: missing parameter token.', ['app' => InvitationApp::APP_NAME]);
                 return new DataResponse(
-                    ['error_message' => 'sender token missing'],
+                    ['success' => false, 'error_message' => AppError::REQUEST_MISSING_PARAMETER],
                     Http::STATUS_NOT_FOUND
                 );
             }
@@ -295,8 +296,9 @@ class InvitationController extends Controller
             try {
                 $invitation = $this->invitationService->findByToken($token);
             } catch (NotFoundException $e) {
+                $this->logger->error("acceptInvite: invitation not found for token '$token'", ['app' => InvitationApp::APP_NAME]);
                 return new DataResponse(
-                    ['error_message' => 'acceptInvite failed'],
+                    ['success' => false, 'error_message' => AppError::INVITATION_NOT_FOUND],
                     Http::STATUS_NOT_FOUND
                 );
             }
@@ -315,30 +317,29 @@ class InvitationController extends Controller
 
             $url = $this->meshRegistryService->getFullInviteAcceptedEndpointURL($invitation->getProviderEndpoint());
             $httpClient = new HttpClient();
-            $this->logger->debug("curl POST request - url: $url" . ' params: ' . print_r($params, true));
             $response = $httpClient->curlPost($url, $params);
-            // TODO this can be much cleaner, more parsing and error checking can be done in the HttpClient because the data response format is standardized
-            if (!isset($response['response'])) {
-                $this->logger->error("Curl POST response['response'] not set - response: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
-                return new DataResponse(
-                    ['error_message' => 'Failed to accept the invitation'],
-                    Http::STATUS_NOT_FOUND
-                );
-            }
-            $resArray = (array)$response['response'];
 
-            if (
-                $response['success'] == false
-                || $this->verifiedInviteAcceptedResponse($resArray) == false
-            ) {
+            if (isset($response['success']) && $response['success'] == false) {
                 $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
                 return new DataResponse(
-                    ['error_message' => 'Failed to accept the invitation'],
+                    [
+                        'success' => false,
+                        'error_message' => (isset($response['error_message']) ? $response['error_message'] : AppError::HANDLE_INVITATION_ERROR)
+                    ],
                     Http::STATUS_NOT_FOUND
                 );
             }
-
-            // check if there is not already an accepted invitation forremote user, and if there is decline this invitation
+            // note: beware of the format of response of the OCM call, it has no 'data' field
+            if ($this->verifiedInviteAcceptedResponse($response) == false) {
+                $this->logger->error('Failed to accept the invitation - returned fields not valid: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                return new DataResponse(
+                    [
+                        'success' => false,
+                        'error_message' => AppError::HANDLE_INVITATION_OCM_INVITE_ACCEPTED_RESPONSE_FIELDS_INVALID
+                    ],
+                    Http::STATUS_NOT_FOUND
+                );
+            }
 
             // all's well, update the invitation
             $updateResult = $this->invitationService->update(
@@ -347,9 +348,9 @@ class InvitationController extends Controller
                     Schema::INVITATION_RECIPIENT_ENDPOINT => $recipientEndpoint,
                     Schema::INVITATION_RECIPIENT_EMAIL => $recipientEmail,
                     Schema::INVITATION_RECIPIENT_NAME => $recipientName,
-                    Schema::INVITATION_SENDER_CLOUD_ID => $resArray[MeshRegistryService::PARAM_NAME_USER_ID],
-                    Schema::INVITATION_SENDER_EMAIL => $resArray[MeshRegistryService::PARAM_NAME_EMAIL],
-                    Schema::INVITATION_SENDER_NAME => $resArray[MeshRegistryService::PARAM_NAME_NAME],
+                    Schema::INVITATION_SENDER_CLOUD_ID => $response[MeshRegistryService::PARAM_NAME_USER_ID],
+                    Schema::INVITATION_SENDER_EMAIL => $response[MeshRegistryService::PARAM_NAME_EMAIL],
+                    Schema::INVITATION_SENDER_NAME => $response[MeshRegistryService::PARAM_NAME_NAME],
                     Schema::INVITATION_STATUS => Invitation::STATUS_ACCEPTED,
                 ],
                 true
@@ -359,42 +360,30 @@ class InvitationController extends Controller
                 return new DataResponse(
                     [
                         'success' => false,
-                        'error_message' => 'Failed to accept the invitation'
+                        'error_message' => AppError::ACCEPT_INVITE_ERROR,
                     ],
                     Http::STATUS_NOT_FOUND
                 );
             }
+
+            $this->removeInvitationNotification($token);
+
+            return new DataResponse(
+                [
+                    'success' => true
+                ],
+                Http::STATUS_OK
+            );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
-                    'error_message' => AppError::ERROR,
+                    'error_message' => AppError::ACCEPT_INVITE_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
             );
         }
-
-        try {
-            // finally remove the notification
-            $manager = \OC::$server->getNotificationManager();
-            $notification = $manager->createNotification();
-            $notification
-                ->setApp(InvitationApp::APP_NAME)
-                ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
-                ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
-            $manager->markProcessed($notification);
-        } catch (Exception $e) {
-            // invitation has already successfully been accepted; we only log this exception
-            $this->logger->error("Unable to remove notification for app '" . InvitationApp::APP_NAME . "' user '" . \OC::$server->getUserSession()->getUser()->getUID() . "' and token '$token'.", ['app' => InvitationApp::APP_NAME]);
-        }
-
-        return new DataResponse(
-            [
-                'success' => true
-            ],
-            Http::STATUS_OK
-        );
     }
 
     /**
@@ -428,10 +417,12 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => false,
+                    'error_message' => AppError::DECLINE_INVITE_ERROR,
                 ],
                 Http::STATUS_NOT_FOUND,
             );
         } catch (NotFoundException $e) {
+            $this->logger->error("declineInvite: invitation not found for token '$token'", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -440,7 +431,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -460,13 +451,18 @@ class InvitationController extends Controller
     private function removeInvitationNotification(string $token): void
     {
         $this->logger->debug(" - removing notification for invitation with token '$token'");
-        $manager = \OC::$server->getNotificationManager();
-        $notification = $manager->createNotification();
-        $notification
-            ->setApp(InvitationApp::APP_NAME)
-            ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
-            ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
-        $manager->markProcessed($notification);
+        try {
+            $manager = \OC::$server->getNotificationManager();
+            $notification = $manager->createNotification();
+            $notification
+                ->setApp(InvitationApp::APP_NAME)
+                ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
+                ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
+            $manager->markProcessed($notification);
+        } catch (Exception $e) {
+            $this->logger->error('Remove notification failed: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw $e;
+        }
     }
 
     /**
@@ -499,6 +495,7 @@ class InvitationController extends Controller
     public function find(int $id = null): DataResponse
     {
         if (!isset($id)) {
+            $this->logger->error("find() - missing parameter 'id'.", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -516,6 +513,7 @@ class InvitationController extends Controller
                 ]
             );
         } catch (NotFoundException $e) {
+            $this->logger->error("invitation not found for id $id. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -535,6 +533,7 @@ class InvitationController extends Controller
     public function findAll(string $fields = null): DataResponse
     {
         if (!isset($fields)) {
+            $this->logger->error("findAll() - missing parameter 'fields'.", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -554,6 +553,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
+            $this->logger->error('invitations not found for fields: ' . print_r($fields, true) . 'Error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -571,6 +571,7 @@ class InvitationController extends Controller
     public function findByToken(string $token = null): DataResponse
     {
         if (!isset($token)) {
+            $this->logger->error("findByToken() - missing parameter 'token'.", ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -589,7 +590,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -598,7 +599,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

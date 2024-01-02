@@ -31,11 +31,9 @@
             if (json.success == true || json.success == false) {
                 callback(json);
             } else {
-                console.log('could not set the endpoint');
                 errorCallback(JSON.stringify(json));
             }
         }).catch((response) => {
-            console.log('status: ' + response.status);
             errorCallback(response);
         });
     }
