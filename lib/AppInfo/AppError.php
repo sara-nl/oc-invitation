@@ -41,6 +41,16 @@ class AppError
     public const HANDLE_INVITATION_MISSING_SENDER_NAME = 'HANDLE_INVITATION_MISSING_SENDER_NAME';
     /** The invitation service provider of the invitation is unknown */
     public const HANDLE_INVITATION_PROVIDER_UNKNOWN = 'HANDLE_INVITATION_PROVIDER_UNKNOWN';
+    /** the reponse fields from the OCM /invite-accepted call are invalid */
+    public const HANDLE_INVITATION_OCM_INVITE_ACCEPTED_RESPONSE_FIELDS_INVALID = 'HANDLE_INVITATION_INVITE_ACCEPTED_RESPONSE_INVALID';
+
+    /* /accept-invite errors */
+    /** error accepting invitation */
+    public const ACCEPT_INVITE_ERROR = 'ACCEPT_INVITE_ERROR';
+
+    /* /decline-invite errors */
+    /** error declining invite */
+    public const DECLINE_INVITE_ERROR = 'DECLINE_INVITE_ERROR';
 
     /* Mesh Registry errors */
     /** error retrieving all providers */
@@ -82,4 +92,9 @@ class AppError
     public const WAYF_NO_PROVIDERS_FOUND = 'WAYF_NO_PROVIDERS_FOUND';
     /** an unspecified error occurred trying to build the wayf page */
     public const WAYF_ERROR = 'WAYF_ERROR';
+
+    /** the curl POST request responded with an error */
+    public const HTTP_POST_CURL_REQUEST_ERROR = 'HTTP_POST_CURL_REQUEST_ERROR';
+    /** the curl GET request responded with an error */
+    public const HTTP_GET_CURL_REQUEST_ERROR = 'HTTP_GET_CURL_REQUEST_ERROR';
 }

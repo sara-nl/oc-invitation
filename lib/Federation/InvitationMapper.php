@@ -40,7 +40,7 @@ class InvitationMapper extends Mapper
         if (is_array($result)) {
             return $this->getVInvitation($result);
         }
-        throw new NotFoundException("Could not retrieve invitation with id '$id'.");
+        throw new NotFoundException("Could not retrieve invitation with id $id.");
     }
 
     /** Returns the invitation with the specified token, or NotFoundException if it could not be found.
@@ -61,7 +61,7 @@ class InvitationMapper extends Mapper
                 return $this->getVInvitation($result);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new NotFoundException($e->getMessage());
         }
         throw new NotFoundException("Invitation not found for token $token");
@@ -172,7 +172,7 @@ class InvitationMapper extends Mapper
             $qb->setParameter(Schema::INVITATION_STATUS, $statuses, IQueryBuilder::PARAM_STR_ARRAY);
             $qb->execute();
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new Exception('An error occurred trying to delete invitations.');
         }
     }

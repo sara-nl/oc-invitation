@@ -115,7 +115,7 @@ class PageController extends Controller
             }
             return $wayfItems;
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException(AppError::WAYF_ERROR);
         }
     }

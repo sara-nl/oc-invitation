@@ -248,7 +248,7 @@ class MeshRegistryService
             $invitationServiceProvider->setEndpoint($endpoint);
             return $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error inserting the invitation service provider.');
         }
     }
@@ -295,7 +295,7 @@ class MeshRegistryService
             $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
             return $invitationServiceProvider;
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException("Error updating invitation service provider with endpoint '$endpoint'");
         }
     }
@@ -313,10 +313,10 @@ class MeshRegistryService
             $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
             return $this->invitationServiceProviderMapper->delete($invitationServiceProvider);
         } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error deleting the invitation service provider: Not found.');
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error deleting the invitation service provider.');
         }
     }
@@ -360,7 +360,7 @@ class MeshRegistryService
         try {
             return $this->invitationServiceProviderMapper->allInvitationServiceProviders();
         } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error retrieving all invitation service providers.');
         }
     }
@@ -415,7 +415,7 @@ class MeshRegistryService
             $invitationServiceProvider = $this->getInvitationServiceProvider();
             return $invitationServiceProvider->getName();
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException("Unable to find this instance's invitation service provider.");
         }
     }

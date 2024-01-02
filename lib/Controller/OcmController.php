@@ -58,7 +58,6 @@ class OcmController extends Controller
         string $name = ''
     ): DataResponse {
         if (trim($recipientProvider) == '') {
-            $this->logger->error('recipient provider missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -68,7 +67,6 @@ class OcmController extends Controller
             );
         }
         if ($token == '') {
-            $this->logger->error('sender token missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -78,7 +76,6 @@ class OcmController extends Controller
             );
         }
         if ($userID == '') {
-            $this->logger->error('recipient user ID missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -88,7 +85,6 @@ class OcmController extends Controller
             );
         }
         if ($email == '') {
-            $this->logger->error('recipient email missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -98,7 +94,6 @@ class OcmController extends Controller
             );
         }
         if ($name == '') {
-            $this->logger->error('recipient name missing');
             return new DataResponse(
                 [
                     'success' => false,
@@ -130,7 +125,7 @@ class OcmController extends Controller
                 );
             }
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -139,7 +134,7 @@ class OcmController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Stacktrace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
