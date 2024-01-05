@@ -247,6 +247,9 @@ class MeshRegistryController extends Controller
     public function addInvitationServiceProvider(string $endpoint): DataResponse
     {
         try {
+            // some sanitizing
+            $endpoint = trim(trim($endpoint), '/');
+
             $invitationServiceProvider = $this->meshRegistryService->addInvitationServiceProvider($endpoint);
 
             $url = $this->meshRegistryService->getFullInvitationServiceProviderEndpointUrl($endpoint);
