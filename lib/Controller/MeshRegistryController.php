@@ -257,7 +257,7 @@ class MeshRegistryController extends Controller
                 throw new ServiceException("Failed to call endpoint '$endpoint'");
             }
 
-            $result = (array)$response['response'];
+            $result = (array)$response;
             if (!isset($result['success']) || $result['success'] == false) {
                 throw new ServiceException(AppError::MESH_REGISTRY_ENDPOINT_INVITATION_SERVICE_PROVIDER_RESPONSE_INVALID);
             }
