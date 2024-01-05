@@ -1,33 +1,42 @@
 version: '3.7'
 
 services:
-    routes-tests:
+
+    integration-tests:
       build:
         context: .
-        dockerfile: routes-tests/Dockerfile
-    # ResearchDrive 1
-    rd-1:
+        dockerfile: integration-tests/Dockerfile
+      depends_on:
+        - nginx-proxy-1-2
+      extra_hosts:
+        - 'oc-1.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+      networks:
+        static-network:
+          ipv4_address: 10.1.0.190
+
+    # oc 1
+    oc-1:
         build:
-          context: .
-          dockerfile: rd-1/Dockerfile
-        container_name: rd-1
+          context: ../../
+          dockerfile: tests/docker/oc-1/Dockerfile-local
+        container_name: oc-1
         restart: always
         depends_on:
-          - mariadb-1
-          - redis-1
+          - mariadb-oc-1
+          - redis-oc-1
         environment:
-          # - OWNCLOUD_TRUSTED_DOMAINS=${RD_1_TRUSTED_DOMAINS}
+          - OWNCLOUD_TRUSTED_DOMAINS=${RD_1_TRUSTED_DOMAINS}
           - OWNCLOUD_DOMAIN=${RD_1_DOMAIN}
           - OWNCLOUD_DB_TYPE=mysql
           - OWNCLOUD_DB_NAME=owncloud
           - OWNCLOUD_DB_USERNAME=owncloud
           - OWNCLOUD_DB_PASSWORD=owncloud
-          - OWNCLOUD_DB_HOST=mariadb-1
+          - OWNCLOUD_DB_HOST=mariadb-oc-1
           - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
           - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
           - OWNCLOUD_MYSQL_UTF8MB4=true
           - OWNCLOUD_REDIS_ENABLED=true
-          - OWNCLOUD_REDIS_HOST=redis-1
+          - OWNCLOUD_REDIS_HOST=redis-oc-1
           - OWNCLOUD_LOG_LEVEL=0
         healthcheck:
             test: ["CMD", "/usr/bin/healthcheck"]
@@ -37,16 +46,17 @@ services:
         # command: ["su", "-c", "/usr/bin/owncloud server", "www-data"]
         tty: true
         volumes:
-          - files-1:/mnt/data
+          - files-oc-1:/mnt/data
         extra_hosts:
-          - 'rd-2.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+          - 'oc-1.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+          - 'oc-2.nl:10.1.0.160' # this will add this mapping to /etc/hosts
         networks:
           static-network:
             ipv4_address: 10.1.0.100
 
-    mariadb-1:
+    mariadb-oc-1:
         image: mariadb:10.6 # minimum required ownCloud version is 10.9
-        container_name: mariadb-1
+        container_name: mariadb-oc-1
         restart: always
         environment:
         - MYSQL_ROOT_PASSWORD=owncloud
@@ -60,14 +70,14 @@ services:
             timeout: 5s
             retries: 5
         volumes:
-            - mysql-1:/var/lib/mysql
+            - mysql-oc-1:/var/lib/mysql
         networks:
           static-network:
             ipv4_address: 10.1.0.110
 
-    redis-1:
+    redis-oc-1:
         image: redis:6
-        container_name: redis-1
+        container_name: redis-oc-1
         restart: always
         command: ["--databases", "1"]
         healthcheck:
@@ -76,7 +86,7 @@ services:
             timeout: 5s
             retries: 5
         volumes:
-            - redis-1:/data
+            - redis-oc-1:/data
         networks:
           static-network:
             ipv4_address: 10.1.0.120
@@ -85,15 +95,13 @@ services:
 
 
     # The reverse mesh proxy with TLS
-    nginx-proxy:
+    nginx-proxy-1-2:
       build:
         context: .
-        dockerfile: nginx-proxy/Dockerfile
-      container_name: nginx-proxy
+        dockerfile: nginx-proxy-1-2/Dockerfile
+      container_name: nginx-proxy-1-2
       depends_on:
-        - rd-1
-      # volumes:
-      #   - rd-1/rd-1.nl/certs:/etc/nginx/certs/rd-1
+        - oc-1
       ports:
         - 80:80
         - 443:443
@@ -101,12 +109,22 @@ services:
         static-network:
           ipv4_address: 10.1.0.160
 
+    adminer:
+      image: adminer
+      container_name: adminer
+      restart: always
+      ports:
+        - 8084:8080
+      networks:
+        static-network:
+          ipv4_address: 10.1.0.170
+
 volumes:
-    files-1:
+    files-oc-1:
         driver: local
-    mysql-1:
+    mysql-oc-1:
         driver: local
-    redis-1:
+    redis-oc-1:
         driver: local
 
 networks:

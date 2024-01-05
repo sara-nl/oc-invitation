@@ -16,6 +16,7 @@ jobs:
       - name: Composer install
         uses: php-actions/composer@v6
 
+      # we must snif only php folders; we have a step for each one
       - name: PHP Code Sniffer appinfo
         uses: php-actions/phpcs@v1
         with:

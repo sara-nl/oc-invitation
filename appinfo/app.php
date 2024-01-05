@@ -3,9 +3,7 @@
 declare(strict_types=1);
 
 use OCA\Invitation\AppInfo\InvitationApp;
-use OCP\Util;
 
-// FIXME: SHOULD this be necessary ?
 require __DIR__ . '/../vendor/autoload.php';
 
 $eventDispatcher = \OC::$server->getEventDispatcher();

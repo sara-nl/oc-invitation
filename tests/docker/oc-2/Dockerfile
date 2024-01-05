@@ -1,10 +1,10 @@
 FROM owncloud/server:latest as builder
 
 # it needs the certs from all mesh hosts
-COPY rd-1/rd-1.nl/certs/cert.pem /usr/share/ca-certificates/rd-mesh/rd-1.pem
-COPY rd-2/rd-2.nl/certs/cert.pem /usr/share/ca-certificates/rd-mesh/rd-2.pem
+COPY rd-1/rd-1.nl/certs/cert.pem /usr/share/ca-certificates/rd-mesh/oc-1.pem
+COPY oc-2/oc-2.nl/certs/cert.pem /usr/share/ca-certificates/rd-mesh/oc-2.pem
 RUN echo 'rd-mesh/rd-1.pem' >> /etc/ca-certificates.conf \
-    && echo 'rd-mesh/rd-2.pem' >> /etc/ca-certificates.conf \
+    && echo 'rd-mesh/oc-2.pem' >> /etc/ca-certificates.conf \
     && update-ca-certificates \
     && export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 

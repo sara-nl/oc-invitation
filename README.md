@@ -23,16 +23,21 @@ This will create the `invitation_version_number.tar.gz` file in the `build/artif
 Now you can activate it and start experimenting. For a full experience you should setup 2 instances between which you can send invitations and create federated shares.
 
 #### Contributing
-Please run `make php-codesniffer-errors` and fix the errors before committing to the repo.
-
+Please run `make php-codesniffer-errors` locally and fix the errors before pushing to the repo. The github build pipeline will run that too.<br>
 For your convenience `make php-codesniffer-errors-fix` will take care of most errors.
+
+Integration tests will also run in the github pipeline when pushing code to the repo. You can (and should) run these tests locally also from within the `tests/docker` folder with the following command:
+
+`docker compose --verbose --progress=plain -f docker-compose-local.yaml run --build --entrypoint /bin/sh --rm integration-tests -- ./tmp/tests/tests.sh`
+
+Check the outcome of the tests and fix any issues.
 
 #### CI/CD
 * Upon pushing commits a workflow doing some codechecking is executed. You should [prepare](#contributing) for that.
 * [Building a release .tar.gz file](release/README.md)
 
 #### Deployment
-Use one of the [official releases](releases) or build your own compressed archive as explained [here](release/README.md).<br>
+Use one of the [official releases](/sara-nl/oc-invitation/releases) or build your own compressed archive as explained [here](release/README.md).<br>
 Deploy the app by copying the extracted `invitation` folder of the official release or your own custom build to the Owncloud `apps` folder.
 
 Finally the admin should activate the app. It should than be present as a menu entrance for all users.
