@@ -3,26 +3,35 @@ name: PHPUnit
 on: [push]
 
 jobs:
-  test:
+  routes:
     runs-on:
       ubuntu-latest
-    
+    env:
+      BRANCH: ${{ github.ref_name }}
+      # BRANCH: "nou-nou"
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3
     
-      - name: Show GitHub context   
-        env: 
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-        shell: bash
+      # - name: Show GitHub context   
+      #   env: 
+      #     GITHUB_CONTEXT: ${{ toJson(github) }}
+      #   run: echo "$GITHUB_CONTEXT"
+      #   shell: bash
 
-      - name: docker-setup
+      # the docker compose setup
+      - name: docker-compose-setup
         uses: cloudposse/github-action-docker-compose-test-run@main
         with:
           file: tests/docker/docker-compose.yaml
           service: routes-tests
           command: /tmp/apps/invitation/tests/run-test.sh
+
+      # - name: Checkout app
+      #   uses: actions/checkout@v2
+      #   with:
+      #     path: apps/${{ env.APP_NAME }}
 
 
 
