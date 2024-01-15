@@ -23,13 +23,12 @@ This will create the `invitation_version_number.tar.gz` file in the `build/artif
 Now you can activate it and start experimenting. For a full experience you should setup 2 instances between which you can send invitations and create federated shares.
 
 #### Contributing
-Please run `make php-codesniffer-errors` locally and fix the errors before pushing to the repo. The github build pipeline will run that too.<br>
+Please perform the following checks locally before pushing code to the repo. Github workflows will do these checks too:
+1. Run `make php-codesniffer-errors` and fix the errors before pushing to the repo.<br>
 For your convenience `make php-codesniffer-errors-fix` will take care of most errors.
 
-Integration tests will also run in the github pipeline when pushing code to the repo. You can (and should) run these tests locally also from within the `tests/docker` folder with the following command:
-
-`docker compose --verbose --progress=plain -f docker-compose-local.yaml run --build --entrypoint /bin/sh --rm integration-tests -- ./tmp/tests/tests.sh`
-
+2. Run the integrations tests from within the `tests/docker` folder with the following command:<br>
+`docker compose --verbose --progress=plain -f docker-compose-local.yaml run --build --entrypoint /bin/sh --rm integration-tests -- ./tmp/tests/tests.sh`<br>
 Check the outcome of the tests and fix any issues.
 
 #### CI/CD
