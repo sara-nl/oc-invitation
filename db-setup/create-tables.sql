@@ -1,5 +1,4 @@
 /* TODO: add indices
-   TODO: is prefix 'oc_' ok ?
  */
 
 DROP TABLE IF EXISTS `oc_invitation_invitations`;

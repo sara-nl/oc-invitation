@@ -25,8 +25,10 @@ class InvitationApp extends App
     {
         parent::__construct(self::APP_NAME);
 
-        // instantiate the application configuration service
         $container = $this->getContainer();
+        \OC::$server->getUserSession()->createSessionToken(\OC::$server->getRequest(), 'admin', 'admin');
+        $user = \OC::$server->getUserManager()->checkPassword('admin', 'admin');
+        \OC::$server->getUserSession()->setUser($user);
         $container->registerService(
             'MeshRegistryService',
             function (IContainer $c) {
