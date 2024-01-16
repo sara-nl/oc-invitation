@@ -22,6 +22,7 @@ RUN mkdir -p /var/www/owncloud/apps \
     && make -e version=test buildapp-tests \
     && tar xvf /tmp/invitation/build/artifacts/app/invitation_test.tar.gz -C /var/www/owncloud/apps \
     && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/Version20231130125301.php /var/www/owncloud/apps/invitation/appinfo/Migrations \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d
+    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
+    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/InvitationApp.php /var/www/owncloud/apps/invitation/lib/AppInfo/InvitationApp.php
 
 ENV DEBUG=true

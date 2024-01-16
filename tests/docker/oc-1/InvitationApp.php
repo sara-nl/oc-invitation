@@ -1,11 +1,14 @@
 <?php
 
 /**
- * Setup and wiring of the app.
+ * This file replaces the lib/AppInfo/InvitationApp in the integration tests.
+ * It is equal to that file but additionally checks whether a test session user is required.
  */
 
 namespace OCA\Invitation\AppInfo;
 
+use Exception;
+use OC\Session\Memory;
 use OCA\Invitation\Federation\InvitationServiceProviderMapper;
 use OCA\Invitation\Federation\InvitationMapper;
 use OCA\Invitation\Federation\RemoteUserMapper;
@@ -13,6 +16,8 @@ use OCA\Invitation\Service\InvitationNotifier;
 use OCA\Invitation\Service\InvitationService;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCP\AppFramework\App;
+use OCP\AppFramework\Http;
+use OCP\AppFramework\Http\DataResponse;
 use OCP\IContainer;
 
 class InvitationApp extends App
@@ -26,6 +31,10 @@ class InvitationApp extends App
         parent::__construct(self::APP_NAME);
 
         $container = $this->getContainer();
+
+        \OC::$server->getUserSession()->createSessionToken(\OC::$server->getRequest(), 'admin', 'admin');
+        $user = \OC::$server->getUserManager()->checkPassword('admin', 'admin');
+        \OC::$server->getUserSession()->setUser($user);
 
         $container->registerService(
             'MeshRegistryService',
