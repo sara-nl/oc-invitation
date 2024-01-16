@@ -130,20 +130,25 @@ class InvitationController extends Controller
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_NEW);
 
+        // TODO: save invitation link with invitation entity and display it in the open invitations list
+        //      with a re-send option perhaps?
+        //      consider accepting failure of sending invitation mail, and show it as a failed invitation in the invitations list
+
         // send the email: this should work if the oc instance is configured correctly
-        // TODO: complete email settings
         try {
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
             $mail->setSubject("You've been invited to exchange cloud IDs.");
-            // $mail->setFrom(array('cloud@domain.org' => 'ownCloud Notifier'));
+            $mail->setFrom([\OC::$server->getConfig()->getSystemValue('invitation-mail-from-address', null)]);
             $mail->setTo(array($email => $email));
             $mail->setBody($message, '');
             $failedRecipients = $mailer->send($mail);
             $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            // FIXME: just continue for now
+            // TODO: Instead of failing, we could continue and still insert and display the invitation as failed in the list
+
+            // just continue for now
             // return new DataResponse(
             //     [
             //         'success' => false,
