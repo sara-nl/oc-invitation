@@ -121,3 +121,8 @@ input#allow-sharing-with-invited-users-only {
     font-family: inherit;
     vertical-align: baseline;
 }
+
+li[data-id="invitation"] img.app-icon {
+    max-height: 38px !important;
+    max-width: 38px !important;
+}
