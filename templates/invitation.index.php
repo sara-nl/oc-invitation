@@ -32,7 +32,7 @@ style($appName, 'invitation');
     </div>
     <div class="pure-u-1-1 invites">
         <div class="pure-g">
-            <div class="pure-u-13-24">
+            <div class="pure-u-1-1">
                 <div class="pure-g">
                     <div class="pure-u-1-1 open">
                         <h2>Open invitations</h2>
@@ -54,7 +54,7 @@ style($appName, 'invitation');
                     </div>
                 </div>
             </div>
-            <div class="pure-u-11-24">
+            <div class="pure-u-1-1">
                 <div class="pure-g">
                     <div class="pure-u-1-1 accepted">
                         <h2>Accepted invitations</h2>

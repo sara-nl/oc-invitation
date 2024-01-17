@@ -25,6 +25,8 @@ use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\ILogger;
 use OCP\IRequest;
+use OCP\Template;
+use OCP\Util;
 use Ramsey\Uuid\Uuid;
 
 class InvitationController extends Controller
@@ -139,9 +141,14 @@ class InvitationController extends Controller
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
             $mail->setSubject("You've been invited to exchange cloud IDs.");
-            $mail->setFrom([\OC::$server->getConfig()->getSystemValue('invitation-mail-from-address', null)]);
+            $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
-            $mail->setBody($message, '');
+            $language = 'en';
+            $htmlText = $this->getMailBody($inviteLink, $message, 'html', $language);
+            $this->logger->debug($htmlText);
+            // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
+            $mail->setHtmlBody($htmlText);
+            // $mail->setPlainBody($plainText);
             $failedRecipients = $mailer->send($mail);
             $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
@@ -183,6 +190,39 @@ class InvitationController extends Controller
                 Http::STATUS_OK
             );
         }
+    }
+
+    /**
+     * Get the email from address.
+     * Can be explicitly set using system config: 'invitation_mail_from_address'.
+     * Otherwise uses the default config which uses the optional system config 'mail_from_address' and 'mail_domain' keys.
+     *
+     * @param string $address the address part in 'address@maildomain.com'
+     * @return string
+     */
+    private function getEmailFromAddress(string $address = null)
+    {
+        if (empty($address)) {
+            $address = 'no-reply';
+        }
+        $senderAddress = Util::getDefaultEmailAddress($address);
+        return \OC::$server->getSystemConfig()->getValue('invitation_mail_from_address', $senderAddress);
+    }
+
+    /**
+     * Returns the mail body rendered according to the specified target template.
+     * @param string $inviteLink the invite link
+     * @param string $message additional message to render
+     * @param string $targetTemplate on of 'html', 'text'
+     * @param string $languageCode the language code to use
+     * @return string the rendered body
+     */
+    private function getMailBody(string $inviteLink, string $message, string $targetTemplate = 'html', string $languageCode = '')
+    {
+        $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
+        $tmpl->assign('inviteLink', $inviteLink);
+        $tmpl->assign('message', $message);
+        return $tmpl->fetchPage();
     }
 
     /**

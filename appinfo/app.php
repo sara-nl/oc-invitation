@@ -29,7 +29,7 @@ if (
                 'href' => $urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.invitation.index'),
 
                 // The icon that will be shown in the navigation, located in img/
-                'icon' => $urlGenerator->imagePath(InvitationApp::APP_NAME, 'handshake.jpg'),
+                'icon' => $urlGenerator->imagePath(InvitationApp::APP_NAME, 'handshake.svg'),
 
                 // The application's title, used in the navigation & the settings page of your app
                 'name' => OC::$server->getL10N(InvitationApp::APP_NAME)->t('Invitation'),
