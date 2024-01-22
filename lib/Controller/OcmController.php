@@ -39,8 +39,6 @@ class OcmController extends Controller
     /**
      * Inform the sender of the invite that it has been accepted by the recipient.
      *
-     * FIXME: use method parameters
-     *
      * @NoCSRFRequired
      * @PublicPage
      * @param string $recipientProvider maps to recipient_endpoint in the Invitation entity
@@ -50,6 +48,7 @@ class OcmController extends Controller
      * @param string $name the recipient name
      * @return DataResponse
      */
+    // FIXME: make sure we follow the OCM protocol regarding response codes
     public function inviteAccepted(
         string $recipientProvider = '',
         string $token = '',

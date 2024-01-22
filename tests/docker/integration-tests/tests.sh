@@ -5,7 +5,7 @@ echo Start Invitation app integration tests
 echo sleeping 15s ... giving owncloud time to startup && sleep 15 &&
 
 # if this succeeds we know we have connectivity
-curl -vv https://oc-1.nl/apps/invitation/registry/invitation-service-provider
+# curl -vv https://oc-1.nl/apps/invitation/registry/invitation-service-provider
 echo 
 echo
 echo "Starting integration unit tests"

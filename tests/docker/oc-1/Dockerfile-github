@@ -24,11 +24,14 @@ RUN cd /tmp/invitation \
     && tar -xvf /tmp/invitation/build/artifacts/app/invitation_test.tar.gz -C /var/www/owncloud/apps \
     && cd /var/www/owncloud/apps/invitation \
     && composer install \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/Version20231130125301.php /var/www/owncloud/apps/invitation/appinfo/Migrations
+    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/Version20231130125301.php /var/www/owncloud/apps/invitation/appinfo/Migrations \
+    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
+    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/InvitationApp.php /var/www/owncloud/apps/invitation/lib/AppInfo/InvitationApp.php
 
 # RUN chown -R www-data:root /var/www/owncloud/apps/invitation \
-    RUN cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d
-    # && chown -R www-data:root /etc/pre_server.d
+# RUN cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
+#     && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/InvitationApp.php /var/www/owncloud/apps/invitation/lib/AppInfo/InvitationApp.php
+# && chown -R www-data:root /etc/pre_server.d
 
 ENV DEBUG=true
 

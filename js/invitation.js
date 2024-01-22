@@ -20,7 +20,14 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            $('#invitation-message span.message').html(json.message);
+                            // $('#invitation-message span.message').html('Your invitation has been sent to ' + json.email + '.');
+                            $('#invitation-message span.message').html(
+                                ' <div id="invitation-message-accordion">'
+                                + '<h5>Your invitation has been sent to ' + json.email + '.</h5>'
+                                + '<div><p>Invite link: <a href="' + json.inviteLink + '">' + json.inviteLink + '</a></p></div>'
+                                + '</div>'
+                            );
+                            $("#invitation-message-accordion").accordion({ collapsible: true, active: false });
                         } else {
                             $('#invitation-message span.error').text(json.error_message);
                         }
@@ -34,13 +41,14 @@
         };
 
         let generateInviteButton = document.getElementById('create-invitation');
+        // FIXME: get message linebreaks: document.getElementById('create-invitation-message').value.replace(/\n/g, "<br/>");
         generateInviteButton.addEventListener(
             "click", function (event) {
                 event.preventDefault();
                 event.stopPropagation();
                 generateInvite(
                     document.getElementById('create-invitation-email').value,
-                    document.getElementById('create-invitation-message').value
+                    encodeURI(document.getElementById('create-invitation-message').value)
                 )
             }
         );
@@ -80,6 +88,7 @@
         };
 
         let updateInvite = function (token, status) {
+            $('#invitation-message span').text("");
             let endpoint = OC.generateUrl('/apps/invitation/update-invitation');
             let options = {
                 method: 'PUT',

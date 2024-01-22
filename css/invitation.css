@@ -126,3 +126,26 @@ li[data-id="invitation"] img.app-icon {
     max-height: 38px !important;
     max-width: 38px !important;
 }
+
+div#invitation-message-accordion .ui-accordion-header {
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    padding-right: 2em;
+    width: fit-content;
+}
+
+div#invitation-message-accordion .ui-accordion-header span.ui-accordion-header-icon {
+    left: unset;
+    right: 0em;
+}
+
+div#invitation-message-accordion div.ui-accordion-content {
+    border: none;
+    background: none;
+}
+
+div#invitation-message-accordion div.ui-accordion-content a {
+    color: blue;
+}
