@@ -45,9 +45,6 @@ class InvitationApp extends App
                 return new InvitationService(
                     new InvitationMapper(
                         \OC::$server->getDatabaseConnection()
-                    ),
-                    new RemoteUserMapper(
-                        \OC::$server->getDatabaseConnection()
                     )
                 );
             }

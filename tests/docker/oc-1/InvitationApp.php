@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file replaces the lib/AppInfo/InvitationApp in the integration tests.
- * It is equal to that file but additionally checks whether a test session user is required.
+ * This file replaces the lib/AppInfo/InvitationApp in the integration tests
+ * and checks whether a test session user is required.
  */
 
 namespace OCA\Invitation\AppInfo;
@@ -32,9 +32,18 @@ class InvitationApp extends App
 
         $container = $this->getContainer();
 
-        \OC::$server->getUserSession()->createSessionToken(\OC::$server->getRequest(), 'admin', 'admin');
-        $user = \OC::$server->getUserManager()->checkPassword('admin', 'admin');
-        \OC::$server->getUserSession()->setUser($user);
+        // Create a user session
+        // For the integration tests this seems to work ok
+        // Checks for existence of the 'User: username' header and creates a session from that.
+        if (!empty($_SERVER['HTTP_USER'])) {
+            $userName = $_SERVER['HTTP_USER'];
+            \OC::$server->getLogger()->debug("Running test for user '$userName'.");
+            \OC::$server->getUserSession()->createSessionToken(\OC::$server->getRequest(), $userName, $userName);
+            $user = \OC::$server->getUserManager()->checkPassword($userName, $userName);
+            \OC::$server->getUserSession()->setUser($user);
+        } else {
+            \OC::$server->getLogger()->debug("Running test with no user session.");
+        }
 
         $container->registerService(
             'MeshRegistryService',

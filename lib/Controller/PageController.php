@@ -38,7 +38,7 @@ class PageController extends Controller
      */
     public function wayf(string $token, string $providerEndpoint, string $name): void
     {
-        // TODO: use template for this
+        // FIXME: use template for this
 
         $title = '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
         try {

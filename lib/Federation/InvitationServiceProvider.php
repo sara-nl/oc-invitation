@@ -5,13 +5,8 @@
  *
  */
 
-// FIXME: the new InvitationServiceProvider
+// FIXME: finalize properties list
 // Properties:
-//      endpoint        - the root of all routes, according of the following format: https://{domain}/{path}/apps/invitation
-//      domain          - under debate, could be usefull as a provider's identiying key, however invitationEndpoint also suffices.
-//
-//      These properties are helpfull for creating the WAYF page:
-//      name            - should have a name, eg. the name of the institute where the EFSS is running, university whatever.
 //      logo            - should have a logo
 //
 //      ... OCM invite-accepted endpoint defined here as well ? as serviceable property ?

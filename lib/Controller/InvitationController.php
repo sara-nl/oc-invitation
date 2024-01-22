@@ -9,7 +9,6 @@ namespace OCA\Invitation\Controller;
 
 use DateTime;
 use Exception;
-use OC\Mail\Mailer;
 use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\Db\Schema;
@@ -79,6 +78,17 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::CREATE_INVITATION_EMAIL_INVALID,
+                ],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+
+        $inviteLink = '';
         try {
             // generate the token
             $token = Uuid::uuid4();
@@ -108,6 +118,8 @@ class InvitationController extends Controller
                     Http::STATUS_NOT_FOUND,
                 );
             }
+
+            $inviteLink = $this->meshRegistryService->inviteLink($params);
         } catch (Exception $e) {
             return new DataResponse(
                 [
@@ -117,8 +129,6 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         }
-
-        $inviteLink = $this->meshRegistryService->inviteLink($params);
 
         // persist the invite to send
         $invitation = new Invitation();
@@ -144,11 +154,14 @@ class InvitationController extends Controller
             $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
             $language = 'en';
+            // $this->logger->debug(" - html sanitized: " . \OCP\Util::sanitizeHTML($message));
             $htmlText = $this->getMailBody($inviteLink, $message, 'html', $language);
-            $this->logger->debug($htmlText);
-            // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
+            // $this->logger->debug(print_r($htmlText, true));
             $mail->setHtmlBody($htmlText);
+            // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
             // $mail->setPlainBody($plainText);
+            // TODO: Array with failed recipients. Be aware that this depends on the used mail backend and therefore should be considered.
+            //       return error if failed ??
             $failedRecipients = $mailer->send($mail);
             $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
         } catch (Exception $e) {
@@ -184,6 +197,9 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
+                    'data' => $newInvitation->getToken(),
+                    'inviteLink' => $inviteLink,
+                    'email' => $email,
                     // FIXME: the link and message should be part of the the persisted invitation
                     'message' => "The following invite (link) has been send to $email: <a style=\"color: blue;\" href=\"$inviteLink\">$inviteLink</a>"
                 ],
@@ -221,8 +237,17 @@ class InvitationController extends Controller
     {
         $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
         $tmpl->assign('inviteLink', $inviteLink);
-        $tmpl->assign('message', $message);
+        $this->logger->debug($message);
+        $this->logger->debug($this->decodeHtmlBreaks($message));
+        $tmpl->assign('message', $this->decodeHtmlBreaks($message));
         return $tmpl->fetchPage();
+    }
+
+    private function decodeHtmlBreaks(string $message = ''): string
+    {
+        // FIXME inactivated until fixed/tested
+        return $message;
+        // return str_replace("%3Cbr\/%3E", "<br\/>", $message);
     }
 
     /**
@@ -292,11 +317,11 @@ class InvitationController extends Controller
         $acceptAction = $notification->createAction();
         $acceptAction
             ->setLabel('accept')
-            ->setLink("/apps/" . InvitationApp::APP_NAME . "/accept-invite/$token", 'POST');
+            ->setLink($this->getBaseUrl() . "/apps/" . InvitationApp::APP_NAME . "/accept-invite/$token", 'POST');
 
         $declineAction = $notification->createAction();
         $declineAction->setLabel('decline')
-            ->setLink('/apps/' . InvitationApp::APP_NAME . "/decline-invite/$token", 'POST');
+            ->setLink($this->getBaseUrl() . '/apps/' . InvitationApp::APP_NAME . "/decline-invite/$token", 'POST');
 
         $notification->setApp(InvitationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
@@ -314,6 +339,19 @@ class InvitationController extends Controller
         $manager->notify($notification);
 
         return new RedirectResponse($urlGenerator->linkToRoute('files.view.index'));
+    }
+
+    /**
+     * Returns the baseUrl.
+     * The baseUrl is present in the request context, but we cannot obtain it.
+     */
+    private function getBaseUrl(): string
+    {
+        $baseUrl = \OC::$WEBROOT;
+        if (!(\getenv('front_controller_active') === 'true')) {
+            $baseUrl = \rtrim($baseUrl, '/') . '/index.php';
+        }
+        return $baseUrl;
     }
 
     /**
