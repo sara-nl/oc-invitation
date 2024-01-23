@@ -52,11 +52,19 @@ class Invitation extends Entity implements JsonSerializable
     protected $timestamp;
     protected $status;
 
+    /** the invitation is new */
     public const STATUS_NEW = 'new';
+    /** the invitation is open */
     public const STATUS_OPEN = 'open';
+    /** the invitation was accepted */
     public const STATUS_ACCEPTED = 'accepted';
+    /** the invitation was declined */
     public const STATUS_DECLINED = 'declined';
+    /** the open invitation has been revoked */
     public const STATUS_REVOKED = 'revoked';
+    /** the accepted invitation has been withdrawn */
+    public const STATUS_WITHDRAWN = 'withdrawn';
+    /** the invitation is invalid (something has gone wrong) */
     public const STATUS_INVALID = 'invalid';
 
     public function jsonSerialize()

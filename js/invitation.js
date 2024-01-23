@@ -181,6 +181,17 @@
                 );
                 return revokeButton;
             }
+            if (status === 'withdrawn') {
+                var revokeButton = $('<a class="pure-button" href="#">withdraw</a>');
+                revokeButton.on(
+                    "click", function (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        updateInvite(token, 'withdrawn')
+                    }
+                );
+                return revokeButton;
+            }
         }
 
         let renderOpenInvitations = function (invitations) {
@@ -215,7 +226,9 @@
                     + '</td><td>' + invitation.remoteUserName
                     + '</td><td>' + invitation.remoteUserCloudId
                     + '</td><td>' + invitation.remoteUserEmail
+                    + '</td><td class="button-holder" data-withdraw-invite="' + invitation.token + '">'
                     + '</td></tr>');
+                $('td[data-withdraw-invite="' + invitation.token + '"]').append(invitationButton('withdrawn', invitation.token));
             });
         };
 
