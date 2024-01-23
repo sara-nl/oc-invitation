@@ -723,7 +723,7 @@ class InvitationController extends Controller
             $status === Invitation::STATUS_DECLINED
             || $status === Invitation::STATUS_REVOKED
         ) {
-            // remove possible associated notification
+            // remove potential associated notification
             $this->removeInvitationNotification($token);
         }
 

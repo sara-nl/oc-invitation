@@ -65,6 +65,7 @@ style($appName, 'invitation');
                                     <th>Remote user name</th>
                                     <th>Remote user cloud ID</th>
                                     <th>Remote user email</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -34,8 +34,8 @@ div.invites div.accepted {
     background-color: aliceblue;
 }
 
-div.invites td.button-holder a {
-    width: 4em;
+div.invites div.open td.button-holder a {
+    width: 5em;
     padding-left: .3em;
     padding-right: .3em;
 }
