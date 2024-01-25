@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use OCA\Invitation\AppInfo\InvitationApp;
+use OCP\Util;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -37,8 +38,8 @@ if (
         }
     );
     $app = \OC::$server->query(\OCA\Invitation\AppInfo\InvitationApp::class);
-    // TODO: consider reactivation when we can make the notification 'decline' button confirmation dialog to work
-    // Util::addScript(InvitationApp::APP_NAME, 'invitation-notifications');
+    // this overrides the OC core sharedialogview.js file.
+    Util::addScript(InvitationApp::APP_NAME, 'oc/sharedialogview');
 } else {
     \OC::$server->getLogger()->error('Error: not installed. Invitations app requires: Federated File Sharing app, Notifications app', ['app' => InvitationApp::APP_NAME]);
     $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {
