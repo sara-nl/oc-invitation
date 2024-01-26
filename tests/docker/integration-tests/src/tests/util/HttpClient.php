@@ -7,7 +7,6 @@ use SimpleXMLElement;
 
 class HttpClient
 {
-
     public function __construct()
     {
     }
@@ -44,7 +43,7 @@ class HttpClient
             if (!isset($output) || $output == false) {
                 throw new Exception('curl_exec output error, curl_getinfo: ' . print_r($info, true));
             }
-            if($unprotected) {
+            if ($unprotected) {
                 return json_decode($output, true);
             }
             $ocs = new SimpleXMLElement($output);
@@ -88,7 +87,7 @@ class HttpClient
                 print_r("\ncurl_getinfo: " . print_r($info, true));
                 throw new Exception('curl_exec output error, curl_getinfo: ' . print_r($info, true));
             }
-            if($unprotected) {
+            if ($unprotected) {
                 return json_decode($output, true);
             }
             $ocs = new SimpleXMLElement($output);

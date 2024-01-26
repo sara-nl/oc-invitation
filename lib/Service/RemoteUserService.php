@@ -11,6 +11,7 @@ use Exception;
 use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Federation\RemoteUser;
 use OCA\Invitation\Federation\RemoteUserMapper;
+use OCA\Invitation\Util;
 use OCP\IConfig;
 use OCP\ILogger;
 use OCP\Share;
@@ -18,6 +19,9 @@ use OCP\Share\IRemoteShareesSearch;
 
 class RemoteUserService implements IRemoteShareesSearch
 {
+    public const REMOTE_USER_TYPE_INFO_INVITED = 'REMOTE_USER_TYPE_INFO_INVITED';
+    public const REMOTE_USER_TYPE_INFO_UNINVITED = 'REMOTE_USER_TYPE_INFO_UNINVITED';
+
     private RemoteUserMapper $remoteUserMapper;
     private IConfig $config;
     private ILogger $logger;
@@ -47,41 +51,66 @@ class RemoteUserService implements IRemoteShareesSearch
     {
         try {
             $result = [];
+            $opencloudmeshResult = [];
+
             // needs at least 3 characters
             if (strlen($search) < 3) {
                 return $result;
+            }
+
+            // Consider potential results from the Open Cloud Mesh plugin
+            $pluginClass = $this->config->getSystemValue('invitation.opencloudmeshRemoteShareesSearch', '\OCA\OpenCloudMesh\ShareeSearchPlugin');
+            if (class_exists($pluginClass)) {
+                $this->logger->debug(" - opencloudmesh app is installed, found remote sharees search implementation: $pluginClass", ['app' => InvitationApp::APP_NAME]);
+                try {
+                    $plugin = \OC::$server->query($pluginClass);
+                    $opencloudmeshResult = $plugin->search($search);
+                    $this->logger->debug(" - opencloudmesh results: " . print_r($result, true), ['app' => InvitationApp::APP_NAME]);
+                } catch (Exception $e) {
+                    $this->logger->error("Error retrieving opencloudmesh sharee search results: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+                }
+            } else {
+                $this->logger->debug(" - skipping opencloudmesh remote sharees search, opemcloudmesh remote sharees search implementation not found: $pluginClass", ['app' => InvitationApp::APP_NAME]);
             }
 
             $remoteUsers = $this->remoteUserMapper->search($search);
 
             foreach ($remoteUsers as $i => $remoteUser) {
                 array_push($result, [
-                    'label' => $remoteUser->getRemoteUserName() . " (Invited)",
+                    'label' => $remoteUser->getRemoteUserName(),
+                    /** custom field */
+                    'invited' => true,
                     'value' => [
                         'shareType' => Share::SHARE_TYPE_REMOTE,
                         'shareWith' => $remoteUser->getRemoteUserCloudID(),
+                        /** custom field */
+                        'typeInfo' => self::REMOTE_USER_TYPE_INFO_INVITED
                     ]
                 ]);
             }
 
             // prepare non invited user
-            // TODO: do we need a translation for 'Not invited' ?
             $nonInvitedUser = [
-                'label' => "$search (Not invited)",
+                'label' => "$search",
+                /* custom field */
+                'uninvited' => true,
                 'value' => [
                     'shareType' => Share::SHARE_TYPE_REMOTE,
                     'shareWith' => $search,
+                    /* custom field */
+                    'typeInfo' => self::REMOTE_USER_TYPE_INFO_UNINVITED
                 ]
             ];
             if (
-                $this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)
+                Util::isTrue($this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === false
                 && strpos($search, '@') !== false
                 && count($remoteUsers) < 1
             ) {
                 array_push($result, $nonInvitedUser);
             }
 
-            return $result;
+            // and merge and return the results
+            return array_merge($result, $opencloudmeshResult);
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error searching for remote users.');
