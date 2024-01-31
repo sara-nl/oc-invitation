@@ -3,6 +3,7 @@
 namespace tests\util;
 
 use Exception;
+use SimpleXMLElement;
 
 class HttpClient
 {
@@ -27,28 +28,31 @@ class HttpClient
      *  ]
      * @throws HttpException
      */
-    public function curlPost(string $url, array $params = [], string $userName = '')
+    public function curlPost(string $url, array $params = [], bool $unprotected = false)
     {
         try {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($ch, CURLOPT_POST, true);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-            if(!empty($userName)) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ["User: $userName"]);
-            }
-            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params, JSON_PRETTY_PRINT));
-            $output = json_decode(curl_exec($ch));
+            curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($params));
+            $output = curl_exec($ch);
             $info = curl_getinfo($ch);
             curl_close($ch);
-            // print_r("\n" . "curl_getinfo: " . print_r($info, true) . "\n");
             if (!isset($output) || $output == false) {
-                print_r("\n" . "curl_getinfo: " . print_r($info, true) . "\n");
-                throw new Exception("empty or false output");
+                throw new Exception('curl_exec output error, curl_getinfo: ' . print_r($info, true));
             }
-            return (array)$output;
+            if($unprotected) {
+                return json_decode($output, true);
+            }
+            $ocs = new SimpleXMLElement($output);
+            if ($ocs->meta->status == 'ok') {
+                return Util::simplexmlToArray($ocs->data);
+            } else {
+                throw new Exception($ocs->meta->statuscode . '. ' . $ocs->meta->message);
+            }
         } catch (Exception $e) {
             throw new Exception($e->getTraceAsString());
         }
@@ -69,27 +73,30 @@ class HttpClient
      *  ]
      * @throws HttpException
      */
-    public function curlGet(string $url, string $userName = '')
+    public function curlGet(string $url, bool $unprotected = false)
     {
         try {
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
-            if(!empty($userName)) {
-                curl_setopt($ch, CURLOPT_HTTPHEADER, ["User: $userName"]);
-            }
-            $output = json_decode(curl_exec($ch));
+            $output = curl_exec($ch);
             $info = curl_getinfo($ch);
             curl_close($ch);
-            // print_r("\n" . "curl_getinfo: " . print_r($info, true) . "\n");
             if (!isset($output) || $output == false) {
-                print_r("\n" . "curl_getinfo: " . print_r($info, true) . "\n");
-                throw new Exception("empty or false output");
+                print_r("\ncurl_getinfo: " . print_r($info, true));
+                throw new Exception('curl_exec output error, curl_getinfo: ' . print_r($info, true));
             }
-            return (array)$output;
+            if($unprotected) {
+                return json_decode($output, true);
+            }
+            $ocs = new SimpleXMLElement($output);
+            if ($ocs->meta->status == 'ok') {
+                return Util::simplexmlToArray($ocs->data);
+            } else {
+                throw new Exception($ocs->meta->statuscode . '. ' . $ocs->meta->message);
+            }
         } catch (Exception $e) {
             throw new Exception($e->getTraceAsString());
         }

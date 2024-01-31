@@ -26,7 +26,9 @@ RUN cd /tmp/invitation \
     && composer install \
     && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/Version20231130125301.php /var/www/owncloud/apps/invitation/appinfo/Migrations \
     && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/InvitationApp.php /var/www/owncloud/apps/invitation/lib/AppInfo/InvitationApp.php
+    && mv /var/www/owncloud/apps/invitation/appinfo/routes.php /var/www/owncloud/apps/invitation/appinfo/routes-main.php \
+    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/src/tests/routes.php /var/www/owncloud/apps/invitation/appinfo/routes.php \
+    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/src/tests/ExternalApiRoute.php /var/www/owncloud/apps/invitation/lib/ExternalApiRoute.php
 
 # RUN chown -R www-data:root /var/www/owncloud/apps/invitation \
 # RUN cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \

@@ -7,10 +7,12 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use tests\util\AppError;
 use tests\util\HttpClient;
+use tests\util\Util;
 
 class InvitationTest extends TestCase
 {
-    private const oc_1_Endpoint = "https://oc-1.nl/apps/invitation";
+    private const oc_1_Endpoint = "https://admin:admin@oc-1.nl/ocs/v1.php/apps/invitation";
+    private const PARAM_NAME_EMAIL = "email";
 
     public function setUp(): void
     {
@@ -21,25 +23,36 @@ class InvitationTest extends TestCase
     {
         try {
             $endpoint = self::oc_1_Endpoint . "/generate-invite";
-            print_r("\ntesting endpoint $endpoint\n");
+            print_r("\ntesting protected endpoint $endpoint\n");
             $httpClient = new HttpClient();
 
             // test no email specified
-            $response = $httpClient->curlGet("$endpoint", 'admin');
-            $this->assertFalse(boolval($response['success']), "Test with no email failed");
-            $this->assertEquals(AppError::CREATE_INVITATION_NO_RECIPIENT_EMAIL, $response['error_message'], 'Error check failed.');
+            $response = $httpClient->curlPost($endpoint, []);
+            $this->assertFalse(Util::is_true($response['success']), 'No email address provided should have returned error');
+            $this->assertEquals(AppError::CREATE_INVITATION_NO_RECIPIENT_EMAIL, $response['error_message'], 'No email address check failed.');
 
             // test email invalid
-            $response = $httpClient->curlGet("$endpoint?email=invalid", 'admin');
-            $this->assertFalse(boolval($response['success']), "Test with no email failed");
-            $this->assertEquals(AppError::CREATE_INVITATION_EMAIL_INVALID, $response['error_message'], 'Error check failed.');
+            print_r("\ntest email valid\n");
+            $response = $httpClient->curlPost(
+                $endpoint,
+                [
+                    self::PARAM_NAME_EMAIL => 'invalid-email-address',
+                    'message' => ''
+                ]
+            );
+            print_r("\ntesting response for error_message:");
+            $this->assertFalse(Util::is_true($response['success']), "Invalid email adress check should have failed");
+            $this->assertEquals(AppError::CREATE_INVITATION_EMAIL_INVALID, $response['error_message'], 'Invalid email address response failure.');
 
             $message = urlencode('I want to invite you.');
-            $response = $httpClient->curlGet("$endpoint?email=someone@example.com&message=$message", 'admin');
-            print_r("\nresponse: " . print_r($response, true) . "\n");
-
-            $this->assertTrue(boolval($response['success']), "POST $endpoint failed");
-
+            $response = $httpClient->curlPost(
+                $endpoint,
+                [
+                    'email' => 'someone@example.com',
+                    'message' => $message
+                ]
+            );
+            $this->assertTrue(Util::is_true($response['success']), "POST $endpoint failed");
             $this->assertTrue(Uuid::isValid($response['data']), 'POST $endpoint failed, invalid token returned.');
             return $response['data'];
         } catch (Exception $e) {
@@ -54,12 +67,11 @@ class InvitationTest extends TestCase
     {
         try {
             $endpoint = self::oc_1_Endpoint . "/find-invitation-by-token";
-            print_r("\ntesting endpoint: $endpoint");
-            print_r("\n      with token: $token\n");
+            print_r("\ntesting protected endpoint: $endpoint for token: $token");
             $httpClient = new HttpClient();
-            $response = $httpClient->curlGet("$endpoint?token=$token", 'admin');
-            $this->assertTrue(boolval($response['success']), "GET $endpoint failed");
-            print_r("\nfound invitation: " . print_r($response['data'], true) . "\n");
+            $response = $httpClient->curlGet("$endpoint?token=$token");
+            $this->assertTrue(Util::is_true($response['success']), "GET $endpoint failed");
+            print_r("\nfound invitation with token: " . print_r($response['data'], true) . "\n");
         } catch (Exception $e) {
             $this->fail($e->getMessage());
         }
@@ -69,4 +81,5 @@ class InvitationTest extends TestCase
     {
         parent::tearDown();
     }
+
 }

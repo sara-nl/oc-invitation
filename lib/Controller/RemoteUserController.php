@@ -38,11 +38,11 @@ class RemoteUserController extends Controller
     public function getRemoteUser(string $cloudID = ''): DataResponse
     {
         try {
-            $result = $this->remoteUserService->getRemoteUser($cloudID);
+            $remoteUser = $this->remoteUserService->getRemoteUser($cloudID);
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $result
+                    'data' => $remoteUser->jsonSerialize()t
                 ],
                 Http::STATUS_OK
             );

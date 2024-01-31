@@ -120,14 +120,10 @@ class MeshRegistryController extends Controller
     {
         try {
             $isp = $this->meshRegistryService->getInvitationServiceProvider();
-            $properties = [];
-            $properties['name'] = $isp->getName();
-            $properties['endpoint'] = $isp->getEndpoint();
-            $properties['domain'] = $isp->getDomain();
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $properties,
+                    'data' => $isp->jsonSerialize(),
                 ],
                 Http::STATUS_OK,
             );
@@ -185,7 +181,7 @@ class MeshRegistryController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $isp,
+                    'data' => $isp->jsonSerialize(),
                 ],
                 Http::STATUS_OK,
             );
@@ -274,7 +270,7 @@ class MeshRegistryController extends Controller
                 return new DataResponse(
                     [
                         'success' => true,
-                        'data' => $invitationServiceProvider,
+                        'data' => $invitationServiceProvider->jsonSerialize(),
                     ]
                 );
             }

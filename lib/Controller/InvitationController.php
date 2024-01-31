@@ -69,6 +69,8 @@ class InvitationController extends Controller
      */
     public function generateInvite(string $email = '', string $message = ''): DataResponse
     {
+        $this->logger->debug(' - METHOD: ' . $this->request->getMethod());
+        $this->logger->debug(' - PARAMS: ' . print_r($this->request->getParams(), true));
         if ('' == $email) {
             return new DataResponse(
                 [
@@ -146,7 +148,6 @@ class InvitationController extends Controller
         //      with a re-send option perhaps?
         //      consider accepting failure of sending invitation mail, and show it as a failed invitation in the invitations list
 
-        // send the email: this should work if the oc instance is configured correctly
         try {
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
@@ -154,9 +155,7 @@ class InvitationController extends Controller
             $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
             $language = 'en';
-            // $this->logger->debug(" - html sanitized: " . \OCP\Util::sanitizeHTML($message));
             $htmlText = $this->getMailBody($inviteLink, $message, 'html', $language);
-            // $this->logger->debug(print_r($htmlText, true));
             $mail->setHtmlBody($htmlText);
             // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
             // $mail->setPlainBody($plainText);
@@ -237,17 +236,8 @@ class InvitationController extends Controller
     {
         $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
         $tmpl->assign('inviteLink', $inviteLink);
-        $this->logger->debug($message);
-        $this->logger->debug($this->decodeHtmlBreaks($message));
-        $tmpl->assign('message', $this->decodeHtmlBreaks($message));
+        $tmpl->assign('message', $message);
         return $tmpl->fetchPage();
-    }
-
-    private function decodeHtmlBreaks(string $message = ''): string
-    {
-        // FIXME inactivated until fixed/tested
-        return $message;
-        // return str_replace("%3Cbr\/%3E", "<br\/>", $message);
     }
 
     /**
@@ -592,7 +582,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $invitation,
+                    'data' => $invitation->jsonSerialize(),
                 ]
             );
         } catch (NotFoundException $e) {
@@ -668,7 +658,7 @@ class InvitationController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $invitation,
+                    'data' => $invitation->jsonSerialize(),
                 ],
                 Http::STATUS_OK,
             );
