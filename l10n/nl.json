@@ -1,0 +1,15 @@
+{
+    "translations": {
+        "Create invitation": "Nieuwe uitnodiging",
+        "Recipient email": "Email ontvanger",
+        "Your message (optional)": "Uw bericht (optioneel)",
+        "Send": "Verstuur",
+        "Open invitations": "Openstaande uitnodigingen",
+        "Accepted invitations": "Geaccepteerde uitnodigingen",
+        "Sent/Received": "Verzonden/Ontvangen",
+        "Remote user name": "Remote gebruiker naam",
+        "Remote user cloud ID": "Remote gebruiker cloud ID",
+        "Remote user email": "Remote gebruiker email"
+    },
+    "pluralForm": "nplurals=2; plural=(n != 1);"
+}

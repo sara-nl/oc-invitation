@@ -14,16 +14,16 @@ style($appName, 'invitation');
     <div class="pure-u-1-1 create">
         <form class="pure-form">
             <fieldset>
-                <legend>Create invitation</legend>
+                <legend><?php p($l->t('Create invitation')); ?></legend>
                 <div class="pure-g">
                     <div class="pure-u-1-4">
-                        <input id="create-invitation-email" type="email" placeholder="Receiver email" />
-                        <button id="create-invitation" type="submit" class="pure-button pure-button-primary">Create</button>
+                        <input id="create-invitation-email" type="email" placeholder="<?php p($l->t('Recipient email')); ?>" />
+                        <button id="create-invitation" type="submit" class="pure-button pure-button-primary"><?php p($l->t('Send')); ?></button>
                     </div>
                 </div>
                 <div class="pure-g">
                     <div class="pure-u-1-3">
-                        <textarea id="create-invitation-message" placeholder="Your message (optional)"></textarea>
+                        <textarea id="create-invitation-message" placeholder="<?php p($l->t('Your message (optional)')); ?>"></textarea>
                     </div>
                 </div>
             </fieldset>
@@ -35,15 +35,15 @@ style($appName, 'invitation');
             <div class="pure-u-1-1">
                 <div class="pure-g">
                     <div class="pure-u-1-1 open">
-                        <h2>Open invitations</h2>
+                        <h2><?php p($l->t('Open invitations')); ?></h2>
                         <table class="pure-table">
                             <thead>
                                 <tr>
-                                    <th>Sent/Received</th>
+                                    <th><?php p($l->t('Sent/Received')); ?></th>
                                     <th>Token</th>
-                                    <th>Remote user name</th>
-                                    <th>Remote user cloud ID</th>
-                                    <th>Remote user email</th>
+                                    <th><?php p($l->t('Remote user name')); ?></th>
+                                    <th><?php p($l->t('Remote user cloud ID')); ?></th>
+                                    <th><?php p($l->t('Remote user email')); ?></th>
                                     <th></th>
                                     <th></th>
                                 </tr>
@@ -57,14 +57,14 @@ style($appName, 'invitation');
             <div class="pure-u-1-1">
                 <div class="pure-g">
                     <div class="pure-u-1-1 accepted">
-                        <h2>Accepted invitations</h2>
+                        <h2><?php p($l->t('Accepted invitations')); ?></h2>
                         <table class="pure-table">
                             <thead>
                                 <tr>
-                                    <th>Sent/Received</th>
-                                    <th>Remote user name</th>
-                                    <th>Remote user cloud ID</th>
-                                    <th>Remote user email</th>
+                                    <th><?php p($l->t('Sent/Received')); ?></th>
+                                    <th><?php p($l->t('Remote user name')); ?></th>
+                                    <th><?php p($l->t('Remote user cloud ID')); ?></th>
+                                    <th><?php p($l->t('Remote user email')); ?></th>
                                     <th></th>
                                 </tr>
                             </thead>
