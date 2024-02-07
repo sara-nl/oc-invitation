@@ -1,6 +1,6 @@
 #!/bin/bash
 
-docker compose -f docker-compose-local.yaml down
+docker compose -f docker-compose-local.yaml stop
 docker system prune -f
 docker volume rm docker_files-oc-1
 docker volume rm docker_mysql-oc-1

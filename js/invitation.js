@@ -5,12 +5,14 @@
 
         let generateInvite = function (email, message) {
             $('#invitation-message span').text("");
-            let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
+            // let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
+            let baseUrl = OC.generateUrl('/apps/invitation/generate-invite');
             let options = {
-                'method': 'GET',
+                'method': 'POST',
                 'headers': {
                     'Content-type': 'application/json;charset=utf-8'
-                }
+                },
+                body: JSON.stringify({ email: email, message: message })
             };
             let response = fetch(baseUrl, options)
                 .then(
@@ -20,35 +22,34 @@
                 ).then(
                     (json) => {
                         if (json.success == true) {
-                            // $('#invitation-message span.message').html('Your invitation has been sent to ' + json.email + '.');
+                            /* TODO: remove before app has gone public */
                             $('#invitation-message span.message').html(
                                 ' <div id="invitation-message-accordion">'
-                                + '<h5>Your invitation has been sent to ' + json.email + '.</h5>'
+                                + '<h5>' + t('invitation', 'Your invitation has been sent to') + ' ' + json.email + '.</h5>'
                                 + '<div><p>Invite link: <a href="' + json.inviteLink + '">' + json.inviteLink + '</a></p></div>'
                                 + '</div>'
                             );
                             $("#invitation-message-accordion").accordion({ collapsible: true, active: false });
                         } else {
-                            $('#invitation-message span.error').text(json.error_message);
+                            $('#invitation-message span.error').text(t('invitation', json.error_message));
                         }
                         getInvitations([{ "status": "open" }], renderOpenInvitations);
                     }
                 ).catch(
                     (response) => {
-                        $('#invitation-message span.error').text('ERROR_UNSPECIFIED');
+                        $('#invitation-message span.error').text(t('invitation', 'ERROR_UNSPECIFIED'));
                     }
                 );
         };
 
         let generateInviteButton = document.getElementById('create-invitation');
-        // FIXME: get message linebreaks: document.getElementById('create-invitation-message').value.replace(/\n/g, "<br/>");
         generateInviteButton.addEventListener(
             "click", function (event) {
                 event.preventDefault();
                 event.stopPropagation();
                 generateInvite(
                     document.getElementById('create-invitation-email').value,
-                    encodeURI(document.getElementById('create-invitation-message').value)
+                    document.getElementById('create-invitation-message').value.replace(/\n/g, "__LINE_BREAK__")
                 )
             }
         );

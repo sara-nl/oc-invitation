@@ -28,7 +28,12 @@
                             <p>
                                 The following message was send with the invitation:<br>
                                 <br>
-                                <?php p($_['message']); ?>
+                                <?php
+                                $lines = preg_split('/__LINE_BREAK__/', $_['message']);
+                                foreach ($lines as $line) { ?>
+                                    <?php p($line); ?>
+                                    <br>
+                                <?php } ?>
                             </p>
                         <?php endif; ?>
                     </td>
