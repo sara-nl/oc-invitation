@@ -8,7 +8,6 @@ namespace OCA\Invitation\AppInfo;
 
 use OCA\Invitation\Federation\InvitationServiceProviderMapper;
 use OCA\Invitation\Federation\InvitationMapper;
-use OCA\Invitation\Federation\RemoteUserMapper;
 use OCA\Invitation\Service\InvitationNotifier;
 use OCA\Invitation\Service\InvitationService;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;

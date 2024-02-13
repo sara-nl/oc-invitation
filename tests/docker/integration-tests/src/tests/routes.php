@@ -1,16 +1,16 @@
 <?php
 
+/**
+ * This is where the we register external API routes.
+ * !! Use for the integration tests only !!
+ * Running the tests requires putting this file into the 'appinfo/' folder
+ * and renaming the original routes file to routes-main.php
+ */
+
 use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Controller\InvitationController;
 use OCA\Invitation\Controller\MeshRegistryController;
 use OCA\Invitation\ExternalApiRoute;
-
-/**
- * This is where the we register external API routes.
- * !! Use for the integration tests only !! 
- * Running the tests requires putting this file into the 'appinfo/' folder
- * and renaming the original routes file to routes-main.php
- */
 
 $meshRegistryService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('MeshRegistryService');
 $meshRegistryController = new MeshRegistryController(
