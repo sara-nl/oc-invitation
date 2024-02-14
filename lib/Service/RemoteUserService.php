@@ -13,6 +13,7 @@ use OCA\Invitation\Federation\RemoteUser;
 use OCA\Invitation\Federation\RemoteUserMapper;
 use OCA\Invitation\Util;
 use OCP\IConfig;
+use OCP\IL10N;
 use OCP\ILogger;
 use OCP\Share;
 use OCP\Share\IRemoteShareesSearch;
@@ -24,12 +25,14 @@ class RemoteUserService implements IRemoteShareesSearch
 
     private RemoteUserMapper $remoteUserMapper;
     private IConfig $config;
+    private IL10N $il10n;
     private ILogger $logger;
 
-    public function __construct(RemoteUserMapper $remoteUserMapper, IConfig $config)
+    public function __construct(RemoteUserMapper $remoteUserMapper, IConfig $config, IL10N $il10n)
     {
         $this->remoteUserMapper = $remoteUserMapper;
         $this->config = $config;
+        $this->il10n = $il10n;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -65,7 +68,15 @@ class RemoteUserService implements IRemoteShareesSearch
                 try {
                     $plugin = \OC::$server->query($pluginClass);
                     $opencloudmeshResult = $plugin->search($search);
-                    $this->logger->debug(" - opencloudmesh results: " . print_r($result, true), ['app' => InvitationApp::APP_NAME]);
+                    // remove the remote users to prevent duplicates, because we will add them later
+                    if (count($opencloudmeshResult) > 0) {
+                        foreach ($opencloudmeshResult as $i => $v) {
+                            if ($v['value']['shareType'] === Share::SHARE_TYPE_REMOTE) {
+                                unset($opencloudmeshResult[$i]);
+                            }
+                        }
+                        $opencloudmeshResult = array_values($opencloudmeshResult);
+                    }
                 } catch (Exception $e) {
                     $this->logger->error("Error retrieving opencloudmesh sharee search results: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
                 }
@@ -77,14 +88,15 @@ class RemoteUserService implements IRemoteShareesSearch
 
             foreach ($remoteUsers as $i => $remoteUser) {
                 array_push($result, [
-                    'label' => $remoteUser->getRemoteUserName(),
+                    'label' => $remoteUser->getRemoteUserName() . ' - ' . $remoteUser->getRemoteUserProviderName(),
                     /** custom field */
                     'invited' => true,
                     'value' => [
                         'shareType' => Share::SHARE_TYPE_REMOTE,
                         'shareWith' => $remoteUser->getRemoteUserCloudID(),
                         /** custom field */
-                        'typeInfo' => self::REMOTE_USER_TYPE_INFO_INVITED
+                        'typeInfo' => $this->il10n->t(self::REMOTE_USER_TYPE_INFO_INVITED),
+                        'shareWithAdditionalInfo' => $remoteUser->getRemoteUserEmail(),
                     ]
                 ]);
             }
@@ -98,7 +110,7 @@ class RemoteUserService implements IRemoteShareesSearch
                     'shareType' => Share::SHARE_TYPE_REMOTE,
                     'shareWith' => $search,
                     /* custom field */
-                    'typeInfo' => self::REMOTE_USER_TYPE_INFO_UNINVITED
+                    'typeInfo' => $this->il10n->t(self::REMOTE_USER_TYPE_INFO_UNINVITED),
                 ]
             ];
             if (

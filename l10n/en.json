@@ -1,0 +1,7 @@
+{
+    "translations": {
+        "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Invited remote user",
+        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Uninvited remote user"
+    },
+    "pluralForm": "nplurals=2; plural=(n != 1);"
+}

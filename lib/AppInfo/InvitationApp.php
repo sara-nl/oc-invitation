@@ -52,24 +52,19 @@ class InvitationApp extends App
             return $c->query('ServerContainer')->getConfig();
         });
 
+        $container->registerService('L10N', function ($c) {
+            return $c->query('ServerContainer')->getL10N($c->query(self::APP_NAME));
+        });
+
         $manager = \OC::$server->getNotificationManager();
         $manager->registerNotifier(
             function () {
-                return new InvitationNotifier(
-                    \OC::$server->getL10NFactory(),
-                    new MeshRegistryService(
-                        self::APP_NAME,
-                        $this->getContainer()->query('Config'),
-                        new InvitationServiceProviderMapper(
-                            \OC::$server->getDatabaseConnection()
-                        )
-                    )
-                );
+                return $this->getContainer()->query(InvitationNotifier::class);
             },
             function () {
                 return [
-                    'id' => 'notification',
-                    'name' => 'notification name'
+                    'id' => 'invitation',
+                    'name' => 'Invitation app'
                 ];
             }
         );

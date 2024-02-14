@@ -69,8 +69,6 @@ class InvitationController extends Controller
      */
     public function generateInvite(string $email = '', string $message = ''): DataResponse
     {
-        $this->logger->debug(' - METHOD: ' . $this->request->getMethod());
-        $this->logger->debug(' - PARAMS: ' . print_r($this->request->getParams(), true));
         if ('' == $email) {
             return new DataResponse(
                 [
@@ -162,7 +160,10 @@ class InvitationController extends Controller
             // TODO: Array with failed recipients. Be aware that this depends on the used mail backend and therefore should be considered.
             //       return error if failed ??
             $failedRecipients = $mailer->send($mail);
-            $this->logger->debug(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
+            if (sizeof($failedRecipients) > 0) {
+                // FIXME send back the failing recipient email (if at all possible)
+                $this->logger->error(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
+            }
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             // TODO: Instead of failing, we could continue and still insert and display the invitation as failed in the list
@@ -304,15 +305,6 @@ class InvitationController extends Controller
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
 
-        $acceptAction = $notification->createAction();
-        $acceptAction
-            ->setLabel('accept')
-            ->setLink($this->getBaseUrl() . "/apps/" . InvitationApp::APP_NAME . "/accept-invite/$token", 'POST');
-
-        $declineAction = $notification->createAction();
-        $declineAction->setLabel('decline')
-            ->setLink($this->getBaseUrl() . '/apps/' . InvitationApp::APP_NAME . "/decline-invite/$token", 'POST');
-
         $notification->setApp(InvitationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
             ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
@@ -323,25 +315,11 @@ class InvitationController extends Controller
                 MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT => $providerEndpoint,
                 MeshRegistryService::PARAM_NAME_NAME => $name,
             ])
-            ->addAction($acceptAction)
-            ->addAction($declineAction);
+            ->setLink($urlGenerator->linkToRoute('invitation.invitation.index'));
 
         $manager->notify($notification);
 
-        return new RedirectResponse($urlGenerator->linkToRoute('files.view.index'));
-    }
-
-    /**
-     * Returns the baseUrl.
-     * The baseUrl is present in the request context, but we cannot obtain it.
-     */
-    private function getBaseUrl(): string
-    {
-        $baseUrl = \OC::$WEBROOT;
-        if (!(\getenv('front_controller_active') === 'true')) {
-            $baseUrl = \rtrim($baseUrl, '/') . '/index.php';
-        }
-        return $baseUrl;
+        return new RedirectResponse($urlGenerator->linkToRoute('invitation.invitation.index'));
     }
 
     /**

@@ -42,7 +42,7 @@ class RemoteUserController extends Controller
             return new DataResponse(
                 [
                     'success' => true,
-                    'data' => $remoteUser->jsonSerialize()t
+                    'data' => $remoteUser->jsonSerialize()
                 ],
                 Http::STATUS_OK
             );

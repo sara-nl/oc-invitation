@@ -149,3 +149,13 @@ div#invitation-message-accordion div.ui-accordion-content {
 div#invitation-message-accordion div.ui-accordion-content a {
     color: blue;
 }
+
+div.invitation-index table td.button-holder {
+    width: 7em;
+}
+
+div.invitation-index table td:first-child {
+    width: 10em;
+    text-align: left;
+    padding-left: 3em;
+}

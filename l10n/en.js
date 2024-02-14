@@ -3,6 +3,8 @@ OC.L10N.register(
     {
         "ERROR_UNSPECIFIED": "An error has occurred",
         "CREATE_INVITATION_NO_RECIPIENT_EMAIL": "Recipient email is required",
-        "CREATE_INVITATION_EMAIL_INVALID": "The recipient email is invalid"
+        "CREATE_INVITATION_EMAIL_INVALID": "The recipient email is invalid",
+        "sent": "Sent to",
+        "received": "Received from",
     },
     "nplurals=2; plural=(n != 1);");

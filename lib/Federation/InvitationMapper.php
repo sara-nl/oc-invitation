@@ -204,6 +204,8 @@ class InvitationMapper extends Mapper
             $invitation->setRemoteUserCloudID($associativeArray[Schema::VINVITATION_REMOTE_USER_CLOUD_ID]);
             $invitation->setRemoteUserName($associativeArray[Schema::VINVITATION_REMOTE_USER_NAME]);
             $invitation->setRemoteUserEmail($associativeArray[Schema::VINVITATION_REMOTE_USER_EMAIL]);
+            $invitation->setRemoteUserProviderEndpoint($associativeArray[Schema::VINVITATION_REMOTE_USER_PROVIDER_ENDPOINT]);
+            $invitation->setRemoteUserProviderName($associativeArray[Schema::VINVITATION_REMOTE_USER_PROVIDER_NAME]);
             return $invitation;
         }
         $this->logger->error('Unable to create a new Invitation from associative array: ' . print_r($associativeArray, true), ['app' => InvitationApp::APP_NAME]);

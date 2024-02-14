@@ -200,10 +200,9 @@
             table.empty();
             invitations.forEach((invitation) => {
                 table.append(
-                    '<tr><td>' + invitation.sentReceived
-                    + '</td><td>' + invitation.token.substring(0, 12) + '...'
+                    '<tr><td>' + t('invitation', invitation.sentReceived)
                     + '</td><td>' + invitation.remoteUserName
-                    + '</td><td>' + invitation.remoteUserCloudId
+                    + '</td><td>' + invitation.remoteUserProviderName
                     + '</td><td>' + invitation.remoteUserEmail
                     + '</td><td class="button-holder" data-accept-invite="' + invitation.token + '">'
                     + '</td><td class="button-holder" data-decline-revoke-invite="' + invitation.token + '">'
@@ -223,10 +222,11 @@
             table.empty();
             invitations.forEach((invitation) => {
                 table.append(
-                    '<tr><td>' + invitation.sentReceived
+                    '<tr><td>' + t('invitation', invitation.sentReceived)
                     + '</td><td>' + invitation.remoteUserName
-                    + '</td><td>' + invitation.remoteUserCloudId
+                    + '</td><td>' + invitation.remoteUserProviderName
                     + '</td><td>' + invitation.remoteUserEmail
+                    + '</td><td>' + invitation.remoteUserCloudId
                     + '</td><td class="button-holder" data-withdraw-invite="' + invitation.token + '">'
                     + '</td></tr>');
                 $('td[data-withdraw-invite="' + invitation.token + '"]').append(invitationButton('withdrawn', invitation.token));

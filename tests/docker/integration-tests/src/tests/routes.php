@@ -2,7 +2,7 @@
 
 /**
  * This is where the we register external API routes.
- * !! Use for the integration tests only !!
+ * !! USE FOR THE INTEGRATION TESTS ONLY !!
  * Running the tests requires putting this file into the 'appinfo/' folder
  * and renaming the original routes file to routes-main.php
  */
