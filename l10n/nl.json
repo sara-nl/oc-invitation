@@ -4,12 +4,15 @@
         "Recipient email": "Email ontvanger",
         "Your message (optional)": "Uw bericht (optioneel)",
         "Send": "Verstuur",
+        "You received an invitation from '%s'. Click to view.": "U heeft een uitnodiging ontvangen van '%s'. Klik om te bekijken.",
         "Open invitations": "Openstaande uitnodigingen",
         "Accepted invitations": "Geaccepteerde uitnodigingen",
         "Sent/Received": "Verzonden/Ontvangen",
         "Remote user name": "Remote gebruiker naam",
         "Remote user cloud ID": "Remote gebruiker cloud ID",
-        "Remote user email": "Remote gebruiker email"
+        "Remote user email": "Remote gebruiker email",
+        "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Uitgenodigde remote gebruiker",
+        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Niet uitgenodigde remote gebruiker"
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

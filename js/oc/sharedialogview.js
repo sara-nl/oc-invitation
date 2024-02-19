@@ -387,10 +387,15 @@
 				 * required invitation app addition: 
 				 * (un)invited check and associated typeInfo
 				 */
+				if (item.value.shareWithAdditionalInfo) {
+					console.log('item.value.shareWithAdditionalInfo: ' + item.value.shareWithAdditionalInfo);
+				}
 				if (item.invited === true) {
 					typeInfo = item.value.typeInfo;
+					// item.value.shareWithAdditionalInfo = 'additional info (invited)';
 				} else if (item.uninvited === true) {
 					typeInfo = item.value.typeInfo;
+					// item.value.shareWithAdditionalInfo = 'additional info (uninvited)';
 				} else {
 					if (item.value.server) {
 						typeInfo = t('core', 'At {server}', {

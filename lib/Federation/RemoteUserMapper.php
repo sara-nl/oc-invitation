@@ -41,8 +41,9 @@ class RemoteUserMapper extends Mapper
         $qb = $this->db->getQueryBuilder();
         $query = $qb->select('*')->from(Schema::VIEW_REMOTEUSERS, 'i');
         $or = $qb->expr()->orX();
-        $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID, $qb->createPositionalParameter($parameter)));
+        $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_EMAIL, $qb->createPositionalParameter($parameter)));
         $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_NAME, $qb->createPositionalParameter($parameter)));
+        $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_PROVIDER_NAME, $qb->createPositionalParameter($parameter)));
         $query->where($or)
             ->andWhere($qb->expr()->eq(Schema::REMOTEUSER_USER_CLOUD_ID, $qb->createPositionalParameter($userCloudID)));
 
@@ -118,6 +119,9 @@ class RemoteUserMapper extends Mapper
             $remoteUser->setUserName($associativeArray[Schema::REMOTEUSER_USER_NAME]);
             $remoteUser->setRemoteUserCloudID($associativeArray[Schema::REMOTEUSER_REMOTE_USER_CLOUD_ID]);
             $remoteUser->setRemoteUserName($associativeArray[Schema::REMOTEUSER_REMOTE_USER_NAME]);
+            $remoteUser->setRemoteUserEmail($associativeArray[Schema::REMOTEUSER_REMOTE_USER_EMAIL]);
+            $remoteUser->setRemoteUserProviderEndpoint($associativeArray[Schema::REMOTEUSER_REMOTE_USER_PROVIDER_ENDPOINT]);
+            $remoteUser->setRemoteUserProviderName($associativeArray[Schema::REMOTEUSER_REMOTE_USER_PROVIDER_NAME]);
             return $remoteUser;
         }
         return null;

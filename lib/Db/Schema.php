@@ -45,6 +45,8 @@ class Schema
     public const VINVITATION_REMOTE_USER_NAME = 'remote_user_name';
     public const VINVITATION_REMOTE_USER_CLOUD_ID = 'remote_user_cloud_id';
     public const VINVITATION_REMOTE_USER_EMAIL = 'remote_user_email';
+    public const VINVITATION_REMOTE_USER_PROVIDER_ENDPOINT = 'remote_user_provider_endpoint';
+    public const VINVITATION_REMOTE_USER_PROVIDER_NAME = 'remote_user_provider_name';
 
     /* Remote Users view */
     public const VIEW_REMOTEUSERS = 'invitation_view_remote_users';
@@ -54,6 +56,9 @@ class Schema
     public const REMOTEUSER_USER_NAME = 'user_name';
     public const REMOTEUSER_REMOTE_USER_CLOUD_ID = 'remote_user_cloud_id';
     public const REMOTEUSER_REMOTE_USER_NAME = 'remote_user_name';
+    public const REMOTEUSER_REMOTE_USER_EMAIL = 'remote_user_email';
+    public const REMOTEUSER_REMOTE_USER_PROVIDER_ENDPOINT = 'remote_user_provider_endpoint';
+    public const REMOTEUSER_REMOTE_USER_PROVIDER_NAME = 'remote_user_provider_name';
 
     /* Invitation service providers table */
     public const TABLE_INVITATION_SERVICE_PROVIDERS = 'invitation_invitation_service_providers';

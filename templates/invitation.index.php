@@ -40,9 +40,8 @@ style($appName, 'invitation');
                             <thead>
                                 <tr>
                                     <th><?php p($l->t('Sent/Received')); ?></th>
-                                    <th>Token</th>
                                     <th><?php p($l->t('Remote user name')); ?></th>
-                                    <th><?php p($l->t('Remote user cloud ID')); ?></th>
+                                    <th><?php p($l->t('Remote user institute')); ?></th>
                                     <th><?php p($l->t('Remote user email')); ?></th>
                                     <th></th>
                                     <th></th>
@@ -63,8 +62,9 @@ style($appName, 'invitation');
                                 <tr>
                                     <th><?php p($l->t('Sent/Received')); ?></th>
                                     <th><?php p($l->t('Remote user name')); ?></th>
-                                    <th><?php p($l->t('Remote user cloud ID')); ?></th>
+                                    <th><?php p($l->t('Remote user institute')); ?></th>
                                     <th><?php p($l->t('Remote user email')); ?></th>
+                                    <th><?php p($l->t('Remote user cloud ID')); ?></th>
                                     <th></th>
                                 </tr>
                             </thead>

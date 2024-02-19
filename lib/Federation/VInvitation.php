@@ -44,6 +44,12 @@ use OCP\AppFramework\Db\Entity;
  * @method void setTimestamp(int $timestamp)
  * @method string getStatus()
  * @method void setStatus(string $status)
+ * @method string getRemoteUserEmail()
+ * @method void setRemoteUserEmail(string $remoteUserEmail)
+ * @method string getRemoteUserProviderEndpoint()
+ * @method void setRemoteUserProviderEndpoint(string $remoteUserProviderEndpoint)
+ * @method string getRemoteUserProviderName()
+ * @method void setRemoteUserProviderName(string $remoteUserProviderName)
  */
 class VInvitation extends Entity implements JsonSerializable
 {
@@ -62,7 +68,12 @@ class VInvitation extends Entity implements JsonSerializable
     protected $recipientName;
     protected $remoteUserCloudID;
     protected $remoteUserName;
+    /** the remote user email */
     protected $remoteUserEmail;
+    /** the remote user provider endpoint */
+    protected $remoteUserProviderEndpoint;
+    /** the remote user provider name */
+    protected $remoteUserProviderName;
 
     public function jsonSerialize()
     {
@@ -83,7 +94,9 @@ class VInvitation extends Entity implements JsonSerializable
             $this->columnToProperty(Schema::VINVITATION_RECIPIENT_NAME) => $this->recipientName,
             $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_NAME) => $this->remoteUserName,
             $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_CLOUD_ID) => $this->remoteUserCloudID,
-            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_EMAIL) => $this->remoteUserEmail
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_EMAIL) => $this->remoteUserEmail,
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_PROVIDER_ENDPOINT) => $this->remoteUserProviderEndpoint,
+            $this->columnToProperty(Schema::VINVITATION_REMOTE_USER_PROVIDER_NAME) => $this->remoteUserProviderName,
         ];
     }
 }
