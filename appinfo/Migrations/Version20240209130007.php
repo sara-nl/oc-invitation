@@ -6,16 +6,27 @@ use OCP\IDBConnection;
 use OCP\Migration\ISqlMigration;
 
 /**
- * Adds to remote user view: email, provider endpoint, provider name
- * Adds to the invitations view: remote user provider endpoint, remote user provider name
+ * Adds constants to oc_invitation_constants table
+ * Adds views: invitation_view_invitations, invitation_view_remote_users
  */
 class Version20240209130007 implements ISqlMigration
 {
     public function sql(IDBConnection $connection)
     {
-        $stmnt = $connection->prepare("
-		drop view if exists oc_invitation_view_invitations;
-		create view oc_invitation_view_invitations as
+        $stmnt = $connection->prepare(
+            "INSERT INTO `oc_invitation_constants` (`name`, `value`)
+		SELECT * FROM (SELECT 'invitation.received', 'received') AS tmp
+		WHERE NOT EXISTS (
+			SELECT name FROM oc_invitation_constants WHERE name = 'invitation.received'
+		) LIMIT 1;
+		INSERT INTO `oc_invitation_constants` (`name`, `value`)
+		SELECT * FROM (SELECT 'invitation.sent', 'sent') AS tmp
+		WHERE NOT EXISTS (
+			SELECT name FROM oc_invitation_constants WHERE name = 'invitation.sent'
+		) LIMIT 1;
+
+		drop view if exists invitation_view_invitations;
+		create view invitation_view_invitations as
 		select distinct 
 		  s.id, s.token, s.timestamp, s.status,
 		  s.user_cloud_id, s.user_provider_endpoint, s.sent_received,
@@ -26,7 +37,7 @@ class Version20240209130007 implements ISqlMigration
 		 from (
 		  select 
 		   i.id as id, i.token as token, i.timestamp as timestamp, i.status as status, 
-		   i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, 'sent' COLLATE utf8mb4_bin as sent_received,
+		   i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, (select value from oc_invitation_constants where name='invitation.sent') as sent_received,
 		   i.provider_endpoint as provider_endpoint, i.recipient_endpoint as recipient_endpoint, 
 		   i.sender_cloud_id as sender_cloud_id, i.sender_name as sender_name, i.sender_email as sender_email, 
 		   i.recipient_cloud_id as recipient_cloud_id, i.recipient_name as recipient_name, i.recipient_email as recipient_email,
@@ -35,7 +46,7 @@ class Version20240209130007 implements ISqlMigration
 			union all
 		  select 
 		   ii.id as id, ii.token as token, ii.timestamp as timestamp, ii.status as status, 
-		   ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, 'received' COLLATE utf8mb4_bin as sent_received,
+		   ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, (select value from oc_invitation_constants where name='invitation.received') as sent_received,
 		   ii.provider_endpoint as provider_endpoint, ii.recipient_endpoint as recipient_endpoint, 
 		   ii.sender_cloud_id as sender_cloud_id, ii.sender_name as sender_name, ii.sender_email as sender_email, 
 		   ii.recipient_cloud_id as recipient_cloud_id, ii.recipient_name as recipient_name, ii.recipient_email as recipient_email,
@@ -48,9 +59,9 @@ class Version20240209130007 implements ISqlMigration
 		 on c.configvalue=s.user_provider_endpoint
 		where c.appid='invitation' and c.configkey='endpoint'
 		group by s.id;
-		
-		drop view if exists oc_invitation_view_remote_users;
-		create view oc_invitation_view_remote_users as
+
+		drop view if exists invitation_view_remote_users;
+		create view invitation_view_remote_users as
 		select distinct 
 		   s.invitation_id, s.user_cloud_id, s.user_name, s.remote_user_cloud_id, s.remote_user_name, s.remote_user_email, s.remote_provider_endpoint as remote_user_provider_endpoint, isp.name as remote_user_provider_name
 		 from (
@@ -73,7 +84,8 @@ class Version20240209130007 implements ISqlMigration
 		join oc_appconfig c
 		 on c.configvalue=s.provider_endpoint
 		 where c.appid='invitation' and c.configkey='endpoint'
-		group by s.invitation_id;		");
+		group by s.invitation_id;"
+        );
         $stmnt->execute();
     }
 }
