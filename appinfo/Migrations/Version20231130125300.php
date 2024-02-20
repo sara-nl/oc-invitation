@@ -6,17 +6,21 @@ use OCP\IDBConnection;
 use OCP\Migration\ISqlMigration;
 
 /**
- * Auto-generated migration step: Please modify to your needs!
+ * Sets charset and collation on tables.
+ * Adds views.
  */
 class Version20231130125300 implements ISqlMigration
 {
-    public function sql(IDBConnection $connection)
-    {
-
-        $collation = \OC::$server->getConfig()->getSystemValue('mysql.utf8mb4', false) ? 'utf8mb4_bin' : 'utf8_bin';
-
-        $stmt = $connection->prepare("
+  public function sql(IDBConnection $connection)
+  {
+    $stmt = $connection->prepare(
+      "
       drop view if exists oc_invitation_view_invitations;
+      drop view if exists oc_invitation_view_remote_users;
+
+      alter table oc_invitation_invitations convert to character set utf8mb3 collate utf8mb3_bin;
+      alter table oc_invitation_invitation_service_providers convert to character set utf8mb3 collate utf8mb3_bin;
+      
       create view oc_invitation_view_invitations as
       select distinct 
         s.id, s.token, s.timestamp, s.status,
@@ -28,7 +32,7 @@ class Version20231130125300 implements ISqlMigration
        from (
         select 
          i.id as id, i.token as token, i.timestamp as timestamp, i.status as status, 
-         i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, 'sent' COLLATE $collation as sent_received,
+         i.sender_cloud_id as user_cloud_id, i.provider_endpoint as user_provider_endpoint, 'sent' COLLATE utf8mb3_bin as sent_received,
          i.provider_endpoint as provider_endpoint, i.recipient_endpoint as recipient_endpoint, 
          i.sender_cloud_id as sender_cloud_id, i.sender_name as sender_name, i.sender_email as sender_email, 
          i.recipient_cloud_id as recipient_cloud_id, i.recipient_name as recipient_name, i.recipient_email as recipient_email,
@@ -37,7 +41,7 @@ class Version20231130125300 implements ISqlMigration
           union all
         select 
          ii.id as id, ii.token as token, ii.timestamp as timestamp, ii.status as status, 
-         ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, 'received' COLLATE $collation as sent_received,
+         ii.recipient_cloud_id as user_cloud_id, ii.recipient_endpoint as user_provider_endpoint, 'received' COLLATE utf8mb3_bin as sent_received,
          ii.provider_endpoint as provider_endpoint, ii.recipient_endpoint as recipient_endpoint, 
          ii.sender_cloud_id as sender_cloud_id, ii.sender_name as sender_name, ii.sender_email as sender_email, 
          ii.recipient_cloud_id as recipient_cloud_id, ii.recipient_name as recipient_name, ii.recipient_email as recipient_email,
@@ -49,7 +53,6 @@ class Version20231130125300 implements ISqlMigration
       where c.appid='invitation' and c.configkey='endpoint'
       group by s.id;
       
-      drop view if exists oc_invitation_view_remote_users;
       create view oc_invitation_view_remote_users as
       select distinct 
          s.invitation_id, s.user_cloud_id, s.user_name, s.remote_user_cloud_id, s.remote_user_name
@@ -71,8 +74,9 @@ class Version20231130125300 implements ISqlMigration
       join oc_appconfig c
        on c.configvalue=s.provider_endpoint
        where c.appid='invitation' and c.configkey='endpoint'
-      group by s.invitation_id;                      ");
+      group by s.invitation_id;"
+    );
 
-        $stmt->execute();
-    }
+    $stmt->execute();
+  }
 }
