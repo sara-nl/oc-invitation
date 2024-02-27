@@ -39,6 +39,7 @@ class RemoteUserMapper extends Mapper
 
         $parameter = '%' . $this->db->escapeLikeParameter($search) . '%';
         $qb = $this->db->getQueryBuilder();
+        $qb->automaticTablePrefix(false);
         $query = $qb->select('*')->from(Schema::VIEW_REMOTEUSERS, 'i');
         $or = $qb->expr()->orX();
         $or->add($qb->expr()->iLike(Schema::REMOTEUSER_REMOTE_USER_EMAIL, $qb->createPositionalParameter($parameter)));
@@ -69,6 +70,7 @@ class RemoteUserMapper extends Mapper
         try {
             $userCloudID = \OC::$server->getUserSession()->getUser()->getCloudId();
             $qb = $this->db->getQueryBuilder();
+            $qb->automaticTablePrefix(false);
             $query = $qb->select('*')->from(Schema::VIEW_REMOTEUSERS, 'i');
             $and = $qb->expr()->andX();
             $and->add($qb->expr()->eq(Schema::REMOTEUSER_USER_CLOUD_ID, $qb->createPositionalParameter($userCloudID)));

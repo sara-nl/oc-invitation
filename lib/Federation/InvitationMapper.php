@@ -33,6 +33,7 @@ class InvitationMapper extends Mapper
     public function find(int $id)
     {
         $qb = $this->db->getQueryBuilder();
+        $qb->automaticTablePrefix(false);
         $result = $qb->select('*')
             ->from(Schema::VIEW_INVITATIONS, 'i')
             ->where($qb->expr()->eq('i.id', $qb->createNamedParameter($id)))
@@ -53,6 +54,7 @@ class InvitationMapper extends Mapper
     {
         try {
             $qb = $this->db->getQueryBuilder();
+            $qb->automaticTablePrefix(false);
             $result = $qb->select('*')
                 ->from(Schema::VIEW_INVITATIONS, 'i')
                 ->where($qb->expr()->eq('i.token', $qb->createNamedParameter($token)))
@@ -98,6 +100,7 @@ class InvitationMapper extends Mapper
         }
 
         $qb = $this->db->getQueryBuilder();
+        $qb->automaticTablePrefix(false);
         $query = $qb->select('*')->from(Schema::VIEW_INVITATIONS, 'i');
         $i = 0;
         foreach ($fieldsAndValues as $field => $values) {
@@ -116,6 +119,7 @@ class InvitationMapper extends Mapper
             }
             ++$i;
         }
+
 
         return $this->getVInvitations($query->execute()->fetchAllAssociative());
     }
