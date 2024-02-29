@@ -6,16 +6,16 @@ use OCP\IDBConnection;
 use OCP\Migration\ISqlMigration;
 
 /**
- * This step inserts all data into the oc-1 database required for the integration tests.
+ * This step inserts all data into the oc-2 database required for the integration tests.
  */
-class Version20231130125301 implements ISqlMigration
+class Version20231130125302 implements ISqlMigration
 {
     public function sql(IDBConnection $connection)
     {
         $stmt = $connection->prepare("
         INSERT INTO `oc_appconfig` (`appid`, `configkey`, `configvalue`) VALUES
         ('invitation',	'allow_sharing_with_invited_users_only', 'yes'),
-        ('invitation',	'endpoint',	'https://oc-1.nl/apps/invitation'),
+        ('invitation',	'endpoint',	'https://oc-2.nl/apps/invitation'),
         ('invitation',	'types',	'filesystem')
         ON DUPLICATE KEY UPDATE `appid` = VALUES(`appid`), `configkey` = VALUES(`configkey`), `configvalue` = VALUES(`configvalue`);
         

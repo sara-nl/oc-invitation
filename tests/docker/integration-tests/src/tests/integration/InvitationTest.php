@@ -3,6 +3,7 @@
 namespace tests\integration;
 
 use Exception;
+use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use tests\util\AppError;
@@ -12,6 +13,8 @@ use tests\util\Util;
 class InvitationTest extends TestCase
 {
     private const OC_1_ENDPOINT = "https://admin:admin@oc-1.nl/ocs/v1.php/apps/invitation";
+    private const OC_1_INVITATION_SERVICE_ENDPOINT = "https://oc-1.nl/apps/invitation";
+    private const OC_2_ENDPOINT = "https://admin:admin@oc-2.nl/ocs/v1.php/apps/invitation";
     private const PARAM_NAME_EMAIL = "email";
 
     public function setUp(): void
@@ -72,6 +75,32 @@ class InvitationTest extends TestCase
             $response = $httpClient->curlGet("$endpoint?token=$token");
             $this->assertTrue(Util::isTrue($response['success']), "GET $endpoint failed");
             print_r("\nfound invitation with token: " . print_r($response['data'], true) . "\n");
+            return $token;
+        } catch (Exception $e) {
+            $this->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * @depends testFindInvitation
+     */
+    public function testHandleInvitation(string $token)
+    {
+        try {
+            $providerEndpoint = self::OC_1_INVITATION_SERVICE_ENDPOINT;
+            $userName = "admin";
+            $handleInviteUrl = self::OC_2_ENDPOINT . "/handle-invite?token=$token&providerEndpoint=$providerEndpoint&name=$userName";
+            print_r("\ntesting protected endpoint: $handleInviteUrl");
+            $httpClient = new HttpClient();
+            $response = $httpClient->curlGet($handleInviteUrl, false, true);
+            $this->assertEquals(200, $response, "GET $handleInviteUrl failed");
+
+            print_r("\n\nverifying the persisted invitation");
+            $findInvitationEndpoint = self::OC_2_ENDPOINT . "/find-invitation-by-token";
+            $response = $httpClient->curlGet("$findInvitationEndpoint?token=$token");
+            print_r("\nresponse: " . print_r($response, true));
+            $this->assertTrue(Util::isTrue($response['success']), "GET $findInvitationEndpoint failed");
+            $this->assertEquals($token, $response['data']['token'], "GET $findInvitationEndpoint failed");
         } catch (Exception $e) {
             $this->fail($e->getMessage());
         }

@@ -39,6 +39,9 @@ class OcmController extends Controller
     /**
      * Inform the sender of the invite that it has been accepted by the recipient.
      *
+     * A previously established invitation relationship between sender and receiver will be replaced with this new one,
+     * provided there is an actual open invite for this /invite-accepted request.
+     *
      * @NoCSRFRequired
      * @PublicPage
      * @param string $recipientProvider maps to recipient_endpoint in the Invitation entity
@@ -105,24 +108,6 @@ class OcmController extends Controller
         $invitation = null;
         try {
             $invitation = $this->invitationService->findByToken($token, false);
-
-            // check if the receiver has not already accepted a previous invitation
-            $existingInvitations = $this->invitationService->findAll([
-                [Schema::VINVITATION_SENDER_CLOUD_ID => $invitation->getSenderCloudId()],
-                [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $userID],
-                [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
-                [Schema::VINVITATION_STATUS => Invitation::STATUS_REVOKED],
-            ], false);
-            if (count($existingInvitations) > 0) {
-                $this->logger->error("Invitation for remote user with name '$name' has been revoked or already accepted.", ['app' => InvitationApp::APP_NAME]);
-                return new DataResponse(
-                    [
-                        'success' => false,
-                        'error_message' => AppError::OCM_INVITE_ACCEPTED_EXISTS
-                    ],
-                    Http::STATUS_NOT_FOUND
-                );
-            }
         } catch (NotFoundException $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
@@ -141,6 +126,38 @@ class OcmController extends Controller
                 ],
                 Http::STATUS_NOT_FOUND
             );
+        }
+
+        // check if there are not an established invitation relations already
+        // and remove those
+        $existingInvitationsSent = $this->invitationService->findAll([
+            [Schema::VINVITATION_SENDER_CLOUD_ID => $invitation->getSenderCloudId()],
+            [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $userID],
+            [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
+        ], false);
+        $existingInvitationsReceived = $this->invitationService->findAll([
+            [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $invitation->getSenderCloudId()],
+            [Schema::VINVITATION_SENDER_CLOUD_ID => $userID],
+            [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
+        ], false);
+        $existingInvitations = array_merge($existingInvitationsSent, $existingInvitationsReceived);
+        if (count($existingInvitations) > 0) {
+            foreach ($existingInvitations as $existingInvitation) {
+                $this->logger->debug("A previous established invitation relation exists. Withdrawing that one.", ['app' => InvitationApp::APP_NAME]);
+                $updateResult = $this->invitationService->update([
+                    Schema::INVITATION_TOKEN => $existingInvitation->getToken(),
+                    Schema::INVITATION_STATUS => Invitation::STATUS_WITHDRAWN,
+                ], false);
+                if ($updateResult == false) {
+                    return new DataResponse(
+                        [
+                            'success' => false,
+                            'error_message' => AppError::OCM_INVITE_ACCEPTED_ERROR,
+                        ],
+                        Http::STATUS_NOT_FOUND,
+                    );
+                }
+            }
         }
 
         // update the invitation with the receiver's info

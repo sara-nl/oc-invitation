@@ -22,6 +22,6 @@ $urlGenerator = \OC::$server->getURLGenerator();
     padding-left: 5em;">
     <?php p($l->t($_['message'])); ?>
     <p>
-        <a href="<?php echo $urlGenerator->linkToRoute('files.view.index'); ?>">Click to continue</a>
+        <a href="<?php echo $urlGenerator->linkToRoute('files.view.index'); ?>"><?php p($l->t('Click to continue')); ?></a>
     </p>
 </div>

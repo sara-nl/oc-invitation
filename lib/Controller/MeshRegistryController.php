@@ -398,6 +398,7 @@ class MeshRegistryController extends Controller
     /**
      * Returnes this instance's invitation service provider endpoint.
      *
+     * @PublicPage
      * @NoCSRFRequired
      *
      * @return DataResponse
@@ -458,6 +459,7 @@ class MeshRegistryController extends Controller
     /**
      * Returnes this instance's invitation service provider name.
      *
+     * @PublicPage
      * @NoCSRFRequired
      *
      * @return DataResponse

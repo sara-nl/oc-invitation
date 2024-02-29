@@ -9,13 +9,8 @@ return [
         // bespoke API - invitation
         ['name' => 'invitation#generate_invite',            'url' => '/generate-invite', 'verb' => 'POST'],
         ['name' => 'invitation#handle_invite',              'url' => '/handle-invite', 'verb' => 'GET'],
-        // FIXME resolve this:
-        // The following 2 methods should actually be PUT but unfortunately the notification handler that uses these to routes
-        // does not set the header Content-type in the request which causing the calls to fail.
-        // And so it only works with POST.
-        // Consider the invite received notification accept action to be a link to the invitation.index page where the invite may be accepted/declined
-        ['name' => 'invitation#accept_invite',              'url' => '/accept-invite/{token}', 'verb' => 'POST'],
-        ['name' => 'invitation#decline_invite',             'url' => '/decline-invite/{token}', 'verb' => 'POST'],
+        ['name' => 'invitation#accept_invite',              'url' => '/accept-invite/{token}', 'verb' => 'PUT'],
+        ['name' => 'invitation#decline_invite',             'url' => '/decline-invite/{token}', 'verb' => 'PUT'],
         ['name' => 'invitation#index',                      'url' => '/index', 'verb' => 'GET'],
         ['name' => 'invitation#find',                       'url' => '/find-invitation', 'verb' => 'GET'],
         ['name' => 'invitation#find_by_token',              'url' => '/find-invitation-by-token', 'verb' => 'GET'],
@@ -42,14 +37,13 @@ return [
         ['name' => 'mesh_registry#invitation_service_providers',        'url' => '/registry/invitation-service-providers', 'verb' => 'GET'],
 
         // route '/endpoint' of this instance
-        //FIXME: prepend route with registry/
-        ['name' => 'mesh_registry#get_endpoint', 'url' => '/endpoint', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#set_endpoint', 'url' => '/endpoint', 'verb' => 'PUT'],
+        ['name' => 'mesh_registry#get_endpoint', 'url' => '/registry/endpoint', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_endpoint', 'url' => '/registry/endpoint', 'verb' => 'PUT'],
 
         // route '/name' of this instance
         //FIXME: prepend route with registry/
-        ['name' => 'mesh_registry#get_name', 'url' => '/name', 'verb' => 'GET'],
-        ['name' => 'mesh_registry#set_name', 'url' => '/name', 'verb' => 'PUT'],
+        ['name' => 'mesh_registry#get_name', 'url' => '/registry/name', 'verb' => 'GET'],
+        ['name' => 'mesh_registry#set_name', 'url' => '/registry/name', 'verb' => 'PUT'],
 
         // route '/share-with-invited-users-only' of this instance
         ['name' => 'mesh_registry#get_allow_sharing_with_invited_users_only', 'url' => '/share-with-invited-users-only', 'verb' => 'GET'],

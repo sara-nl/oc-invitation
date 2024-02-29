@@ -78,7 +78,6 @@ class VInvitation extends Entity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
             $this->columnToProperty(Schema::VINVITATION_TOKEN) => $this->token,
             $this->columnToProperty(Schema::VINVITATION_TIMESTAMP) => $this->timestamp,
             $this->columnToProperty(Schema::VINVITATION_STATUS) => $this->status,

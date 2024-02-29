@@ -119,7 +119,7 @@ class InvitationMapper extends Mapper
             }
             ++$i;
         }
-
+        $query->addOrderBy(Schema::INVITATION_TIMESTAMP, 'DESC');
 
         return $this->getVInvitations($query->execute()->fetchAllAssociative());
     }

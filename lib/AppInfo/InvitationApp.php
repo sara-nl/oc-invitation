@@ -20,6 +20,9 @@ class InvitationApp extends App
 
     public const CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY = 'allow_sharing_with_invited_users_only';
 
+    public const CONFIG_DEPLOY_MODE = 'deploy_mode';
+    public const DEPLOY_MODE_TEST = 'deploy_mode_test';
+
     public function __construct()
     {
         parent::__construct(self::APP_NAME);
