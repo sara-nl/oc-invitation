@@ -29,14 +29,14 @@ $invitationController = new InvitationController(
 
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/name',
+    '/apps/invitation/registry/name',
     'getName',
     $meshRegistryController
 );
 
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/endpoint',
+    '/apps/invitation/registry/endpoint',
     'getEndpoint',
     $meshRegistryController
 );
@@ -46,6 +46,19 @@ new ExternalApiRoute(
     '/apps/invitation/generate-invite',
     'generateInvite',
     $invitationController
+);
+new ExternalApiRoute(
+    'GET',
+    '/apps/invitation/find-invitation-by-token',
+    'findByToken',
+    $invitationController
+);
+new ExternalApiRoute(
+    'GET',
+    '/apps/invitation/handle-invite',
+    'handleInvite',
+    $invitationController,
+    true
 );
 new ExternalApiRoute(
     'GET',

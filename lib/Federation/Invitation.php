@@ -70,7 +70,6 @@ class Invitation extends Entity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
             $this->columnToProperty(Schema::INVITATION_USER_CLOUD_ID) => $this->userCloudId,
             $this->columnToProperty(Schema::INVITATION_TOKEN) => $this->token,
             $this->columnToProperty(Schema::INVITATION_PROVIDER_ENDPOINT) => $this->providerEndpoint,

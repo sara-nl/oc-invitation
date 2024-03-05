@@ -72,7 +72,7 @@ class HttpClient
      *  ]
      * @throws HttpException
      */
-    public function curlGet(string $url, bool $unprotected = false)
+    public function curlGet(string $url, bool $unprotected = false, bool $returnHttpCode = false)
     {
         try {
             $ch = curl_init();
@@ -81,6 +81,10 @@ class HttpClient
             curl_setopt($ch, CURLOPT_TIMEOUT, 10);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ["Content-Type: application/json"]);
             $output = curl_exec($ch);
+            $info = null;
+            if ($returnHttpCode) {
+                return curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            }
             $info = curl_getinfo($ch);
             curl_close($ch);
             if (!isset($output) || $output == false) {

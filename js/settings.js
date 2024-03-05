@@ -44,7 +44,7 @@
                 var _endpoint = document.getElementById('invitation-service-endpoint').value.trim();
                 if (_endpoint !== "") {
                     window.INVITATION.call(
-                        '/endpoint',
+                        '/registry/endpoint',
                         'PUT',
                         { endpoint: _endpoint },
                         (result) => {

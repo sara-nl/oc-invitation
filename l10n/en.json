@@ -1,7 +1,8 @@
 {
     "translations": {
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Invited remote user",
-        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Uninvited remote user"
+        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Uninvited remote user",
+        "HANDLE_INVITATION_EXISTS": "The invitation has already been accepted."
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

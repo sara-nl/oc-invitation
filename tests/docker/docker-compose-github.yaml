@@ -10,11 +10,12 @@ services:
         - nginx-proxy-1-2
       extra_hosts:
         - 'oc-1.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+        - 'oc-2.nl:10.1.0.160' # this will add this mapping to /etc/hosts
       networks:
         static-network:
           ipv4_address: 10.1.0.190
 
-    # oc 1
+    # instance oc-1
     oc-1:
         build:
           context: .
@@ -92,8 +93,88 @@ services:
           static-network:
             ipv4_address: 10.1.0.120
 
-    # END ResearchDrive 1
+    # END instance oc-1
 
+    # instance oc-2
+    oc-2:
+        build:
+          context: .
+          dockerfile: oc-2/Dockerfile-github
+          args:
+            - BRANCH=${BRANCH}
+        container_name: oc-2
+        restart: always
+        depends_on:
+          - mariadb-oc-2
+          - redis-oc-2
+        environment:
+          - OWNCLOUD_TRUSTED_DOMAINS=${RD_1_TRUSTED_DOMAINS}
+          - OWNCLOUD_DOMAIN=${RD_1_DOMAIN}
+          - OWNCLOUD_DB_TYPE=mysql
+          - OWNCLOUD_DB_NAME=owncloud
+          - OWNCLOUD_DB_USERNAME=owncloud
+          - OWNCLOUD_DB_PASSWORD=owncloud
+          - OWNCLOUD_DB_HOST=mariadb-oc-2
+          - OWNCLOUD_ADMIN_USERNAME=${ADMIN_USERNAME}
+          - OWNCLOUD_ADMIN_PASSWORD=${ADMIN_PASSWORD}
+          - OWNCLOUD_MYSQL_UTF8MB4=true
+          - OWNCLOUD_REDIS_ENABLED=true
+          - OWNCLOUD_REDIS_HOST=redis-oc-2
+          - OWNCLOUD_LOG_LEVEL=0
+        healthcheck:
+            test: ["CMD", "/usr/bin/healthcheck"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+        # command: ["su", "-c", "/usr/bin/owncloud server", "www-data"]
+        tty: true
+        volumes:
+          - files-oc-2:/mnt/data
+        extra_hosts:
+          - 'oc-1.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+          - 'oc-2.nl:10.1.0.160' # this will add this mapping to /etc/hosts
+        networks:
+          static-network:
+            ipv4_address: 10.1.0.130
+
+    mariadb-oc-2:
+        image: mariadb:10.6 # minimum required ownCloud version is 10.9
+        container_name: mariadb-oc-2
+        restart: always
+        environment:
+        - MYSQL_ROOT_PASSWORD=owncloud
+        - MYSQL_USER=owncloud
+        - MYSQL_PASSWORD=owncloud
+        - MYSQL_DATABASE=owncloud
+        command: ["--max-allowed-packet=128M", "--innodb-log-file-size=64M"]
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-u", "root", "--password=owncloud"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        volumes:
+            - mysql-oc-2:/var/lib/mysql
+        networks:
+          static-network:
+            ipv4_address: 10.1.0.140
+
+    redis-oc-2:
+        image: redis:6
+        container_name: redis-oc-2
+        restart: always
+        command: ["--databases", "1"]
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        volumes:
+            - redis-oc-2:/data
+        networks:
+          static-network:
+            ipv4_address: 10.1.0.150
+
+    # END instance oc-2
 
     # The reverse mesh proxy with TLS
     nginx-proxy-1-2:
@@ -103,6 +184,7 @@ services:
       container_name: nginx-proxy-1-2
       depends_on:
         - oc-1
+        - oc-2
       ports:
         - 80:80
         - 443:443
@@ -116,6 +198,12 @@ volumes:
     mysql-oc-1:
         driver: local
     redis-oc-1:
+        driver: local
+    files-oc-2:
+        driver: local
+    mysql-oc-2:
+        driver: local
+    redis-oc-2:
         driver: local
 
 networks:

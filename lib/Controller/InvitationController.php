@@ -392,7 +392,38 @@ class InvitationController extends Controller
                 );
             }
 
-            // all's well, update the invitation
+            // withdraw any previous accepted invitation from the same inviter
+            $existingInvitationsReceived = $this->invitationService->findAll([
+                [Schema::VINVITATION_SENDER_CLOUD_ID => $response[MeshRegistryService::PARAM_NAME_USER_ID]],
+                [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $recipientCloudID],
+                [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
+            ]);
+            $existingInvitationsSent = $this->invitationService->findAll([
+                [Schema::VINVITATION_RECIPIENT_CLOUD_ID => $response[MeshRegistryService::PARAM_NAME_USER_ID]],
+                [Schema::VINVITATION_SENDER_CLOUD_ID => $recipientCloudID],
+                [Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED],
+            ]);
+            $existingInvitations = array_merge($existingInvitationsReceived, $existingInvitationsSent);
+            if (count($existingInvitations) > 0) {
+                foreach ($existingInvitations as $existingInvitation) {
+                    $this->logger->debug("A previous invitation for remote user with name " . $response[MeshRegistryService::PARAM_NAME_NAME] . " was accepted already. Withdrawing that one", ['app' => InvitationApp::APP_NAME]);
+                    $updateResult = $this->invitationService->update([
+                        Schema::INVITATION_TOKEN => $existingInvitation->getToken(),
+                        Schema::INVITATION_STATUS => Invitation::STATUS_WITHDRAWN,
+                    ]);
+                    if ($updateResult == false) {
+                        return new DataResponse(
+                            [
+                                'success' => false,
+                                'error_message' => AppError::ACCEPT_INVITE_ERROR,
+                            ],
+                            Http::STATUS_NOT_FOUND,
+                        );
+                    }
+                }
+            }
+
+            // all's well, update the open invitation
             $updateResult = $this->invitationService->update(
                 [
                     Schema::INVITATION_TOKEN => $invitation->getToken(),

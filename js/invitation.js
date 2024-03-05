@@ -1,45 +1,42 @@
 (function (window, $) {
     $(window.document).ready(function () {
         var document = window.document;
-        // TODO: use the inv library for the calls
-
         let generateInvite = function (email, message) {
             $('#invitation-message span').text("");
             // let baseUrl = OC.generateUrl('/apps/invitation/generate-invite?email=' + email + '&message=' + message);
-            let baseUrl = OC.generateUrl('/apps/invitation/generate-invite');
-            let options = {
-                'method': 'POST',
-                'headers': {
-                    'Content-type': 'application/json;charset=utf-8'
-                },
-                body: JSON.stringify({ email: email, message: message })
-            };
-            let response = fetch(baseUrl, options)
-                .then(
-                    (response) => {
-                        return response.json();
-                    }
-                ).then(
-                    (json) => {
-                        if (json.success == true) {
-                            /* TODO: remove before app has gone public */
+            window.INVITATION.call(
+                "generate-invite",
+                "POST",
+                { email: email, message: message },
+                (result) => {
+                    if (result.success == true) {
+                        if ($('input[value="deploy_mode_test"]').size() === 1) {
                             $('#invitation-message span.message').html(
                                 ' <div id="invitation-message-accordion">'
-                                + '<h5>' + t('invitation', 'Your invitation has been sent to') + ' ' + json.email + '.</h5>'
-                                + '<div><p>Invite link: <a href="' + json.inviteLink + '">' + json.inviteLink + '</a></p></div>'
+                                + '<h5>' + t('invitation', 'Your invitation has been sent to') + ' ' + result.email + '.</h5>'
+                                + '<div><p>Invite link: <a href="' + result.inviteLink + '">' + result.inviteLink + '</a></p></div>'
                                 + '</div>'
                             );
                             $("#invitation-message-accordion").accordion({ collapsible: true, active: false });
                         } else {
-                            $('#invitation-message span.error').text(t('invitation', json.error_message));
+                            $('#invitation-message span.message').html(
+                                ' <div">'
+                                + '<h5>' + t('invitation', 'Your invitation has been sent to') + ' ' + result.email + '</h5>'
+                                + '</div>'
+                            );
                         }
-                        getInvitations([{ "status": "open" }], renderOpenInvitations);
+                    } else {
+                        $('#invitation-message span.error').text(t('invitation', result.error_message));
                     }
-                ).catch(
-                    (response) => {
-                        $('#invitation-message span.error').text(t('invitation', 'ERROR_UNSPECIFIED'));
+                    getInvitations([{ "status": "open" }], renderOpenInvitations);
+                },
+                (response) => {
+                    if ($('input[value="deploy_mode_test"]').size() === 1) {
+                        console.log(response.toString());
                     }
-                );
+                    $('#invitation-message span.error').text(t('invitation', 'ERROR_UNSPECIFIED'));
+                }
+            );
         };
 
         let generateInviteButton = document.getElementById('create-invitation');
@@ -59,98 +56,76 @@
          * @param {*} criteria eg. [{ "status": "open" }, { "status": "new" }]
          */
         let getInvitations = function (criteria, renderer) {
-            let endpoint = OC.generateUrl('/apps/invitation/find-all-invitations?fields=' + JSON.stringify(criteria));
-            let options = {
-                'method': 'GET',
-                'headers': {
-                    'Content-type': 'application/json;charset=utf-8'
-                }
-            };
-            let response = fetch(endpoint, options)
-                .then(
-                    (response) => {
-                        return response.json();
-                    }
-                ).then(
-                    (json) => {
-                        if (json.success == true) {
-                            if (json.data) {
-                                renderer(json.data);
-                            }
-                        } else {
-                            $('#invitation-error span').text(json.error_message);
+            window.INVITATION.call(
+                "find-all-invitations?fields=" + JSON.stringify(criteria),
+                "GET",
+                null,
+                (result) => {
+                    if (result.success == true) {
+                        if (result.data) {
+                            renderer(result.data);
                         }
+                    } else {
+                        $('#invitation-error span').text(result.error_message);
                     }
-                ).catch(
-                    (response) => {
-                        $('#invitation-error span').text('ERROR_UNSPECIFIED');
+                },
+                (response) => {
+                    if ($('input[value="deploy_mode_test"]').size() === 1) {
+                        console.log(response.toString());
                     }
-                );
+                    $('#invitation-error span').text('ERROR_UNSPECIFIED');
+                }
+            );
         };
 
         let updateInvite = function (token, status) {
             $('#invitation-message span').text("");
-            let endpoint = OC.generateUrl('/apps/invitation/update-invitation');
-            let options = {
-                method: 'PUT',
-                headers: {
-                    'Content-type': 'application/json;charset=utf-8'
+            window.INVITATION.call(
+                "update-invitation",
+                "PUT",
+                { token: token, status: status },
+                (result) => {
+                    if (result.success == true) {
+                        getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
+                        getInvitations([{ "status": "open" }], renderOpenInvitations);
+                    } else {
+                        OC.dialogs.alert(result.error_message, 'Update invitation error');
+                    }
                 },
-                body: JSON.stringify({ token: token, status: status })
-            };
-            let response = fetch(endpoint, options)
-                .then(
-                    (response) => {
-                        return response.json();
+                (response) => {
+                    if ($('input[value="deploy_mode_test"]').size() === 1) {
+                        console.log(response.toString());
                     }
-                ).then(
-                    (json) => {
-                        if (json.success == true) {
-                            getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
-                            getInvitations([{ "status": "open" }], renderOpenInvitations);
-                        } else {
-                            OC.dialogs.alert(json.error_message, 'Update invitation error');
-                        }
-                    }
-                ).catch(
-                    (response) => {
-                        OC.dialogs.alert('ERROR_UNSPECIFIED', 'Update invitation error');
-                    }
-                );
+                    OC.dialogs.alert('ERROR_UNSPECIFIED', 'Update invitation error');
+                }
+            );
         };
 
         let acceptInvite = function (token) {
-            let endpoint = OC.generateUrl('/apps/invitation/accept-invite/' + token);
-            let options = {
-                method: 'POST',
-                headers: {
-                    'Content-type': 'application/json;charset=utf-8'
+            window.INVITATION.call(
+                "accept-invite/" + token,
+                "PUT",
+                null,
+                (result) => {
+                    if (result.success == true) {
+                        getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
+                        getInvitations([{ "status": "open" }], renderOpenInvitations);
+                    } else {
+                        OC.dialogs.alert(t('invitation', result.error_message), t('invitation', 'Accept invitation error'));
+                    }
+                },
+                (response) => {
+                    if ($('input[value="deploy_mode_test"]').size() === 1) {
+                        console.log(response.toString());
+                    }
+                    OC.dialogs.alert('ERROR_UNSPECIFIED', 'Accept invitation error');
                 }
-            };
-            let response = fetch(endpoint, options)
-                .then(
-                    (response) => {
-                        return response.json();
-                    }
-                ).then(
-                    (json) => {
-                        if (json.success == true) {
-                            getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
-                            getInvitations([{ "status": "open" }], renderOpenInvitations);
-                        } else {
-                            OC.dialogs.alert(json.error_message, 'Accept invitation error');
-                        }
-                    }
-                ).catch(
-                    (response) => {
-                        OC.dialogs.alert('ERROR_UNSPECIFIED', 'Accept invitation error');
-                    }
-                );
+            );
         };
 
         let invitationButton = function (status, token) {
             if (status === 'accepted') {
-                var acceptButton = $('<a class="pure-button" href="#">accept</a>');
+                var acceptButton = $('<a class="pure-button" href="#">' + t('invitation', 'accept') + '</a>');
                 acceptButton.on(
                     "click", function (event) {
                         event.preventDefault();
@@ -161,7 +136,7 @@
                 return acceptButton;
             }
             if (status === 'declined') {
-                var declineButton = $('<a class="pure-button" href="#">decline</a>');
+                var declineButton = $('<a class="pure-button" href="#">' + t('invitation', 'decline') + '</a>');
                 declineButton.on(
                     "click", function (event) {
                         event.preventDefault();
@@ -172,7 +147,7 @@
                 return declineButton;
             }
             if (status === 'revoked') {
-                var revokeButton = $('<a class="pure-button" href="#">revoke</a>');
+                var revokeButton = $('<a class="pure-button" href="#">' + t('invitation', 'revoke') + '</a>');
                 revokeButton.on(
                     "click", function (event) {
                         event.preventDefault();
@@ -183,7 +158,7 @@
                 return revokeButton;
             }
             if (status === 'withdrawn') {
-                var revokeButton = $('<a class="pure-button" href="#">withdraw</a>');
+                var revokeButton = $('<a class="pure-button" href="#">' + t('invitation', 'withdraw') + '</a>');
                 revokeButton.on(
                     "click", function (event) {
                         event.preventDefault();
@@ -233,7 +208,7 @@
             });
         };
 
-        getInvitations([{ "status": "accepted" }], renderAcceptedInvitations)
+        getInvitations([{ "status": "accepted" }], renderAcceptedInvitations);
         getInvitations([{ "status": "open" }], renderOpenInvitations);
     });
 })(window, jQuery);

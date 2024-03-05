@@ -8,11 +8,14 @@
         "Open invitations": "Openstaande uitnodigingen",
         "Accepted invitations": "Geaccepteerde uitnodigingen",
         "Sent/Received": "Verzonden/Ontvangen",
-        "Remote user name": "Remote gebruiker naam",
-        "Remote user cloud ID": "Remote gebruiker cloud ID",
-        "Remote user email": "Remote gebruiker email",
+        "Remote user name": "Naam remote gebruiker",
+        "Remote user institute": "Organisatie remote gebruiker",
+        "Remote user cloud ID": "Cloud ID remote gebruiker",
+        "Remote user email": "Email remote gebruiker",
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Uitgenodigde remote gebruiker",
-        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Niet uitgenodigde remote gebruiker"
+        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Niet uitgenodigde remote gebruiker",
+        "HANDLE_INVITATION_EXISTS": "Deze uitnodiging is reeds geaccepteerd.",
+        "Click to continue": "Klik hier om door te gaan."
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

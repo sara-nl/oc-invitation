@@ -37,7 +37,6 @@ class InvitationServiceProvider extends Entity implements JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->id,
             $this->columnToProperty(Schema::INVITATION_SERVICE_PROVIDER_DOMAIN) => $this->domain,
             $this->columnToProperty(Schema::INVITATION_SERVICE_PROVIDER_ENDPOINT) => $this->endpoint,
             $this->columnToProperty(Schema::INVITATION_SERVICE_PROVIDER_NAME) => $this->name,

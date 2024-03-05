@@ -3,14 +3,13 @@
 use OCA\Invitation\AppInfo\InvitationApp;
 
 $appName = InvitationApp::APP_NAME;
-// FIXME: decide whether the user display name is appropriate (as default)
-$userDisplayName = \OC::$server->getUserSession()->getUser()->getDisplayName();
 script($appName, 'inv');
 script($appName, 'invitation');
 style($appName, 'pure-min-css-3.0.0');
 style($appName, 'invitation');
 ?>
 <div id="<?php p($appName); ?>" class="invitation-index pure-g">
+    <input type="hidden" value="<?php echo \OC::$server->getConfig()->getAppValue($appName, InvitationApp::CONFIG_DEPLOY_MODE, ''); ?>" />
     <div class="pure-u-1-1 create">
         <form class="pure-form">
             <fieldset>

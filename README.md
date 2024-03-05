@@ -29,7 +29,8 @@ For your convenience `make php-codesniffer-errors-fix` will take care of most er
 
 2. Run the integrations tests from within the `tests/docker` folder with the following command:<br>
 `docker compose --verbose --progress=plain -f docker-compose-local.yaml run --build --entrypoint /bin/sh --rm integration-tests -- ./tmp/tests/tests.sh`<br>
-Check the outcome of the tests and fix any issue.
+Check the outcome of the tests and fix any issue.<br>
+*Note: locally you should remove at least the volumes before running the tests again because locally those are not removed after running. A `stop.sh` script specifically for that can be found [here](https://github.com/sara-nl/oc-invitation/blob/main/tests/docker/stop.sh).
 
 #### CI/CD
 * Upon pushing commits a workflow doing some codechecking is executed. You should [prepare](#contributing) for that.

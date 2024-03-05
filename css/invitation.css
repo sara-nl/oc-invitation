@@ -35,7 +35,7 @@ div.invites div.accepted {
 }
 
 div.invites div.open td.button-holder a {
-    width: 5em;
+    min-width: 5em;
     padding-left: .3em;
     padding-right: .3em;
 }
