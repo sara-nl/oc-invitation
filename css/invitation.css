@@ -159,3 +159,52 @@ div.invitation-index table td:first-child {
     text-align: left;
     padding-left: 3em;
 }
+
+div.wayf {
+    width: 28em;
+    margin-top: 5em;
+    margin-left: 8em;
+}
+
+div.wayf-surf-logo {
+    position: absolute;
+    left: 1em;
+    top: 1em;
+}
+
+div.wayf div.wayf-header {
+    height: 1.9em;
+    padding: 1em;
+    padding-left: 1.6em;
+    border: 1px solid silver;
+    background-color: lightgray;
+}
+
+div.wayf div.wayf-header h2 {
+    color: darkslategray;
+    font-weight: normal;
+    margin: 0;
+    margin-bottom: .2em;
+}
+
+div.wayf div.text {
+    font-size: smaller;
+    margin: .5em;
+    margin-bottom: 1.8em;
+}
+
+div.wayf div.institutes {
+    width: 27em;
+}
+
+div.wayf div.institutes p {
+    padding-left: 2em;
+    padding-bottom: .5em;
+    margin-right: .3em;
+    margin-left: .3em;
+    border-bottom: 1px solid gray;
+}
+
+div.wayf div.institutes p a {
+    text-decoration: none;
+}

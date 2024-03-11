@@ -12,17 +12,17 @@ appstore_package_name=$(appstore_build_directory)/$(app_name)_$(version)
 # full check, gives all errors and warnings
 .PHONY: php-codesniffer-full
 php-codesniffer-full:
-	$(CURDIR)/vendor/bin/phpcs appinfo/ lib/ templates/ tests/docker/integration-tests/src --standard=PSR12 --report=full
+	$(CURDIR)/vendor/bin/phpcs appinfo/ lib/ templates/settings/ templates/wayf tests/docker/integration-tests/src/ --standard=PSR12 --report=full
 
 # check for errors only, ignoring warnings
 .PHONY: php-codesniffer-errors
 php-codesniffer-errors:
-	$(CURDIR)/vendor/bin/phpcs appinfo/ lib/ templates/ tests/docker/integration-tests/src --standard=PSR12 --report=full --warning-severity=0
+	$(CURDIR)/vendor/bin/phpcs appinfo/ lib/ templates/settings/ templates/wayf tests/docker/integration-tests/src/ --standard=PSR12 --report=full --warning-severity=0
 
 # should fix (most) errors
 .PHONY: php-codesniffer-errors-fix
 php-codesniffer-errors-fix:
-	$(CURDIR)/vendor/bin/phpcbf appinfo/ lib/ templates/ tests/docker/integration-tests/src --standard=PSR12
+	$(CURDIR)/vendor/bin/phpcbf appinfo/ lib/ templates/settings/ templates/wayf tests/docker/integration-tests/src/ --standard=PSR12
 
 # Builds the source package for the app store, ignores php and js tests
 # command: make version={version_number} buildapp

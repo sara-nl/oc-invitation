@@ -42,4 +42,22 @@ jobs:
           version: 3.7.2
           standard: PSR12
           warning_severity: 0
-          path: templates/
+          path: templates/settings/
+
+      - name: PHP Code Sniffer templates
+        uses: php-actions/phpcs@v1
+        with:
+          php_version: 7.4
+          version: 3.7.2
+          standard: PSR12
+          warning_severity: 0
+          path: templates/wayf/
+
+      - name: PHP Code Sniffer templates
+        uses: php-actions/phpcs@v1
+        with:
+          php_version: 7.4
+          version: 3.7.2
+          standard: PSR12
+          warning_severity: 0
+          path: tests/docker/integration-tests/src/

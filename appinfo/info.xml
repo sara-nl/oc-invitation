@@ -12,7 +12,6 @@
     <category>Integration.</category>
     <summary>Enhances federated sharing between Owncloud instances by implementing an invitation workflow.</summary>
     <types>
-        <filesystem/>
     </types>
 
 

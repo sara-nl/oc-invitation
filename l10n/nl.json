@@ -15,7 +15,13 @@
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Uitgenodigde remote gebruiker",
         "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Niet uitgenodigde remote gebruiker",
         "HANDLE_INVITATION_EXISTS": "Deze uitnodiging is reeds geaccepteerd.",
+<<<<<<< Updated upstream
         "Click to continue": "Klik hier om door te gaan."
+=======
+        "Click to continue": "Klik hier om door te gaan.",
+        "Select your institution to log in": "Kies uw instituut om in te loggen",
+        "You will be redirected to the Research Drive page of your institution to log in.": "U wordt doorgestuurd naar de inlogpagina van het instituut van uw keuze."
+>>>>>>> Stashed changes
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

@@ -152,7 +152,7 @@ class InvitationController extends Controller
             $mail->setSubject("You've been invited to exchange cloud IDs.");
             $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
-            $language = 'en';
+            $language = 'en'; // actually not used, the email itself is multi language
             $htmlText = $this->getMailBody($inviteLink, $message, 'html', $language);
             $mail->setHtmlBody($htmlText);
             // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
