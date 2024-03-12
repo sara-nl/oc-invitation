@@ -14,6 +14,7 @@ use OCA\Invitation\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\ILogger;
 use OCP\IRequest;
+use OCP\Template;
 
 class PageController extends Controller
 {
@@ -34,37 +35,26 @@ class PageController extends Controller
      * @PublicPage
      * @param string $token the token
      * @param string $providerEndpoint the endpoint of the sender
-     * @return void
+     * @return
      */
     public function wayf(string $token, string $providerEndpoint, string $name): void
     {
-        // FIXME: use template for this
-
-        $title = '<html title="WAYF"><head></head><h4>Where Are You From</h4>';
         try {
             $wayfItems = $this->getWayfItems($token, $providerEndpoint, $name);
-            $this->logger->debug(print_r($wayfItems, true));
             if (sizeof($wayfItems) == 0) {
                 throw new ServiceException(AppError::WAYF_NO_PROVIDERS_FOUND);
             }
-            $html = $title;
-            foreach ($wayfItems as $wayfItem) {
-                $this->logger->debug(print_r($wayfItem, true));
-                $url = $wayfItem['handleInviteUrl'];
-                $name = $wayfItem['providerName'];
-                $html .= print_r("<p><a href=\"$url\">$name</a></p>", true) . '</html>';
-            }
-            $html .= '</html>';
-            echo $html;
+            $l = \OC::$server->getL10NFactory()->findLanguage(InvitationApp::APP_NAME);
+            $tmpl = new Template('invitation', "wayf/wayf", '', false, $l);
+            $tmpl->assign('wayfItems', $wayfItems);
+            echo $tmpl->fetchPage();
         } catch (ServiceException $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            $html = $title;
-            $html .= '<div>' . $e->getMessage() . '</div></html>';
+            $html = '<div>' . $e->getMessage() . '</div></html>';
             echo $html;
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            $html = $title;
-            $html .= '<div>' . AppError::WAYF_ERROR . '</div></html>';
+            $html = '<div>' . AppError::WAYF_ERROR . '</div></html>';
             echo $html;
         }
         exit(0);

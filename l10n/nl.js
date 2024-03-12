@@ -13,7 +13,7 @@ OC.L10N.register(
         "accept": "accepteer",
         "received": "Ontvangen van",
         "withdraw": "intrekken",
-        "decline": "intrekken",
+        "decline": "afwijzen",
         "revoke": "intrekken"
     },
     "nplurals=2; plural=(n != 1);");
