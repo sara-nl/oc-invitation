@@ -1,5 +1,8 @@
 (function (window, $) {
     $(window.document).ready(function () {
+
+        $('h1.logo-icon').text("");
+
         var document = window.document;
         let generateInvite = function (email, message) {
             $('#invitation-message span').text("");

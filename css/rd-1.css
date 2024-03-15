@@ -1,0 +1,14 @@
+div#invitation {
+    background-color: lightcyan;
+}
+
+div#header {
+    background-color: darkslategray !important;
+}
+
+div#header h1.logo-icon {
+    color: darkslategray !important;
+    background-image: url(../img/rd-1-university.png) !important;
+    background-size: 20em 2.3em !important;
+    width: 20em !important;
+}

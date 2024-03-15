@@ -16,6 +16,10 @@
 		OC.Share = {};
 	}
 
+	$(window.document).ready(function () {
+        $('h1.logo-icon').text("");
+	});
+
 	var TEMPLATE_BASE =
 		'<div class="resharerInfoView subView"></div>' +
 		'{{#if isSharingAllowed}}' +
