@@ -48,4 +48,4 @@ To do ...
 ---
 ### Invitation Workflow
 ![Invitation Workflow](img/invitation-flow-user-info-exchange.png "Invitation Workflow")
-Fig.2 The invitation workflow as it is implemented.
+Fig.2 - The invitation workflow as it is implemented.
