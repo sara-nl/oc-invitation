@@ -1,0 +1,16 @@
+div#invitation {
+    background-color: lightgrey;
+}
+
+div#header {
+    background-color: steelblue !important;
+}
+
+div#header h1.logo-icon {
+    color: darkslategray !important;
+    background-image: url(../img/rd-2-institute.png) !important;
+    background-size: 18em 2.5em !important;
+    width: 20em !important;
+    height: 54px !important;
+    margin-top: -3px !important;
+}

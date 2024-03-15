@@ -26,16 +26,17 @@ php-codesniffer-errors-fix:
 
 # Builds the source package for the app store, ignores php and js tests
 # command: make version={version_number} buildapp
-.PHONY: buildapp
-buildapp:
+.PHONY: buildapp-tar
+buildapp-tar:
 	rm -rf $(appstore_build_directory)
 	mkdir -p $(appstore_build_directory)
 	# concatenate cd, ls and tar commands with '&&' otherwise the script context will remain the root instead of build
 	cd build &&	\
 	ln -s ../ $(app_name) && \
-	tar cvzfh $(appstore_package_name).tar.gz \
+	tar cvfh $(appstore_package_name).tar \
 	--exclude="$(app_name)/build" \
 	--exclude="$(app_name)/release" \
+	--exclude="$(app_name)/signature" \
 	--exclude="$(app_name)/tests" \
 	--exclude="$(app_name)/Makefile" \
 	--exclude="$(app_name)/*.log" \
@@ -58,6 +59,10 @@ buildapp:
 	--exclude-vcs \
 	$(app_name) && \
 	rm $(app_name)
+
+.PHONY: buildapp
+buildapp: buildapp-tar
+	gzip $(appstore_package_name).tar
 
 # Builds the source package for the app store, includes artifacts required for tests
 # command: make version={version_number} buildapp
@@ -89,3 +94,17 @@ buildapp-tests:
 	--exclude-vcs \
 	$(app_name) && \
 	rm $(app_name)
+
+.PHONY: buildapp-and-sign
+buildapp-and-sign: buildapp-tar
+	# extract the tar
+	rm -rf tmp/${app_name} && \
+	mkdir -p tmp && \
+	tar -xf $(appstore_package_name).tar -C tmp
+	# rm -rf tmp
+	# mkdir -p /tmp/${app_name}/appinfo && \
+	# echo '{boe: "bah"}' > /tmp/${app_name}/appinfo/invitation.test && \
+	# ln -s /tmp/${app_name} ${app_name} && \
+	# tar -rf $(appstore_package_name).tar ${app_name}/appinfo/invitation.test
+	# rm ${app_name}
+

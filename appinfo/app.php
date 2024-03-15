@@ -40,6 +40,14 @@ if (
     $app = \OC::$server->query(\OCA\Invitation\AppInfo\InvitationApp::class);
     // this overrides the OC core sharedialogview.js file.
     Util::addScript(InvitationApp::APP_NAME, 'oc/sharedialogview');
+
+    \OC::$server->getLogger()->debug(" - SERVER HOST: " . \OC::$server->getRequest()->getServerHost());
+    if(\OC::$server->getRequest()->getServerHost() == 'rd-1.nl') {
+        Util::addStyle(InvitationApp::APP_NAME, 'rd-1');
+        \OC::$server->getThemeService()->getTheme()->setName('Invitation');
+    } else {
+        Util::addStyle(InvitationApp::APP_NAME, 'rd-2');
+    }
 } else {
     \OC::$server->getLogger()->error('Error: not installed. Invitations app requires: Federated File Sharing app, Notifications app', ['app' => InvitationApp::APP_NAME]);
     $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {
