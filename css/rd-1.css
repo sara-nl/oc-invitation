@@ -1,3 +1,7 @@
+div.logo {
+    background-image: url('/apps/invitation/img/rd-1-university.png') !important;
+}
+
 div#invitation {
     background-color: lightcyan;
 }
