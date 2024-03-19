@@ -41,10 +41,8 @@ if (
     // this overrides the OC core sharedialogview.js file.
     Util::addScript(InvitationApp::APP_NAME, 'oc/sharedialogview');
 
-    \OC::$server->getLogger()->debug(" - SERVER HOST: " . \OC::$server->getRequest()->getServerHost());
-    if(\OC::$server->getRequest()->getServerHost() == 'rd-1.nl') {
+    if (\OC::$server->getRequest()->getServerHost() == 'rd-1.nl') {
         Util::addStyle(InvitationApp::APP_NAME, 'rd-1');
-        \OC::$server->getThemeService()->getTheme()->setName('Invitation');
     } else {
         Util::addStyle(InvitationApp::APP_NAME, 'rd-2');
     }

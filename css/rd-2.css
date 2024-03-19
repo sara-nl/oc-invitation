@@ -1,5 +1,9 @@
+div.logo {
+    background-image: url('/apps/invitation/img/rd-2-institute.png') !important;
+}
+
 div#invitation {
-    background-color: lightgrey;
+    /* background-color: lightgrey; */
 }
 
 div#header {
