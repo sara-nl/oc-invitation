@@ -22,6 +22,7 @@ use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
+use OCP\IL10N;
 use OCP\ILogger;
 use OCP\IRequest;
 use OCP\Template;
@@ -32,17 +33,20 @@ class InvitationController extends Controller
 {
     private MeshRegistryService $meshRegistryService;
     private InvitationService $invitationService;
+    private IL10N $il10n;
     private ILogger $logger;
 
     public function __construct(
         $appName,
         IRequest $request,
         MeshRegistryService $meshRegistryService,
-        InvitationService $invitationService
+        InvitationService $invitationService,
+        IL10N $il10n
     ) {
         parent::__construct($appName, $request);
         $this->meshRegistryService = $meshRegistryService;
         $this->invitationService = $invitationService;
+        $this->il10n = $il10n;
         $this->logger = \OC::$server->getLogger();
     }
 
@@ -86,6 +90,12 @@ class InvitationController extends Controller
                 ],
                 Http::STATUS_NOT_FOUND
             );
+        }
+
+        // check pre-conditions
+        $preConditionFailed = $this->generateInvitePreCondition();
+        if ($preConditionFailed->getStatus() != Http::STATUS_OK) {
+            return $preConditionFailed;
         }
 
         $inviteLink = '';
@@ -236,6 +246,7 @@ class InvitationController extends Controller
     private function getMailBody(string $inviteLink, string $message, string $targetTemplate = 'html', string $languageCode = '')
     {
         $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
+        $tmpl->assign('fromName', \OC::$server->getUserSession()->getUser()->getDisplayName());
         $tmpl->assign('inviteLink', $inviteLink);
         $tmpl->assign('message', $message);
         return $tmpl->fetchPage();
@@ -275,9 +286,17 @@ class InvitationController extends Controller
 
         // check if invitation doesn't already exists
         try {
-            $invitation = $this->invitationService->findByToken($token);
             // we want a NotFoundException
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS]));
+            $invitation = $this->invitationService->findByToken($token);
+
+            if ($invitation->getStatus() === Invitation::STATUS_OPEN) {
+                // redirect to the open invitation
+                return new RedirectResponse($urlGenerator->linkToRoute('invitation.invitation.index'));
+            }
+            if ($invitation->getStatus() === Invitation::STATUS_ACCEPTED) {
+                return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ALREADY_ACCEPTED, 'param1' => $invitation->getSenderName()]));
+            }
+            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS, 'param1' => $this->il10n->t($invitation->getStatus())]));
         } catch (NotFoundException $e) {
             // we're good to go
         } catch (Exception $e) {
@@ -352,6 +371,12 @@ class InvitationController extends Controller
                     ['success' => false, 'error_message' => AppError::INVITATION_NOT_FOUND],
                     Http::STATUS_NOT_FOUND
                 );
+            }
+
+            // check pre-conditions
+            $preConditionFailed = $this->acceptInvitePreCondition();
+            if ($preConditionFailed->getStatus() != Http::STATUS_OK) {
+                return $preConditionFailed;
             }
 
             $recipientEndpoint = $this->meshRegistryService->getEndpoint();
@@ -466,6 +491,74 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         }
+    }
+
+    /**
+     * Returns a DataResponse with an error why the precondition failed,
+     * or null when it hasn't.
+     */
+    private function generateInvitePreCondition(): DataResponse
+    {
+        $_userEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
+        if (!isset($_userEmail) || $_userEmail === '') {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::CREATE_INVITATION_ERROR_SENDER_EMAIL_MISSING,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+        $_userName = \OC::$server->getUserSession()->getUser()->getDisplayName();
+        if (!isset($_userName) || $_userName === '') {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::CREATE_INVITATION_ERROR_SENDER_NAME_MISSING,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+        return new DataResponse(
+            [
+                'success' => true,
+            ],
+            Http::STATUS_OK,
+        );
+    }
+
+    /**
+     * Returns a DataResponse with an error why the precondition failed,
+     * or null when it hasn't.
+     */
+    private function acceptInvitePreCondition(): DataResponse
+    {
+        $_userEmail = \OC::$server->getUserSession()->getUser()->getEMailAddress();
+        if (!isset($_userEmail) || $_userEmail === '') {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::ACCEPT_INVITE_ERROR_RECIPIENT_EMAIL_MISSING,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+        $_userName = \OC::$server->getUserSession()->getUser()->getDisplayName();
+        if (!isset($_userName) || $_userName === '') {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::ACCEPT_INVITE_ERROR_RECIPIENT_NAME_MISSING,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
+        }
+        return new DataResponse(
+            [
+                'success' => true,
+            ],
+            Http::STATUS_OK,
+        );
     }
 
     /**

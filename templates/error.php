@@ -20,7 +20,10 @@ $urlGenerator = \OC::$server->getURLGenerator();
     background-color: aqua;
     font-weight: bold;
     padding-left: 5em;">
-    <?php p($l->t($_['message'])); ?>
+    <?php
+    $_message = $_['message'];
+    p($l->t("$_message %s", $_['param1']));
+    ?>
     <p>
         <a href="<?php echo $urlGenerator->linkToRoute('files.view.index'); ?>"><?php p($l->t('Click to continue')); ?></a>
     </p>

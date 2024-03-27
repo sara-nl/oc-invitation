@@ -13,11 +13,14 @@
         "Remote user cloud ID": "Cloud ID remote gebruiker",
         "Remote user email": "Email remote gebruiker",
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Uitgenodigde remote gebruiker",
-        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Niet uitgenodigde remote gebruiker",
-        "HANDLE_INVITATION_EXISTS": "Deze uitnodiging is reeds geaccepteerd.",
+        "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Onbekende remote gebruiker",
+        "HANDLE_INVITATION_EXISTS %s": "Deze uitnodiging is reeds afgehandeld. De status van de uitnodiging is: %s. U kunt eventueel de zender vragen om een nieuwe uitnodiging, of er zelf één sturen.",
+        "HANDLE_INVITATION_ALREADY_ACCEPTED %s": "Remote gebruiker %s is al bekend in het systeem. U kunt direct onderling gefedereerd bestanden delen.",
         "Click to continue": "Klik hier om door te gaan.",
         "Select your institution to log in": "Kies uw instituut om in te loggen",
-        "You will be redirected to the Research Drive page of your institution to log in.": "U wordt doorgestuurd naar de inlogpagina van het instituut van uw keuze."
+        "You will be redirected to the Research Drive page of your institution to log in.": "U wordt doorgestuurd naar de inlogpagina van het instituut van uw keuze.",
+        "withdrawn": "ingetrokken",
+        "declined": "afgewezen"
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

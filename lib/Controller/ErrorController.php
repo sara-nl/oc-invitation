@@ -27,8 +27,8 @@ class ErrorController extends Controller
      * @param string $message
      * @return TemplateResponse
      */
-    public function invitation(string $message): TemplateResponse
+    public function invitation(string $message, string $param1 = ""): TemplateResponse
     {
-        return new TemplateResponse(InvitationApp::APP_NAME, 'error', ['message' => $message]);
+        return new TemplateResponse(InvitationApp::APP_NAME, 'error', ['message' => $message, 'param1' => $param1]);
     }
 }
