@@ -33,10 +33,13 @@ class AppError
     public const CREATE_INVITATION_ERROR_SENDER_EMAIL_MISSING = 'CREATE_INVITATION_ERROR_SENDER_EMAIL_MISSING';
     /** the sender personal profile has no name specified */
     public const CREATE_INVITATION_ERROR_SENDER_NAME_MISSING = 'CREATE_INVITATION_ERROR_SENDER_NAME_MISSING';
-
+    /** the email used is the email of the sender */
+    public const CREATE_INVITATION_EMAIL_IS_OWN_EMAIL = "CREATE_INVITATION_EMAIL_IS_OWN_EMAIL";
     /* Handle recieved invitation errors */
     /** unspecified handle invitation error */
     public const HANDLE_INVITATION_ERROR = 'HANDLE_INVITATION_ERROR';
+    /** unable to retrieve the invite information */
+    public const GET_INVITE_ERROR = 'GET_INVITE_ERROR';
     /** an invitation already exists */
     public const HANDLE_INVITATION_EXISTS = 'HANDLE_INVITATION_EXISTS';
     /** an invitation already exists */
@@ -51,6 +54,8 @@ class AppError
     public const HANDLE_INVITATION_PROVIDER_UNKNOWN = 'HANDLE_INVITATION_PROVIDER_UNKNOWN';
     /** the reponse fields from the OCM /invite-accepted call are invalid */
     public const HANDLE_INVITATION_OCM_INVITE_ACCEPTED_RESPONSE_FIELDS_INVALID = 'HANDLE_INVITATION_INVITE_ACCEPTED_RESPONSE_INVALID';
+    /** the invite link is not valid (anymore) */
+    public const HANDLE_INVITATION_INVALID_INVITELINK = "HANDLE_INVITATION_INVALID_INVITELINK";
 
     /* accept invite errors */
     /** error accepting invitation */
@@ -63,6 +68,10 @@ class AppError
     /* decline invite errors */
     /** error declining invite */
     public const DECLINE_INVITE_ERROR = 'DECLINE_INVITE_ERROR';
+
+    /* update invitation errors */
+    /** error updating invitation */
+    public const UPDATE_INVITATION_ERROR = "UPDATE_INVITATION_ERROR";
 
     /* Mesh Registry errors */
     /** error retrieving all providers */

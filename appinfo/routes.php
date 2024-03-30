@@ -7,6 +7,9 @@
 return [
     'routes' => [
         // bespoke API - invitation
+        // unprotected endpoint /invitation
+        ['name' => 'invitation#invitation',                 'url' => '/invite/{token}', 'verb' => 'GET'],
+        ['name' => 'invitation#invitation_form',            'url' => '/invitation-form', 'verb' => 'GET'],
         ['name' => 'invitation#generate_invite',            'url' => '/generate-invite', 'verb' => 'POST'],
         ['name' => 'invitation#handle_invite',              'url' => '/handle-invite', 'verb' => 'GET'],
         ['name' => 'invitation#accept_invite',              'url' => '/accept-invite/{token}', 'verb' => 'PUT'],
@@ -41,7 +44,6 @@ return [
         ['name' => 'mesh_registry#set_endpoint', 'url' => '/registry/endpoint', 'verb' => 'PUT'],
 
         // route '/name' of this instance
-        //FIXME: prepend route with registry/
         ['name' => 'mesh_registry#get_name', 'url' => '/registry/name', 'verb' => 'GET'],
         ['name' => 'mesh_registry#set_name', 'url' => '/registry/name', 'verb' => 'PUT'],
 

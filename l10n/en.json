@@ -2,8 +2,11 @@
     "translations": {
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Invited remote user",
         "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Unknown remote user",
-        "HANDLE_INVITATION_ALREADY_ACCEPTED %s": "Remote user %s is already known by the system. You can immediately exchange federated shares between eachother.",
-        "HANDLE_INVITATION_EXISTS %s": "This invitation has been dealt with already. The status of the invitation is: %s. If needed you can request the sender for a new invitation, or send one yourself."
+        "HANDLE_INVITATION_ALREADY_ACCEPTED": "Remote user %s is already known by the system. You can share data already.",
+        "HANDLE_INVITATION_EXISTS": "This invitation has been dealt with already. The status of the invitation is: %s. If needed you can request the sender for a new invitation, or send one yourself.",
+        "HANDLE_INVITATION_INVALID_INVITELINK": "This invitation has expired.",
+        "GET_INVITE_ERROR": "Could not handle the invitation. An error has occurred.",
+        "notification": "You received an invitation from '%s'. Click to view."
     },
     "pluralForm": "nplurals=2; plural=(n != 1);"
 }

@@ -22,7 +22,7 @@ $urlGenerator = \OC::$server->getURLGenerator();
     padding-left: 5em;">
     <?php
     $_message = $_['message'];
-    p($l->t("$_message %s", $_['param1']));
+    p($l->t("$_message", $_['param1']));
     ?>
     <p>
         <a href="<?php echo $urlGenerator->linkToRoute('files.view.index'); ?>"><?php p($l->t('Click to continue')); ?></a>

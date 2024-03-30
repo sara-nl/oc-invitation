@@ -46,9 +46,12 @@ div.invites h2 {
 }
 
 div.create {
-    border-bottom: 1px solid lightgray;
     margin-left: .1em;
     margin-bottom: 1em;
+}
+
+button#open-invitation-form {
+    margin: 2.2em 1em 1em 1em;
 }
 
 div.create legend {
@@ -127,6 +130,19 @@ li[data-id="invitation"] img.app-icon {
     max-width: 38px !important;
 }
 
+div#invitation-index-message {
+    height: 2em;
+    margin-top: .8em;
+    padding-top: .5em;
+    border-top: 1px solid lightgray;
+    font-size: 1.2em;
+}
+
+div#invitation-index-message span.error {
+    font-weight: bold;
+    color: red;
+}
+
 div#invitation-message-accordion .ui-accordion-header {
     border: none;
     background: none;
@@ -144,6 +160,7 @@ div#invitation-message-accordion .ui-accordion-header span.ui-accordion-header-i
 div#invitation-message-accordion div.ui-accordion-content {
     border: none;
     background: none;
+    padding-top: .2em;
 }
 
 div#invitation-message-accordion div.ui-accordion-content a {
@@ -207,4 +224,60 @@ div.wayf div.institutes p {
 
 div.wayf div.institutes p a {
     text-decoration: none;
+}
+
+div.app-invitation>div.oc-dialog {
+    width: 50%;
+    z-index: 10000;
+}
+
+div.invitation-form input {
+    width: 25em;
+}
+
+div.invitation-form textarea {
+    width: 25.4em;
+    height: 8em;
+    margin-top: .2em;
+}
+
+div.invitation-form label {
+    display: inline-block;
+    width: 90%;
+    text-align: right;
+}
+
+div.invitation-form div.invitation-form-button-row {
+    border-top: 1px solid #e5e5e5;
+    margin-top: .8em;
+    padding-top: .7em;
+}
+
+div.app-invitation div.oc-dialog {
+    z-index: 900;
+}
+
+div.oc-dialog {
+    width: 30%;
+}
+
+div.oc-dialog div.oc-dialog-buttonrow {
+    border-top: 1px solid lightgray;
+    padding-top: .5em;
+}
+
+div.create-invitation-overlay-on {
+    display: initial !important;
+}
+
+div#create-invitation-overlay {
+    display: none;
+    background-color: #000;
+    opacity: 0.20;
+    z-index: 899;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
 }
