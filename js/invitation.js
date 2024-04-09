@@ -254,13 +254,23 @@
             }
         );
     };
+    /**
+     * This prevents the default ocdialog behaviour for enter keypress
+     * @param {*} event 
+     */
+    let _catchEnter = function (event) {
+        if (event.keyCode === 13) {
+            event.stopImmediatePropagation();
+        }
+    }
 
     let _INVITATION = {
         renderOpenInvitations: _renderOpenInvitations,
         renderAcceptedInvitations: _renderAcceptedInvitations,
         initInvitationForm: _initInvitationForm,
         closeInvitationForm: _closeInvitationForm,
-        listInvitations: _listInvitations
+        listInvitations: _listInvitations,
+        catchEnter: _catchEnter
     };
 
     window.INVITATION = _INVITATION;
@@ -294,7 +304,6 @@
                                             window.INVITATION.closeInvitationForm();
                                         }
                                     }],
-                                    // closeButton: null,
                                     close: function () {
                                         window.INVITATION.closeInvitationForm();
                                     }

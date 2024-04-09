@@ -34,5 +34,6 @@
 <script>
     (function(window) {
         window.INVITATION.initInvitationForm("<?php p($_['cloudID']); ?>");
+        $('#create-invitation-message').on("keydown", function(event, ui) { window.INVITATION.catchEnter(event); })
     })(window);
 </script>
