@@ -24,8 +24,8 @@ class MeshRegistryService
     private InvitationServiceProviderMapper $invitationServiceProviderMapper;
     private ILogger $logger;
 
-    // TODO: move all this to a more appropriate class
     private const ENDPOINT_FORWARD_INVITE = '/registry/forward-invite';
+    public const ENDPOINT_GET_INVITE = '/invite';
     public const ENDPOINT_ACCEPT_INVITE = '/accept-invite';
     public const ENDPOINT_HANDLE_INVITE = '/handle-invite';
     public const ENDPOINT_INVITE_ACCEPTED = '/ocm/invite-accepted';
@@ -34,7 +34,6 @@ class MeshRegistryService
     /** @depricated The domain of the sender's provider */
     public const PARAM_NAME_PROVIDER_DOMAIN = 'providerDomain';
     /** The endpoint of the sender's provider */
-    // TODO: check if this param is still relevant
     public const PARAM_NAME_PROVIDER_ENDPOINT = 'providerEndpoint';
     /** OCM param recipientProvider */
     public const PARAM_NAME_RECIPIENT_PROVIDER = 'recipientProvider';

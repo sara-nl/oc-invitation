@@ -3,7 +3,8 @@
 use OCA\Invitation\AppInfo\InvitationApp;
 
 $appName = InvitationApp::APP_NAME;
-script($appName, 'inv');
+script($appName, 'invitation-service');
+script($appName, 'invitation-actions');
 script($appName, 'invitation');
 style($appName, 'pure-min-css-3.0.0');
 style($appName, 'invitation');
@@ -11,23 +12,18 @@ style($appName, 'invitation');
 <div id="<?php p($appName); ?>" class="invitation-index pure-g">
     <input type="hidden" value="<?php echo \OC::$server->getConfig()->getAppValue($appName, InvitationApp::CONFIG_DEPLOY_MODE, ''); ?>" />
     <div class="pure-u-1-1 create">
-        <form class="pure-form">
-            <fieldset>
-                <legend><?php p($l->t('Create invitation')); ?></legend>
-                <div class="pure-g">
-                    <div class="pure-u-1-4">
-                        <input id="create-invitation-email" type="email" placeholder="<?php p($l->t('Recipient email')); ?>" />
-                        <button id="create-invitation" type="submit" class="pure-button pure-button-primary"><?php p($l->t('Send')); ?></button>
-                    </div>
-                </div>
-                <div class="pure-g">
-                    <div class="pure-u-1-3">
-                        <textarea id="create-invitation-message" placeholder="<?php p($l->t('Your message (optional)')); ?>"></textarea>
-                    </div>
-                </div>
-            </fieldset>
-        </form>
-        <div id="invitation-message"><span class="message"></span><span class="error"></span></div>
+        <div class="pure-g">
+            <div class="pure-u-1-8">
+                <button id="open-invitation-form" type="submit" class="pure-button pure-button-primary"><?php p($l->t('Create invitation')); ?></button>
+            </div>
+            <div class="pure-u-7-8">
+                <span class="information">
+                </span>
+            </div>
+            <div class="pure-u-1-1" id="invitation-index-message">
+                <span class="message"></span><span class="error"></span>
+            </div>
+        </div>
     </div>
     <div class="pure-u-1-1 invites">
         <div class="pure-g">
@@ -76,3 +72,4 @@ style($appName, 'invitation');
         </div>
     </div>
 </div>
+<div id="create-invitation-overlay"></div>

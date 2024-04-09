@@ -37,10 +37,10 @@ class PageController extends Controller
      * @param string $providerEndpoint the endpoint of the sender
      * @return
      */
-    public function wayf(string $token, string $providerEndpoint, string $name): void
+    public function wayf(string $token, string $providerEndpoint): void
     {
         try {
-            $wayfItems = $this->getWayfItems($token, $providerEndpoint, $name);
+            $wayfItems = $this->getWayfItems($token, $providerEndpoint);
             if (sizeof($wayfItems) == 0) {
                 throw new ServiceException(AppError::WAYF_NO_PROVIDERS_FOUND);
             }
@@ -74,11 +74,10 @@ class PageController extends Controller
      *
      * @param string $token
      * @param string $providerEndpoint
-     * @param string $name
      * @return array
      * @throws ServiceException
      */
-    private function getWayfItems(string $token, string $providerEndpoint, string $name): array
+    private function getWayfItems(string $token, string $providerEndpoint): array
     {
         try {
             $invitationServiceProviders = $this->meshRegistryService->allInvitationServiceProviders();
@@ -95,8 +94,7 @@ class PageController extends Controller
                     $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
                     $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;
                     $providerEndpointParam = MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT;
-                    $nameParam = MeshRegistryService::PARAM_NAME_NAME;
-                    $link = "$serviceEndpoint/$handleInviteEndpoint?$tokenParam=$token&$providerEndpointParam=$providerEndpoint&$nameParam=$name";
+                    $link = "$serviceEndpoint/$handleInviteEndpoint?$tokenParam=$token&$providerEndpointParam=$providerEndpoint";
                     $wayfItems[$i] = [
                         "handleInviteUrl" => $link,
                         "providerName" => $invitationServiceProvider->getName(),

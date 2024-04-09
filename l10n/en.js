@@ -1,13 +1,26 @@
 OC.L10N.register(
     "invitation",
     {
-        "ERROR_UNSPECIFIED": "An error has occurred",
+        "ERROR_UNSPECIFIED": "An error has occurred. No further information available.",
+        "GET_INVITATIONS_ERROR_UNSPECIFIED": "Error: unable to retrieve {status} invitations.",
+        "CREATE_INVITATION_ERROR_SENDER_EMAIL_MISSING": "Your personal profile lacks an email address. An email address is required when creating an invitation. Please complete your personal profile by filling in your email address. Afterwards you can create the invitation.",
+        "CREATE_INVITATION_ERROR_SENDER_NAME_MISSING": "Your personal profile lacks a name. Your name is required when creating an invitation. Please complete your personal profile by filling in your full name.  Afterwards you can create the invitation.",
+        "ACCEPT_INVITATION_ERROR": "An error has occured with accepting the invitation",
+        "ACCEPT_INVITE_ERROR_RECIPIENT_EMAIL_MISSING": "Your personal profile lacks an email address. An email address is required to accept an invitation. Please fill in your email in your personal profile. Afterwards you can accept the invitation.",
+        "ACCEPT_INVITE_ERROR_RECIPIENT_NAME_MISSING": "Your personal profile lacks a name. Your name is required to accept an invitation. Please fill in your name in your personal profile. Afterwards you can accept the invitation.",
         "CREATE_INVITATION_NO_RECIPIENT_EMAIL": "Recipient email is required",
         "CREATE_INVITATION_EMAIL_INVALID": "The recipient email is invalid",
-        "CREATE_INVITATION_EXISTS": "Looks like the intended recipient is already in your list of accepted or open invitations. To send a new invite you need to withdraw the accepted or revoke the open existing one.",
+        "CREATE_INVITATION_NO_SENDER_NAME": "Sender name is required",
+        "CREATE_INVITATION_EXISTS": "Looks like the intended recipient is already in your list of accepted or open sent invitations. To send a new invite you need to withdraw the accepted or revoke the open existing one.",
+        "CREATE_INVITATION_EMAIL_IS_OWN_EMAIL": "This is your own email! You should fill in the email of the intended recipient of the invitation.",
+        "UPDATE_INVITATION_ERROR": "Unable to change the status of the invitation",
         "OCM_INVITE_ACCEPTED_NOT_FOUND": "The sender informs us that the invitation does not exist (anymore).",
         "OCM_INVITE_ACCEPTED_EXISTS": "The sender informs us that an accepted invitation already exists.",
+        "Your invitation has been sent to": "Your invitation has been send to {recipient}. When the receiver accepts the invitation it will appear in the list of accepted invitations.",
+        "confirmation-header": "Please note that the following information will be shared with the receiver of the invitation:",
+        "confirmation": "<p>Your cloud ID: {cloudId}<br>Your email: {email}<br>Your name: {name}<br><br></p>",
         "sent": "Sent to",
         "received": "Received from",
+        "explanation": "<h2>Invite a remote user to exchange cloud ID's.</h2>If you want to share data with a Research Drive user from a <b>different institute</b> you need that person's cloud ID.<br>You can obtain the cloud ID of the person you want to share with by sending a one time invitation.<br>When this person accepts the invitation your cloud IDs will be exchanged and saved in each others Research Drive environment.<br>From then on, when sharing, you can find that remote person by name, email or institute name."
     },
     "nplurals=2; plural=(n != 1);");

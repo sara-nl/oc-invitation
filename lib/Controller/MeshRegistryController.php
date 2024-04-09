@@ -47,7 +47,7 @@ class MeshRegistryController extends Controller
      * @param string $name the name of the sender
      * @return Response
      */
-    public function forwardInvite(string $token = '', string $providerEndpoint = '', string $name = ''): Response
+    public function forwardInvite(string $token = '', string $providerEndpoint = ''): Response
     {
         $urlGenerator = \OC::$server->getURLGenerator();
 
@@ -73,18 +73,6 @@ class MeshRegistryController extends Controller
                 )
             );
         }
-        if ($name == '') {
-            \OC::$server->getLogger()->error('Invite is missing the sender name.', ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse(
-                $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
-                    [
-                        'message' => AppError::HANDLE_INVITATION_MISSING_SENDER_NAME
-                    ]
-                )
-            );
-        }
-
         if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerEndpoint)) {
             \OC::$server->getLogger()->error("Invitation service provider endpoint '$providerEndpoint' is unknown.", ['app' => InvitationApp::APP_NAME]);
             return new RedirectResponse(
@@ -101,7 +89,6 @@ class MeshRegistryController extends Controller
         $params = [
             MeshRegistryService::PARAM_NAME_TOKEN => $token,
             MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT => $providerEndpoint,
-            MeshRegistryService::PARAM_NAME_NAME => $name,
         ];
         return new RedirectResponse(
             $urlGenerator->linkToRoute($this->meshRegistryService->getWayfPageRoute(), $params)
