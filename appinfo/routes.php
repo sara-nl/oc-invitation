@@ -32,7 +32,7 @@ return [
         ['name' => 'mesh_registry#invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'GET'],
         // adds a remote invitation service provider
         ['name' => 'mesh_registry#add_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'POST'],
-        // @depricated remote services cannot be updated, they update themselves and we retrieve the properties from them
+        // update the properties of this invitation service provider
         ['name' => 'mesh_registry#update_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'PUT'],
         ['name' => 'mesh_registry#delete_invitation_service_provider', 'url' => '/registry/invitation-service-provider', 'verb' => 'DELETE'],
 

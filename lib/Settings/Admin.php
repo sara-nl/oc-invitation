@@ -3,7 +3,9 @@
 namespace OCA\Invitation\Settings;
 
 use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Invitation\Service\ApplicationConfigurationException;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
+use OCA\Invitation\Service\NotFoundException;
 use OCP\ILogger;
 use OCP\Settings\ISettings;
 use OCP\Template;
@@ -27,7 +29,17 @@ class Admin implements ISettings
     public function getPanel()
     {
         $template = new Template('invitation', 'settings/admin');
-        $template->assign('endpoint', $this->meshRegistryService->getEndpoint());
+        try {
+            $invitationServiceProvider = $this->meshRegistryService->getInvitationServiceProvider();
+            $template->assign('endpoint', $invitationServiceProvider->getEndpoint());
+            $template->assign('name', $invitationServiceProvider->getName());
+        } catch (ApplicationConfigurationException $e) {
+            $template->assign('endpoint', '');
+            $template->assign('name', '');
+        } catch (NotFoundException $e) {
+            $template->assign('endpoint', '');
+            $template->assign('name', '');
+        }
         $template->assign(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $this->meshRegistryService->getAllowSharingWithInvitedUsersOnly());
         return $template;
     }

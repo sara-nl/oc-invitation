@@ -11,6 +11,9 @@ class AppError
     /** unspecified error */
     public const ERROR = 'ERROR';
 
+    /** the application has not been configured correctly */
+    public const APPLICATION_CONFIGURATION_EXCEPTION = "APPLICATION_CONFIGURATION_EXCEPTION";
+
     /* route errors */
     /** the request is missing a required parameter */
     public const REQUEST_MISSING_PARAMETER = 'REQUEST_MISSING_PARAMETER';
@@ -78,6 +81,8 @@ class AppError
     public const MESH_REGISTRY_ALL_PROVIDERS_ERROR = 'MESH_REGISTRY_ALL_PROVIDERS_ERROR';
     /** error adding the invitation service provider */
     public const MESH_REGISTRY_ADD_PROVIDER_ERROR = 'MESH_REGISTRY_ADD_PROVIDER_ERROR';
+    /** provider is already registered */
+    public const MESH_REGISTRY_ADD_PROVIDER_EXISTS_ERROR = 'MESH_REGISTRY_ADD_PROVIDER_EXISTS_ERROR';
     /** error deleting the invitation service provider */
     public const MESH_REGISTRY_DELETE_PROVIDER_ERROR = 'MESH_REGISTRY_DELETE_PROVIDER_ERROR';
     /** error retrieving the invitation service provider */
@@ -118,4 +123,8 @@ class AppError
     public const HTTP_POST_CURL_REQUEST_ERROR = 'HTTP_POST_CURL_REQUEST_ERROR';
     /** the curl GET request responded with an error */
     public const HTTP_GET_CURL_REQUEST_ERROR = 'HTTP_GET_CURL_REQUEST_ERROR';
+
+    /* settings admin errors */
+    /** only a remote provider can be added in the settings */
+    public const SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR = 'SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR';
 }

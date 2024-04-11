@@ -12,6 +12,8 @@ use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Db\Schema;
 use OCA\Invitation\Federation\InvitationServiceProvider;
 use OCA\Invitation\Federation\InvitationServiceProviderMapper;
+use OCA\Invitation\Service\ApplicationConfigurationException;
+use OCA\Invitation\Service\InvitationService;
 use OCA\Invitation\Service\NotFoundException;
 use OCA\Invitation\Service\ServiceException;
 use OCP\IConfig;
@@ -156,13 +158,13 @@ class MeshRegistryService
      * Returns the endpoint of the local (this instance's) invitation service provider.
      *
      * @return string the endpoint
-     * @throws ServiceException if the endpoint has not been set
+     * @throws ApplicationConfigurationException if the endpoint has not been set
      */
     public function getEndpoint(): string
     {
         $endpoint = $this->getAppValue('endpoint');
         if (!isset($endpoint) || trim($endpoint) == "") {
-            throw new ServiceException('Endpoint is not set.');
+            throw new ApplicationConfigurationException('Endpoint is not set.');
         }
         return $endpoint;
     }
@@ -198,12 +200,15 @@ class MeshRegistryService
      * Returns the invitation service provider of this instance.
      *
      * @return InvitationServiceProvider
+     * @throws ApplicationConfigurationException
      * @throws NotFoundException
      */
     public function getInvitationServiceProvider(): InvitationServiceProvider
     {
         try {
             return $this->invitationServiceProviderMapper->getInvitationServiceProvider($this->getEndpoint());
+        } catch (ApplicationConfigurationException $e) {
+            throw $e;
         } catch (ServiceException $e) {
             throw new NotFoundException($e->getMessage());
         }
@@ -224,28 +229,23 @@ class MeshRegistryService
     /**
      * Adds the specified invitation service provider and returns it, also if it exists already.
      *
-     * @param string $endpoint
+     * @param InvitationServiceProvider $provider
      * @return InvitationServiceProvider
      * @throws ServiceException in case of error
      */
-    public function addInvitationServiceProvider(string $endpoint): InvitationServiceProvider
+    public function addInvitationServiceProvider(InvitationServiceProvider $provider): InvitationServiceProvider
     {
-        if (!$this->isEndpointValid($endpoint)) {
-            throw new ServiceException("Invalid endpoint '$endpoint'");
-        }
         $invitationServiceProvider = null;
         try {
-            $invitationServiceProvider = $this->findInvitationServiceProvider($endpoint);
+            $invitationServiceProvider = $this->findInvitationServiceProvider($provider->getEndpoint());
         } catch (NotFoundException $e) {
-            $this->logger->info("Creating invitation service provider with endpoint '$endpoint'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("Creating invitation service provider with endpoint " . $provider->getEndpoint(), ['app' => InvitationApp::APP_NAME]);
         }
         if (isset($invitationServiceProvider)) {
             return $invitationServiceProvider;
         }
         try {
-            $invitationServiceProvider = new InvitationServiceProvider();
-            $invitationServiceProvider->setEndpoint($endpoint);
-            return $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
+            return $this->invitationServiceProviderMapper->insert($provider);
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error inserting the invitation service provider.');
@@ -253,45 +253,74 @@ class MeshRegistryService
     }
 
     /**
-     * Updates the fields of invitation service provider with the specified endpoint.
+     * Updates the fields of invitation service provider with the specified endpoint or
+     * registers the provider if it is not registered yet.
      *
-     * @param string endpoint
-     * @param array $fields
+     * @param string endpoint the currently configured provider endpoint
+     * @param array $fields updates on current provider fields
      * @return InvitationServiceProvider the updated provider
      * @throws ServiceException
      */
     public function updateInvitationServiceProvider($endpoint, $fields): InvitationServiceProvider
     {
         try {
-            $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
+            $this->logger->debug(" updating: $endpoint with fields: " . print_r($fields, true));
+            $invitationServiceProvider = null;
+            $newEndpoint = "";
+            $newName = "";
+            try {
+                $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
+            } catch (NotFoundException $e) {
+                // create it first, unless $endpoint is empty in which case we expect it to be in the fields
+                if (!empty($endpoint)) {
+                    if (!$this->isEndpointValid($endpoint)) {
+                        throw new ServiceException("Error updating invitation service provider. Endpoint invalid: $endpoint");
+                    }
+                    $invitationServiceProvider = new InvitationServiceProvider();
+                    $invitationServiceProvider->setEndpoint($endpoint);
+                    $invitationServiceProvider = $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
+                    $newEndpoint = $endpoint;
+                } else {
+                    $this->logger->info("Registering this Invitation Service Provider to the registry.");
+                }
+            }
             foreach ($fields as $field => $value) {
                 switch ($field) {
                     case Schema::INVITATION_SERVICE_PROVIDER_ENDPOINT:
                         if (is_string($value) == true) {
-                            $invitationServiceProvider->setEndpoint($value);
+                            if (!$this->isEndpointValid($value)) {
+                                throw new ServiceException("Error updating invitation service provider. Endpoint invalid: $value");
+                            }
+                            $newEndpoint = $value;
                         } else {
-                            $this->logger->debug("Value '$value' is of wrong type");
+                            $this->logger->debug("Value '$value' is of wrong type for property endpoint");
                         }
                         break;
                     case Schema::INVITATION_SERVICE_PROVIDER_NAME:
                         if (is_string($value) == true) {
-                            $invitationServiceProvider->setName($value);
+                            $newName = $value;
                         } else {
-                            $this->logger->debug("Value '$value' is of wrong type");
-                        }
-                        break;
-                    case Schema::INVITATION_SERVICE_PROVIDER_DOMAIN:
-                        if (is_string($value) == true) {
-                            $invitationServiceProvider->setDomain($value);
-                        } else {
-                            $this->logger->debug("Value '$value' is of wrong type");
+                            $this->logger->debug("Value '$value' is of wrong type for property name");
                         }
                         break;
                     default:
                         $this->logger->debug("Field '$field' is not a property of entity InvitationServiceProvider");
                 }
             }
-            $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
+            $domain = parse_url($newEndpoint)['host'];
+            if ($invitationServiceProvider == null) {
+                $invitationServiceProvider = new InvitationServiceProvider();
+                $invitationServiceProvider->setEndpoint($newEndpoint);
+                $invitationServiceProvider->setName($newName);
+                $invitationServiceProvider->setDomain($domain);
+                $invitationServiceProvider = $this->invitationServiceProviderMapper->insert($invitationServiceProvider);
+            } else {
+                $invitationServiceProvider->setEndpoint($newEndpoint);
+                $invitationServiceProvider->setName($newName);
+                $invitationServiceProvider->setDomain($domain);
+                $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
+            }
+            $this->setAppValue('endpoint', $newEndpoint);
             return $invitationServiceProvider;
         } catch (Exception $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
@@ -310,7 +339,11 @@ class MeshRegistryService
     {
         try {
             $invitationServiceProvider = $this->invitationServiceProviderMapper->getInvitationServiceProvider($endpoint);
-            return $this->invitationServiceProviderMapper->delete($invitationServiceProvider);
+            $deletedEntity = $this->invitationServiceProviderMapper->delete($invitationServiceProvider);
+            if ($endpoint === $this->getEndpoint()) {
+                $this->deleteAppValue('endpoint');
+            }
+            return $deletedEntity;
         } catch (NotFoundException $e) {
             $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException('Error deleting the invitation service provider: Not found.');
@@ -394,8 +427,8 @@ class MeshRegistryService
             $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
             return $invitationServiceProvider->getName();
         } catch (NotFoundException $e) {
-            $this->logger->error("Unable to find this instance's invitation service provider. Could not set name to '$name'.", ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException("Unable to find this instance's invitation service provider. Could not set name to '$name'.");
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new ServiceException("Error updating invitation service provider: Not found");
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             throw new ServiceException("Could not set name to '$name'.");
@@ -410,13 +443,8 @@ class MeshRegistryService
      */
     public function getName(): string
     {
-        try {
-            $invitationServiceProvider = $this->getInvitationServiceProvider();
-            return $invitationServiceProvider->getName();
-        } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            throw new ServiceException("Unable to find this instance's invitation service provider.");
-        }
+        $name = $this->getAppValue('name');
+        return $name;
     }
 
     /**
@@ -444,6 +472,7 @@ class MeshRegistryService
     /**
      * Returns the value of the specified application key.
      *
+     * @param string $key
      * @return mixed
      */
     private function getAppValue($key)
@@ -452,7 +481,22 @@ class MeshRegistryService
     }
 
     /**
+     * Deletes the app config set for the specified key.
+     *
+     * @param string $key
+     * @return mixed
+     */
+    private function deleteAppValue($key)
+    {
+        return $this->config->deleteAppValue($this->appName, $key);
+    }
+
+    /**
      * Sets the value of the specified application key.
+
+     * @param string $key
+     * @param string $value
+     * @return void
      */
     private function setAppValue($key, $value): void
     {

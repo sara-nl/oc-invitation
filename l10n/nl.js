@@ -2,6 +2,7 @@ OC.L10N.register(
     "invitation",
     {
         "ERROR_UNSPECIFIED": "Er is iets misgegaan. Geen verdere informatie beschikbaar.",
+        "APPLICATION_CONFIGURATION_EXCEPTION": "Er is iets misgegaan. De applicatie is incorrect geconfigureerd.",
         "GET_INVITATIONS_ERROR_UNSPECIFIED": "Foutmelding: kon geen {status} uitnodigingen ophalen.",
         "CREATE_INVITATION_ERROR_SENDER_EMAIL_MISSING": "Uw persoonlijk profiel mist het emailadres. Dit is nodig voor het maken van een uitnodiging. Vult u svp. het emailadres in bij uw persoonlijk profiel. Daarna kunt u de uitnodiging maken.",
         "CREATE_INVITATION_ERROR_SENDER_NAME_MISSING": "Uw persoonlijk profiel mist de naam. Dit is nodig voor het maken van een uitnodiging. Vult u svp. uw naam in bij uw persoonlijk profiel. Daarna kunt u de uitnodiging verzenden.",
@@ -13,9 +14,9 @@ OC.L10N.register(
         "CREATE_INVITATION_NO_SENDER_NAME": "Naam zender is verplicht",
         "CREATE_INVITATION_EXISTS": "Er lijkt al een geaccepteerde of open verzonden uitnodiging met deze persoon te bestaan. Voor het versturen van een nieuwe uitnodiging dient u de bestaande eerst in te trekken.",
         "CREATE_INVITATION_EMAIL_IS_OWN_EMAIL": "Dit is uw eigen email. U dient het emailadres van de ontvanger in te vullen.",
+        "UPDATE_INVITATION_ERROR": "Kan de status van de uitnodiging niet aanpassen",
         "OCM_INVITE_ACCEPTED_NOT_FOUND": "De verzendende partij geeft aan dat deze uitnodiging daar niet (meer) bestaat.",
         "OCM_INVITE_ACCEPTED_EXISTS": "De verzendende partij geeft aan dat een geaccepteerde uitnodiging daar al bestaat.",
-        "UPDATE_INVITATION_ERROR": "Kan de status van de uitnodiging niet aanpassen",
         "Accept invitation error": "Er is een fout opgetreden bij het accepteren van de uitnodiging",
         "Decline invitation error": "Er is een fout opgetreden bij het afwijzen van de uitnodiging",
         "Revoke invitation error": "Er is een fout opgetreden bij het intrekken van de uitnodiging",
@@ -29,6 +30,13 @@ OC.L10N.register(
         "revoke": "intrekken",
         "confirmation-header": "Let op, the volgende informatie zal worden gedeeld met de ontvanger van de uitnodiging:",
         "confirmation": "<p>Uw cloud ID: {cloudId}<br>Uw email: {email}<br>Uw naam: {name}<br><br></p>",
-        "explanation": "<h2>Invite a remote user to exchange cloud ID's.</h2>If you want to share data with a Research Drive user from a <b>different institute</b> you need that person's cloud ID.<br>You can obtain the cloud ID of the person you want to share with by sending a one time invitation.<br>When this person accepts the invitation your cloud IDs will be exchanged and saved in each others Research Drive environment.<br>From then on, when sharing, you can find that remote person by name, email or institute name."
+        "explanation": "<h2>Invite a remote user to exchange cloud ID's.</h2>If you want to share data with a Research Drive user from a <b>different institute</b> you need that person's cloud ID.<br>You can obtain the cloud ID of the person you want to share with by sending a one time invitation.<br>When this person accepts the invitation your cloud IDs will be exchanged and saved in each others Research Drive environment.<br>From then on, when sharing, you can find that remote person by name, email or institute name.",
+        "MESH_REGISTRY_ADD_PROVIDER_ERROR": "Er is iets misgegaan. Kan geen provider toevoegen.",
+        "MESH_REGISTRY_UPDATE_PROVIDER_ERROR": "Er is iets misgegaan. Kan provider niet aanpassen.",
+        "SETTINGS_UPDATE_ERROR": "An error has occurred. Kon deze setting niet updaten.",
+        "SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR": "Alleen remote providers kunnen toegevoegd worden.",
+        "MESH_REGISTRY_GET_SERVICE_PROVIDERS_ERROR": "Er is iets misgegaan. Kan geen providers ophalen.",
+        "MESH_REGISTRY_DELETE_SERVICE_PROVIDER_ERROR": "Er is iets misgegaan. Kan provider niet verwijderen.",
+        "MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR": "Dit is een verplicht veld."
     },
     "nplurals=2; plural=(n != 1);");

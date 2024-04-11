@@ -14,6 +14,7 @@ use OCA\Invitation\AppInfo\AppError;
 use OCA\Invitation\Db\Schema;
 use OCA\Invitation\Federation\Invitation;
 use OCA\Invitation\HttpClient;
+use OCA\Invitation\Service\ApplicationConfigurationException;
 use OCA\Invitation\Service\InvitationService;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCA\Invitation\Service\NotFoundException;
@@ -228,7 +229,17 @@ class InvitationController extends Controller
             }
 
             $inviteLink = $this->meshRegistryService->inviteLink($params);
+        } catch (ApplicationConfigurationException $e) {
+            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::APPLICATION_CONFIGURATION_EXCEPTION,
+                ],
+                Http::STATUS_NOT_FOUND,
+            );
         } catch (Exception $e) {
+            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

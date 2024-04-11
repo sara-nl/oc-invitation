@@ -79,7 +79,9 @@ div.app-invitation div.error a {
     color: darkblue !important;
 }
 
-input.invitation-endpoint {
+input.settings-isp-endpoint,
+input.settings-isp-name,
+input.settings-add-isp {
     width: 30em;
 }
 
@@ -107,7 +109,21 @@ ul#invitation-remote-service-providers span.settings-error {
     width: 50em;
 }
 
-span.invitation-service-settings-endpoint-success.fade-out {
+label[for="invitation-service-endpoint"],
+label[for="invitation-service-name"] {
+    display: inline-block;
+    width: 5em;
+    margin-right: 1em;
+    text-align: right;
+}
+
+button#save-invitation-service-name {
+    margin-left: 6em;
+    margin-right: 1em;
+}
+
+span.invitation-service-settings-endpoint-success.fade-out,
+span.invitation-service-settings-success.fade-out {
     font-weight: bold;
     transition: opacity 2s ease-in;
     opacity: 0;

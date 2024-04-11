@@ -4,7 +4,9 @@ use OCA\Invitation\AppInfo\InvitationApp;
 
 $appName = InvitationApp::APP_NAME;
 $allowSharingWithInvitedUsersOnly = $_[InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY];
-script($appName, 'inv');
+script($appName, 'invitation-service');
+script($appName, 'invitation-actions');
+script($appName, 'invitation');
 script($appName, 'settings');
 style($appName, 'invitation'); ?>
 
@@ -19,14 +21,19 @@ style($appName, 'invitation'); ?>
     </p>
     <br>
     <p>
-        <b>Invitation service endpoint</b>
+        <b>This Invitation Service Provider</b>
     </p>
     <p>
-        <input id="invitation-service-endpoint" class="invitation-endpoint" type="text" placeholder="endpoint" value="<?php p($_['endpoint']); ?>" />
-        <button id="save-invitation-service-endpoint" type="submit" class="button">Save</button>
-        <span id="invitation-service-settings-endpoint-success" class="invitation-service-settings-endpoint-success"></span>
+        <label for="invitation-service-endpoint">Endpoint</label><input id="invitation-service-endpoint" data-invitation-service-provider-endpoint="<?php p($_['endpoint']); ?>" class="settings-isp-endpoint" type="text" placeholder="endpoint" value="<?php p($_['endpoint']); ?>" />
         <span id="invitation-service-settings-endpoint-error" class="settings-error"></span>
     </p>
+    <label for="invitation-service-name">Name</label><input id="invitation-service-name" class="settings-isp-name" type="text" placeholder="name" value="<?php p($_['name']); ?>" />
+    <span id="invitation-service-settings-name-error" class="settings-error"></span>
+    <div>
+        <button id="save-invitation-service-name" type="submit" class="button">Save</button>
+        <span id="invitation-service-settings-success" class="invitation-service-settings-success"></span>
+        <span id="invitation-service-settings-error" class="settings-error"></span>
+    </div>
     <br>
     <p>
         <b>Remote Invitation Service Providers</b>
@@ -35,7 +42,7 @@ style($appName, 'invitation'); ?>
         <button id="invitation-add-remote-service-provider" type="submit" class="button">+ Add provider</button>
     <div><span id="invitation-remote-service-providers-error" class="settings-error"></span></div>
     <div id="invitation-add-remote-service-provider" class="hide">
-        <input id="invitation-add-remote-service-provider-endpoint" class="invitation-endpoint" type="text" placeholder="endpoint" />
+        <input id="invitation-add-remote-service-provider-endpoint" class="settings-add-isp" type="text" placeholder="endpoint" />
         <button id="invitation-remote-service-provider-save" type="submit" class="button">Save</button>
         <span id="invitation-remote-service-provider-save-error" class="settings-error"></span>
     </div>

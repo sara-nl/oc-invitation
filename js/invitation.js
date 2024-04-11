@@ -279,49 +279,51 @@
         var document = window.document;
 
         let openInvitationFormButton = document.getElementById('open-invitation-form');
-        openInvitationFormButton.addEventListener(
-            "click", function (event) {
-                event.preventDefault();
-                event.stopPropagation();
-                $('div#invitation-index-message span.message').empty();
-                $("div#create-invitation-overlay").addClass("create-invitation-overlay-on");
-                window.INVITATION_SERVICE.call(
-                    "invitation-form",
-                    "GET",
-                    null,
-                    (result) => {
-                        if (result.success == true) {
-                            if (result.data) {
-                                $('#content').append('<div id="invitation-form-container">' + result.data + '</div>');
-                                $('#invitation-form-container').ocdialog({
-                                    width: 500,
-                                    closeOnEscape: true,
-                                    modal: true,
-                                    buttons: [{
-                                        text: t('core', 'Cancel'),
-                                        classes: 'cancel',
-                                        click: function () {
+        if (openInvitationFormButton) {
+            openInvitationFormButton.addEventListener(
+                "click", function (event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    $('div#invitation-index-message span.message').empty();
+                    $("div#create-invitation-overlay").addClass("create-invitation-overlay-on");
+                    window.INVITATION_SERVICE.call(
+                        "invitation-form",
+                        "GET",
+                        null,
+                        (result) => {
+                            if (result.success == true) {
+                                if (result.data) {
+                                    $('#content').append('<div id="invitation-form-container">' + result.data + '</div>');
+                                    $('#invitation-form-container').ocdialog({
+                                        width: 500,
+                                        closeOnEscape: true,
+                                        modal: true,
+                                        buttons: [{
+                                            text: t('core', 'Cancel'),
+                                            classes: 'cancel',
+                                            click: function () {
+                                                window.INVITATION.closeInvitationForm();
+                                            }
+                                        }],
+                                        close: function () {
                                             window.INVITATION.closeInvitationForm();
                                         }
-                                    }],
-                                    close: function () {
-                                        window.INVITATION.closeInvitationForm();
-                                    }
-                                });
+                                    });
+                                }
+                            } else {
+                                $('#invitation-error span').text(result.error_message);
                             }
-                        } else {
-                            $('#invitation-error span').text(result.error_message);
+                        },
+                        (response) => {
+                            if ($('input[value="deploy_mode_test"]').size() === 1) {
+                                console.log(response.toString());
+                            }
+                            $('#invitation-error span').text(t('invitation', 'ERROR_UNSPECIFIED'));
                         }
-                    },
-                    (response) => {
-                        if ($('input[value="deploy_mode_test"]').size() === 1) {
-                            console.log(response.toString());
-                        }
-                        $('#invitation-error span').text(t('invitation', 'ERROR_UNSPECIFIED'));
-                    }
-                );
-            }
-        );
+                    );
+                }
+            );
+        }
 
         window.INVITATION.listInvitations([{ "status": "open" }], window.INVITATION.renderOpenInvitations);
         window.INVITATION.listInvitations([{ "status": "accepted" }], window.INVITATION.renderAcceptedInvitations);
