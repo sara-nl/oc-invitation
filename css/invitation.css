@@ -247,6 +247,18 @@ div.app-invitation>div.oc-dialog {
     z-index: 10000;
 }
 
+div.app-invitation>div.oc-dialog h3.oc-dialog-title {
+    font-size: larger;
+}
+
+div.app-invitation>div.oc-dialog legend {
+    font-weight: normal;
+}
+
+div.app-invitation>div.oc-dialog-dim {
+    display: none;
+}
+
 div.invitation-form input {
     width: 25em;
 }

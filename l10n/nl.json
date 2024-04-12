@@ -1,9 +1,12 @@
 {
     "translations": {
-        "Create invitation": "Nieuwe uitnodiging",
         "Recipient email": "Email ontvanger",
+        "Recipient name": "Naam ontvanger",
+        "Invitation to": "Uitnodiging naar",
+        "Sender info": "Uw informatie",
         "Your message (optional)": "Uw bericht (optioneel)",
         "Send": "Verstuur",
+        "INVITATION_EMAIL_SUBJECT": "You've been invited to exchange cloud IDs.",
         "notification": "U heeft een uitnodiging ontvangen van '%s'. Klik om te bekijken.",
         "Open invitations": "Openstaande uitnodigingen",
         "Accepted invitations": "Geaccepteerde uitnodigingen",

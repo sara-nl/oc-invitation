@@ -1,5 +1,6 @@
 {
     "translations": {
+        "INVITATION_EMAIL_SUBJECT": "You've been invited to exchange cloud IDs.",
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Invited remote user",
         "REMOTE_USER_TYPE_INFO_UNINVITED": "Federated - Unknown remote user",
         "HANDLE_INVITATION_ALREADY_ACCEPTED": "Remote user %s is already known by the system. You can share data already.",

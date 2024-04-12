@@ -6,14 +6,12 @@ use OCA\Invitation\AppInfo\InvitationApp;
 use OCA\Invitation\Service\ApplicationConfigurationException;
 use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use OCA\Invitation\Service\NotFoundException;
-use OCP\ILogger;
 use OCP\Settings\ISettings;
 use OCP\Template;
 
 class Admin implements ISettings
 {
     private MeshRegistryService $meshRegistryService;
-    private ILogger $logger;
 
     public function __construct(MeshRegistryService $meshRegistryService)
     {

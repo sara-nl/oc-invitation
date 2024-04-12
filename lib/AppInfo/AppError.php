@@ -26,6 +26,8 @@ class AppError
     public const CREATE_INVITATION_ERROR = 'CREATE_INVITATION_ERROR';
     /** the recipient's mail is required */
     public const CREATE_INVITATION_NO_RECIPIENT_EMAIL = 'CREATE_INVITATION_NO_RECIPIENT_EMAIL';
+    /** the recipient's mail is required */
+    public const CREATE_INVITATION_NO_RECIPIENT_NAME = 'CREATE_INVITATION_NO_RECIPIENT_NAME';
     /** the email is invalid */
     public const CREATE_INVITATION_EMAIL_INVALID = 'CREATE_INVITATION_EMAIL_INVALID';
     /** a sender name is required */

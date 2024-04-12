@@ -23,6 +23,8 @@ class InvitationApp extends App
     public const CONFIG_DEPLOY_MODE = 'deploy_mode';
     public const DEPLOY_MODE_TEST = 'deploy_mode_test';
 
+    public const INVITATION_EMAIL_SUBJECT = 'INVITATION_EMAIL_SUBJECT';
+
     public function __construct()
     {
         parent::__construct(self::APP_NAME);

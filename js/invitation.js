@@ -115,10 +115,14 @@
     /**
      * These fields must be set.
      * @param {string} email the email of the recipient
+     * @param {string} recipientName the name of the recipient
      * @param {string} senderName the name of the sender
      * @returns {string} empty string if fields are valid, else a translated error message
      */
-    let validateInvitationFields = function (email, senderName) {
+    let validateInvitationFields = function (email, recipientName, senderName) {
+        if (typeof recipientName !== "string" || recipientName.trim() === "") {
+            return t('invitation', "CREATE_INVITATION_NO_RECIPIENT_NAME")
+        }
         if (typeof email !== "string" || email.trim() === "") {
             return t('invitation', "CREATE_INVITATION_NO_RECIPIENT_EMAIL")
         }
@@ -178,9 +182,10 @@
                 event.stopPropagation();
                 let dialogClass = "create-invitation-confirmation-dialog";
                 let email = document.getElementById('create-invitation-email').value;
+                let recipientName = document.getElementById('create-invitation-recipientName').value;
                 let yourName = document.getElementById('create-invitation-senderName').value;
                 let message = document.getElementById('create-invitation-message').value.replace(/\n/g, "__LINE_BREAK__");
-                let validateErrorMessage = validateInvitationFields(email, yourName);
+                let validateErrorMessage = validateInvitationFields(email, recipientName, yourName);
                 if ("" === validateErrorMessage) {
                     $('#invitation-message span.error').text("");
                     OC.dialogs.message(
@@ -191,13 +196,14 @@
                         function () {
                             window.INVITATION_ACTIONS.sendInvite(
                                 email,
+                                recipientName,
                                 yourName,
                                 message,
                                 (result) => {
                                     if ($('input[value="deploy_mode_test"]').size() === 1) {
                                         $('#invitation-index-message span.message').html(
                                             ' <div id="invitation-message-accordion">'
-                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipient: result.data.email }) + '</h5>'
+                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
                                             + '<div><p>Invite link: <a href="' + result.data.inviteLink + '">' + result.data.inviteLink + '</a></p></div>'
                                             + '</div>'
                                         );
@@ -205,7 +211,7 @@
                                     } else {
                                         $('#invitation-index-message span.message').html(
                                             ' <div">'
-                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipient: result.data.email }) + '</h5>'
+                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
                                             + '</div>'
                                         );
                                     }
@@ -307,7 +313,8 @@
                                         }],
                                         close: function () {
                                             window.INVITATION.closeInvitationForm();
-                                        }
+                                        },
+                                        title: t('invitation', 'Create Invitation')
                                     });
                                 }
                             } else {

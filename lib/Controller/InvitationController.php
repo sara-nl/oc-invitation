@@ -148,18 +148,28 @@ class InvitationController extends Controller
      *
      * @NoAdminRequired
      * @NoCSRFRequired
-     * @param string email the email address to send the invite to
-     * @param string senderName the name of the sender
-     * @param string message the message for the receiver
+     * @param string $email the email address to send the invite to
+     * @param string $recipientName the name of the recipient
+     * @param string $senderName the name of the sender
+     * @param string $message the message for the receiver
      * @return DataResponse the result
      */
-    public function generateInvite(string $email = '', string $senderName = '', string $message = ''): DataResponse
+    public function generateInvite(string $email = '', string $recipientName = '', string $senderName = '', string $message = ''): DataResponse
     {
         if ('' == $email) {
             return new DataResponse(
                 [
                     'success' => false,
                     'error_message' => AppError::CREATE_INVITATION_NO_RECIPIENT_EMAIL,
+                ],
+                Http::STATUS_NOT_FOUND
+            );
+        }
+        if ('' == $recipientName) {
+            return new DataResponse(
+                [
+                    'success' => false,
+                    'error_message' => AppError::CREATE_INVITATION_NO_RECIPIENT_NAME,
                 ],
                 Http::STATUS_NOT_FOUND
             );
@@ -268,13 +278,13 @@ class InvitationController extends Controller
         try {
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
-            $mail->setSubject("You've been invited to exchange cloud IDs.");
+            $mail->setSubject($this->il10n->t(InvitationApp::INVITATION_EMAIL_SUBJECT));
             $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
             $language = 'en'; // actually not used, the email itself is multi language
-            $htmlText = $this->getMailBody($inviteLink, $message, 'html', $language);
+            $htmlText = $this->getMailBody($inviteLink, $recipientName, $message, 'html', $language);
             $mail->setHtmlBody($htmlText);
-            // $plainText = $this->getMailBody($inviteLink, $message, 'text', $language);
+            // $plainText = $this->getMailBody($inviteLink, $recipientName, $message, 'text', $language);
             // $mail->setPlainBody($plainText);
             // TODO: Array with failed recipients. Be aware that this depends on the used mail backend and therefore should be considered.
             //       return error if failed ??
@@ -320,8 +330,9 @@ class InvitationController extends Controller
                         'token' => $newInvitation->getToken(),
                         'inviteLink' => $inviteLink,
                         'email' => $email,
+                        'recipientName' => $recipientName,
                         // FIXME: the link and message should be part of the the persisted invitation
-                        'message' => "The following invite (link) has been send to $email: <a style=\"color: blue;\" href=\"$inviteLink\">$inviteLink</a>"
+                        'message' => "The following invite (link) has been send to $recipientName($email): <a style=\"color: blue;\" href=\"$inviteLink\">$inviteLink</a>"
                     ],
                 ],
                 Http::STATUS_OK
@@ -349,14 +360,16 @@ class InvitationController extends Controller
     /**
      * Returns the mail body rendered according to the specified target template.
      * @param string $inviteLink the invite link
+     * @param string $recipientName the name of the recipient
      * @param string $message additional message to render
      * @param string $targetTemplate on of 'html', 'text'
      * @param string $languageCode the language code to use
      * @return string the rendered body
      */
-    private function getMailBody(string $inviteLink, string $message, string $targetTemplate = 'html', string $languageCode = '')
+    private function getMailBody(string $inviteLink, string $recipientName, string $message, string $targetTemplate = 'html', string $languageCode = '')
     {
         $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
+        $tmpl->assign('recipientName', $recipientName);
         $tmpl->assign('fromName', \OC::$server->getUserSession()->getUser()->getDisplayName());
         $tmpl->assign('inviteLink', $inviteLink);
         $tmpl->assign('message', $message);

@@ -8,15 +8,16 @@
     /**
      * 
      * @param string email
+     * @param string recipientName
      * @param string senderName
      * @param string message
      */
-    let _sendInvite = function (email, senderName, message, successCallback, errorCallback) {
+    let _sendInvite = function (email, recipientName, senderName, message, successCallback, errorCallback) {
         $('#invitation-message span').text("");
         window.INVITATION_SERVICE.call(
             "generate-invite",
             "POST",
-            { email: email, senderName: senderName, message: message },
+            { email: email, recipientName: recipientName, senderName: senderName, message: message },
             successCallback,
             errorCallback
         );
