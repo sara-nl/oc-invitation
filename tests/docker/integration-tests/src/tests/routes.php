@@ -19,11 +19,13 @@ $meshRegistryController = new MeshRegistryController(
     $meshRegistryService
 );
 $invitationService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('InvitationService');
+$l10nService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('L10N');
 $invitationController = new InvitationController(
     InvitationApp::APP_NAME,
     \OC::$server->getRequest(),
     $meshRegistryService,
-    $invitationService
+    $invitationService,
+    $l10nService
 );
 
 

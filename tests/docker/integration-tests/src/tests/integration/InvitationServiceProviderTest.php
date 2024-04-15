@@ -52,6 +52,7 @@ class InvitationServiceProviderTest extends TestCase
             print_r("\ntesting unprotected endpoint $endpoint\n");
             $httpClient = new HttpClient();
             $response = $httpClient->curlGet($endpoint, true);
+
             print_r("\n" . print_r($response, true));
             $this->assertTrue(Util::isTrue($response['success']), "GET $endpoint failed");
             $this->assertEquals($invitationServiceProviderName, $response['data'], "GET $endpoint failed");
