@@ -443,8 +443,8 @@ class MeshRegistryService
      */
     public function getName(): string
     {
-        $name = $this->getAppValue('name');
-        return $name;
+        $invitationServiceProvider = $this->getInvitationServiceProvider();
+        return $invitationServiceProvider->getName();
     }
 
     /**

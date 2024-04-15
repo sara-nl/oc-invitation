@@ -58,7 +58,7 @@ class InvitationApp extends App
         });
 
         $container->registerService('L10N', function ($c) {
-            return $c->query('ServerContainer')->getL10N($c->query(self::APP_NAME));
+            return $c->query('ServerContainer')->getL10N($c->getAppName());
         });
 
         $manager = \OC::$server->getNotificationManager();
