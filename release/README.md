@@ -1,4 +1,4 @@
-### How to create a release tar
+## How to create a release tar
 
 The project will be cloned and the release tar will be build from it.
 

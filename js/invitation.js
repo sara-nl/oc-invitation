@@ -229,6 +229,8 @@
                         $('.' + dialogClass).empty().append(
                             t('invitation', 'confirmation', { "cloudId": cloudId, "name": yourName, "email": email })
                         );
+                        // to position the confirmation dialog overlay on top of the invitation form overlay 
+                        $('div.oc-dialog-dim:last').addClass('confirmation');
                     });
                 } else {
                     $('#invitation-message span.error').text(validateErrorMessage);
@@ -239,7 +241,7 @@
 
     let _closeInvitationForm = function closeInvitationForm() {
         $('#invitation-form-container').ocdialog('destroy').remove();
-        $("div#create-invitation-overlay").removeClass("create-invitation-overlay-on");
+        $('div.oc-dialog-dim').remove();
     };
 
     /**
@@ -291,7 +293,6 @@
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
-                    $("div#create-invitation-overlay").addClass("create-invitation-overlay-on");
                     window.INVITATION_SERVICE.call(
                         "invitation-form",
                         "GET",

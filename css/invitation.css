@@ -255,10 +255,6 @@ div.app-invitation>div.oc-dialog legend {
     font-weight: normal;
 }
 
-div.app-invitation>div.oc-dialog-dim {
-    display: none;
-}
-
 div.invitation-form input {
     width: 25em;
 }
@@ -285,6 +281,14 @@ div.app-invitation div.oc-dialog {
     z-index: 900;
 }
 
+div.app-invitation>div.oc-dialog-dim {
+    z-index: 899;
+}
+
+div.app-invitation>div.oc-dialog-dim.confirmation {
+    z-index: 999;
+}
+
 div.oc-dialog {
     width: 30%;
 }
@@ -292,20 +296,4 @@ div.oc-dialog {
 div.oc-dialog div.oc-dialog-buttonrow {
     border-top: 1px solid lightgray;
     padding-top: .5em;
-}
-
-div.create-invitation-overlay-on {
-    display: initial !important;
-}
-
-div#create-invitation-overlay {
-    display: none;
-    background-color: #000;
-    opacity: 0.20;
-    z-index: 899;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
 }

@@ -72,4 +72,3 @@ style($appName, 'invitation');
         </div>
     </div>
 </div>
-<div id="create-invitation-overlay"></div>
