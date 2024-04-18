@@ -24,6 +24,13 @@ php-codesniffer-errors:
 php-codesniffer-errors-fix:
 	$(CURDIR)/vendor/bin/phpcbf appinfo/ lib/ templates/settings/ templates/wayf tests/docker/integration-tests/src/ --standard=PSR12
 
+# runs the integration tests
+.PHONY: integration-tests
+integration-tests:
+	cd $(CURDIR)/tests/docker && \
+	docker compose --verbose --progress=plain -f docker-compose-local.yaml run --build --entrypoint /bin/sh --rm integration-tests -- ./tmp/tests/tests.sh && \
+	sh ./docker-cleanup.sh
+
 # Builds the source package for the app store, ignores php and js tests
 # command: make version={version_number} buildapp
 .PHONY: buildapp

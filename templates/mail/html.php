@@ -18,7 +18,7 @@
                             throw new Exception("No invite link available when generating email content");
                         } ?>
                         <p> -- English version below --</p>
-                        <?php p($l->t('Hallo,')); ?>
+                        <?php p($l->t('Hallo ' . $_['recipientName'] . ',')); ?>
                         <br>
                         U bent uitgenodigd om uw cloud IDs uit te wisselen met <?php echo $_['fromName']; ?>.
                         Als u deze uitnodiging accepteerd zult u onderling efficienter gefedereerd bestanden kunnen delen.<br>
@@ -50,7 +50,7 @@
                         SURF Research Drive team<br>
                         <br>
                         <hr>
-                        <?php p($l->t('Hello,')); ?>
+                        <?php p($l->t('Hello ' . $_['recipientName'] . ',')); ?>
                         <br>
                         You have been invited to exchange cloud IDs with <?php echo $_['fromName']; ?>.
                         If you accept this invitation you will be able to create federated shares with each other more efficiently.<br>
