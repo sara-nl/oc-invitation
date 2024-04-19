@@ -54,7 +54,7 @@ Fig.2 Invitation app settings page.<br>
 ##### section - Remote Invitation Service Providers
  * Here you should specify all Invitation Service Providers you want to enable exchanging cloud IDs via invitations with.<br>
  Click the 'Add Provider' button, fill in the remote provider's endpoint and click 'Save'. The availablity of the remote provider will be verified before it will be added.<br>
-To remove a remote provider click the thrashbin icon of the relevant provider. This will disable invitation functionality with that Owmcloud instance.
+To remove a remote provider click the thrashbin icon of the relevant provider. This will disable invitation functionality with that Owncloud instance.
 
 ---
 ### Contributing
@@ -72,11 +72,21 @@ Check the outcome of the tests and fix any issue.<br>
 * Upon pushing commits a workflow doing some codechecking is executed. You should [prepare](#contributing) for that.
 * [Building a release .tar.gz file](release/README.md)
 
+#### Development options
+* Display the generated invite link:<br>
+Add the key/value set to the db `appconfig` table to display the invite link after an invitation has been created:
+
+| appid      | configkey   | configvalue      |
+|------------|-------------|------------------|
+| invitation | deploy_mode | deploy_mode-test |
+
+<br>
 
 ---
+
 ### Invitation Workflow
 The Invitation Workflow has been designed with sync-and-share systems in mind. It implements a controlled exchange of user information between sync-and-share systems. This can be particularly usefull in the case of federated sharing were some knowledge (eg. user id) of the remote user is required.<br>
-The workflow starts off with sending an invitation via email to the remote counterpart with the request to exchange user information (see figure 2 below).<br> The actual exchange of user information takes place in the final step of the invitation workflow. This step (`HTTP POST request /invite-accepted`) is part of the [Open Cloud Mesh specification](https://cs3org.github.io/OCM-API/docs.html?branch=v1.1.0&repo=OCM-API&user=cs3org#/paths/~1invite-accepted/post).<br>
+The workflow starts off by sending an invitation via email to the remote counterpart with the request to exchange user information (see figure 2 below).<br> The actual exchange of user information takes place in the final step of the invitation workflow. This step (`HTTP POST request /invite-accepted`) is part of the [Open Cloud Mesh specification](https://cs3org.github.io/OCM-API/docs.html?branch=v1.1.0&repo=OCM-API&user=cs3org#/paths/~1invite-accepted/post).<br>
 Handling of the invitation is regulated by a _Mesh Registry Service_ that has knowledge of all systems between which user information may be exchanged.<br>
 <br>
 ![Invitation Workflow](img/invitation-flow-user-info-exchange.png "Invitation Workflow")<br>
