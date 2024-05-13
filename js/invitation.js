@@ -81,7 +81,16 @@
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
-                    _updateInvite(token, 'declined');
+                    OC.dialogs.confirm(
+                        t('invitation', 'decline-invitation-confirmation-title'),
+                        t('invitation', 'decline-invitation-confirmation-message'),
+                        function (declined) {
+                            if (declined == true) {
+                                _updateInvite(token, 'declined');
+                            }
+                        },
+                        true
+                    );
                 }
             );
             return declineButton;
@@ -93,22 +102,40 @@
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
-                    _updateInvite(token, 'revoked');
+                    OC.dialogs.confirm(
+                        t('invitation', 'revoke-invitation-confirmation-title'),
+                        t('invitation', 'revoke-invitation-confirmation-message'),
+                        function (revoked) {
+                            if (revoked == true) {
+                                _updateInvite(token, 'revoked');
+                            }
+                        },
+                        true
+                    );
                 }
             );
             return revokeButton;
         }
         if (status === 'withdrawn') {
-            var revokeButton = $('<a class="pure-button" href="#">' + t('invitation', 'withdraw') + '</a>');
-            revokeButton.on(
+            var withdrawButton = $('<a class="pure-button" href="#">' + t('invitation', 'withdraw') + '</a>');
+            withdrawButton.on(
                 "click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
-                    _updateInvite(token, 'withdrawn');
+                    OC.dialogs.confirm(
+                        t('invitation', 'withdraw-invitation-confirmation-title'),
+                        t('invitation', 'withdraw-invitation-confirmation-message'),
+                        function (withdraw) {
+                            if (withdraw == true) {
+                                _updateInvite(token, 'withdrawn');
+                            }
+                        },
+                        true
+                    );
                 }
             );
-            return revokeButton;
+            return withdrawButton;
         }
     };
 

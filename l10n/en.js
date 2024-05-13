@@ -19,6 +19,7 @@ OC.L10N.register(
         "OCM_INVITE_ACCEPTED_NOT_FOUND": "The sender informs us that the invitation does not exist (anymore).",
         "OCM_INVITE_ACCEPTED_EXISTS": "The sender informs us that an accepted invitation already exists.",
         "Your invitation has been sent to": "Your invitation has been send to {recipientName} ({recipientEmail}). When the receiver accepts the invitation it will appear in the list of accepted invitations.",
+        "withdraw": "remove",
         "confirmation-header": "Please note that the following information will be shared with the receiver of the invitation:",
         "confirmation": "<p>Your cloud ID: {cloudId}<br>Your email: {email}<br>Your name: {name}<br><br></p>",
         "sent": "Sent to",
@@ -30,6 +31,12 @@ OC.L10N.register(
         "SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR": "Only remote providers can be added.",
         "MESH_REGISTRY_GET_SERVICE_PROVIDERS_ERROR": "An error has occurred. Could not retrieve service providers.",
         "MESH_REGISTRY_DELETE_SERVICE_PROVIDER_ERROR": "An error has occurred. Could not delete service provider.",
-        "MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR": "This is a required field."
+        "MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR": "This is a required field.",
+        "withdraw-invitation-confirmation-title": "If you remove this accepted invitation you will not be able to search for the remote user anymore when creating shares. Are you sure?",
+        "withdraw-invitation-confirmation-message": "Remove accepted invitation?",
+        "decline-invitation-confirmation-title": "Are you sure?",
+        "decline-invitation-confirmation-message": "Decline this invitation",
+        "revoke-invitation-confirmation-title": "Are you sure?",
+        "revoke-invitation-confirmation-message": "Revoke this invitation"
     },
     "nplurals=2; plural=(n != 1);");
