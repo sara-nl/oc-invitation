@@ -35,6 +35,12 @@ Use one of the [official releases](/sara-nl/oc-invitation/releases) or build you
 Deploy the app by copying the extracted `invitation` folder of the official release or your own custom build to the Owncloud `apps` folder.<br>
 Finally the admin should activate the app. It should than be present as a menu entrance for all users.
 
+#### Activation
+To activate enhanced federated sharing (search and display invited remote users in the share dialog) the following configuration must be added to the `config.php` file of the Owncloud instance:
+```
+sharing.remoteShareesSearch' => '\\OCA\\Invitation\\Service\\RemoteUserService
+```
+
 ---
 ### Configuration
 To be able to send invitations between Owncloud instances the app must be installed on each one of them.<br>

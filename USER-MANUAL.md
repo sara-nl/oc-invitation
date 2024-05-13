@@ -134,7 +134,14 @@ This goes for Jimmie in his Research Drive environment as well.
 
 ![Display the accepted invitation](img/rd-2-display-accepted-invitation.png "Display the accepted invitation")<br>
 Fig.13 - Display the accepted invitation.<br>
+#### Removing an accepted invitation
+<p>
+Both sender and receiver can remove an accepted invitation by clicking the 'remove' button, however, an accepted invitation exists on both sender and receiver Research Drive environments and removing it on one environment does not affect the invitation on the other. If eg. the sender removes the accepted invitation this removes the cloud ID and information of the remote user (the receiver) from the Research Drive environment of the sender and for the sender account. The consequence is that the sender cannot search for the receiver anymore when creating a share. A federated share for the receiver can still be created by the sender but only by filling in the cloud ID 'by hand'.<br>
+Since the invitation also exists on the receiver's environment the receiver still sees an accepted invitation and still can search for the sender when creating shares. Also removing the invitation makes cloud ID and receiver information unavailable for the sender but not for any other users on the sender's environment that may possibly have their own accepted invitations with that same receiver.<br>
+Removing an accepted invitation by the receiver has exactly the same consequences but then the sender is the remote user that cannot be found anymore by the receiver.<br>
 <br>
+Please note that <b>no existing shares between the two users are affected when removing an invitation!</b><br>
+</p>
 
 ### Successfull exchange of cloud IDs and enhanced federated sharing support
 <p>
