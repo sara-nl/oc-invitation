@@ -182,6 +182,28 @@ class InvitationMapper extends Mapper
     }
 
     /**
+     * Deletes all expired open invitations.
+     *
+     * @param int $periodSeconds the number of seconds after which open invitations will be considered expired.
+     */
+    public function deleteExpiredOpenInvitation(int $expirationPeriod)
+    {
+        try {
+            $time = \time() - $expirationPeriod;
+            $qb = $this->db->getQueryBuilder();
+            $qb->delete(Schema::TABLE_INVITATIONS)
+                ->where($qb->expr()->in(Schema::INVITATION_STATUS, $qb->createParameter(Schema::INVITATION_STATUS)))
+                ->andWhere($qb->expr()->lt(Schema::INVITATION_TIMESTAMP, $qb->createParameter('time')));
+            $qb->setParameter(Schema::INVITATION_STATUS, [Invitation::STATUS_OPEN], IQueryBuilder::PARAM_STR_ARRAY);
+            $qb->setParameter('time', $time, IQueryBuilder::PARAM_INT);
+            $qb->execute();
+        } catch (Exception $e) {
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            throw new Exception('An error occurred trying to delete open invitations.');
+        }
+    }
+
+    /**
      * Builds and returns a new VInvitation object from specified associative array.
      *
      * @param array $associativeArray

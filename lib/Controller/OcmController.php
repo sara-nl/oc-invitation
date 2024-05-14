@@ -51,7 +51,7 @@ class OcmController extends Controller
      * @param string $name the recipient name
      * @return DataResponse
      */
-    // FIXME: make sure we follow the OCM protocol regarding response codes
+    // FIXME: verify we follow the OCM protocol regarding response codes
     public function inviteAccepted(
         string $recipientProvider = '',
         string $token = '',

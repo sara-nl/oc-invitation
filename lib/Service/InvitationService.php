@@ -154,4 +154,18 @@ class InvitationService
             throw new ServiceException($e->getMessage());
         }
     }
+
+    /**
+     * Deletes all expired open invitations.
+     *
+     * @param int $expirationPeriod the number of seconds after which open invitations will be considered expired.
+     */
+    public function deleteExpiredOpenInvitation(int $expirationPeriod)
+    {
+        try {
+            $this->mapper->deleteExpiredOpenInvitation($expirationPeriod);
+        } catch (Exception $e) {
+            throw new ServiceException($e->getMessage());
+        }
+    }
 }

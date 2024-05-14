@@ -28,6 +28,8 @@ class CleanupInvitations extends TimedJob
     {
         try {
             $this->invitationService->deleteForStatus([Invitation::STATUS_DECLINED, Invitation::STATUS_INVALID, Invitation::STATUS_REVOKED]);
+            // 2592000 seconds is 30 days
+            $this->invitationService->deleteExpiredOpenInvitation(2592000);
         } catch (ServiceException $e) {
             $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
         }
