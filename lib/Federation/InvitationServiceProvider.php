@@ -5,12 +5,6 @@
  *
  */
 
-// FIXME: finalize properties list
-// Properties:
-//      logo            - should have a logo
-//
-//      ... OCM invite-accepted endpoint defined here as well ? as serviceable property ?
-
 namespace OCA\Invitation\Federation;
 
 use JsonSerializable;

@@ -8,7 +8,7 @@
     <!-- TODO: check licence-->
     <licence>mit</licence>
     <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
-<!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
+    <!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
     <category>Integration.</category>
     <summary>Enhances federated sharing between Owncloud instances by implementing an invitation workflow.</summary>
     <types>

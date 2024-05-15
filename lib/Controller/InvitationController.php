@@ -271,10 +271,6 @@ class InvitationController extends Controller
         $invitation->setTimestamp(time());
         $invitation->setStatus(Invitation::STATUS_NEW);
 
-        // TODO: save invitation link with invitation entity and display it in the open invitations list
-        //      with a re-send option perhaps?
-        //      consider accepting failure of sending invitation mail, and show it as a failed invitation in the invitations list
-
         try {
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
@@ -284,27 +280,19 @@ class InvitationController extends Controller
             $language = 'en'; // actually not used, the email itself is multi language
             $htmlText = $this->getMailBody($inviteLink, $recipientName, $message, 'html', $language);
             $mail->setHtmlBody($htmlText);
+            // TODO do we even need this ?
             // $plainText = $this->getMailBody($inviteLink, $recipientName, $message, 'text', $language);
             // $mail->setPlainBody($plainText);
-            // TODO: Array with failed recipients. Be aware that this depends on the used mail backend and therefore should be considered.
-            //       return error if failed ??
             $failedRecipients = $mailer->send($mail);
             if (sizeof($failedRecipients) > 0) {
-                // FIXME send back the failing recipient email (if at all possible)
                 $this->logger->error(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
             }
         } catch (Exception $e) {
             $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
-            // TODO: Instead of failing, we could continue and still insert and display the invitation as failed in the list
+            // TODO Instead of failing, we could continue and still insert and display the invitation as failed in the list
+            // this would probably work best with a modify and resend option
 
-            // just continue for now
-            // return new DataResponse(
-            //     [
-            //         'success' => false,
-            //         'error_message' => AppError::CREATE_INVITATION_ERROR,
-            //     ],
-            //     Http::STATUS_NOT_FOUND
-            // );
+            // So just continue for now
         }
 
         // when all's well set status to open and persist
@@ -331,7 +319,6 @@ class InvitationController extends Controller
                         'inviteLink' => $inviteLink,
                         'email' => $email,
                         'recipientName' => $recipientName,
-                        // FIXME: the link and message should be part of the the persisted invitation
                         'message' => "The following invite (link) has been send to $recipientName($email): <a style=\"color: blue;\" href=\"$inviteLink\">$inviteLink</a>"
                     ],
                 ],
@@ -727,7 +714,6 @@ class InvitationController extends Controller
                 return new DataResponse(
                     [
                         'success' => true,
-                        // TODO consider returning the updated invitation
                     ],
                     Http::STATUS_OK,
                 );

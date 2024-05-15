@@ -84,12 +84,6 @@ class PageController extends Controller
             $wayfItems = [];
             foreach ($invitationServiceProviders as $i => $invitationServiceProvider) {
                 if ($invitationServiceProvider->getEndpoint() != $this->meshRegistryService->getEndpoint()) {
-                    // TODO: optional: check if the server supports the invitation workflow
-                    //       This should be done via the ocm /ocm-provider endpoint which must return the '/invite-accepted' capability
-                    //       to inform us it supports handling invitations.
-                    //       More likely is that we already know it should,
-                    //       so this would be more like a sanity check (eg. the service may be down)
-
                     $serviceEndpoint = $invitationServiceProvider->getEndpoint();
                     $handleInviteEndpoint = trim(MeshRegistryService::ENDPOINT_HANDLE_INVITE, '/');
                     $tokenParam = MeshRegistryService::PARAM_NAME_TOKEN;

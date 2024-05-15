@@ -51,7 +51,6 @@ class OcmController extends Controller
      * @param string $name the recipient name
      * @return DataResponse
      */
-    // FIXME: verify we follow the OCM protocol regarding response codes
     public function inviteAccepted(
         string $recipientProvider = '',
         string $token = '',
@@ -179,8 +178,6 @@ class OcmController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         }
-
-        // TODO: at this point a notification could(should?) be created to inform the sender that the invite has been accepted.
 
         return new DataResponse(
             [

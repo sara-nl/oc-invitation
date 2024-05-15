@@ -88,7 +88,6 @@
                         _ul.empty();
                         result.data.forEach((isp) => {
                             if (_endpoint != isp.endpoint) {
-                                // TODO: it should be possible to display all properties, eg. in expanded view
                                 _li = $('<li>' + isp.name + '</li>');
                                 _deleteButton = $('<span class="icon icon-delete"></span>');
                                 _errorElement = $('<span class="settings-error"></span>');

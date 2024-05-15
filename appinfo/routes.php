@@ -51,9 +51,6 @@ return [
         ['name' => 'mesh_registry#get_allow_sharing_with_invited_users_only', 'url' => '/share-with-invited-users-only', 'verb' => 'GET'],
         ['name' => 'mesh_registry#set_allow_sharing_with_invited_users_only', 'url' => '/share-with-invited-users-only', 'verb' => 'PUT'],
 
-        // TODO: ... public info endpoint that returns relevant info of this mesh node/server
-        //       returns: ... to decide
-
         // OCM - Open Cloud Mesh protocol
         ['name' => 'ocm#invite_accepted',                   'url' => '/ocm/invite-accepted', 'verb' => 'POST'],
 
