@@ -37,7 +37,7 @@ style($appName, 'invitation');
                                     <th><?php p($l->t('Sent/Received')); ?></th>
                                     <th><?php p($l->t('Remote user name')); ?></th>
                                     <th><?php p($l->t('Remote user institute')); ?></th>
-                                    <th><?php p($l->t('Remote user email')); ?></th>
+                                    <th><?php p($l->t('Sent to')); ?></th>
                                     <th></th>
                                     <th></th>
                                 </tr>
