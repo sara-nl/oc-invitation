@@ -206,40 +206,58 @@ div.wayf-surf-logo {
 }
 
 div.wayf div.wayf-header {
-    height: 1.9em;
     padding: 1em;
-    padding-left: 1.6em;
-    border: 1px solid silver;
-    background-color: lightgray;
+    padding-left: 0.3em;
+    width: 35em;
 }
 
 div.wayf div.wayf-header h2 {
     color: darkslategray;
-    font-weight: normal;
+    font-weight: bolder;
     margin: 0;
-    margin-bottom: .2em;
 }
 
 div.wayf div.text {
-    font-size: smaller;
-    margin: .5em;
-    margin-bottom: 1.8em;
+    margin-left: .5em;
+    margin-bottom: 2em;
 }
 
 div.wayf div.institutes {
-    width: 27em;
+    width: 40em;
+    border-top: 1px solid gray;
 }
 
-div.wayf div.institutes p {
-    padding-left: 2em;
-    padding-bottom: .5em;
-    margin-right: .3em;
-    margin-left: .3em;
+div.wayf div.institute {
+    padding-top: 1em;
+    padding-bottom: 1em;
     border-bottom: 1px solid gray;
 }
 
-div.wayf div.institutes p a {
+div.wayf div.institute:hover {
+    background-color: lightgray;
+}
+
+div.wayf div.institute-logo {
+    display: inline-block;
+    vertical-align: middle;
+    width: 10em;
+    text-align: center;
+    padding-right: .5em;
+}
+
+div.wayf div.invite-link {
+    display: inline-block;
+}
+
+div.wayf div.institutes a {
     text-decoration: none;
+    font-size: 1.1em;
+    color: darkblue;
+}
+
+div.wayf div.institute-logo img {
+    max-width: 8em;
+    max-height: 2.5em;
 }
 
 div.app-invitation>div.oc-dialog {
