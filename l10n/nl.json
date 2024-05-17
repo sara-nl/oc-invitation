@@ -1,5 +1,6 @@
 {
     "translations": {
+        "Create invitation": "Nieuwe Uitnodiging",
         "Recipient email": "Email ontvanger",
         "Recipient name": "Naam ontvanger",
         "Invitation to": "Uitnodiging naar",
@@ -14,7 +15,7 @@
         "Remote user name": "Naam remote gebruiker",
         "Remote user institute": "Organisatie remote gebruiker",
         "Remote user cloud ID": "Cloud ID remote gebruiker",
-        "Sent to": "Verzonder naar",
+        "Sent to": "Verzonden naar",
         "Sender name": "Naam zender",
         "Your name": "Uw naam",
         "REMOTE_USER_TYPE_INFO_INVITED": "Federated - Uitgenodigde remote gebruiker",

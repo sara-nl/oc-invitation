@@ -18,7 +18,7 @@
         <div class="institutes">
             <?php
             foreach ($_['wayfItems'] as $item) {
-                print_r('<p><a href="' . $item['handleInviteUrl'] . '">' . $item['providerName'] . '</a></p>');
+                print_r('<a href="' . $item['handleInviteUrl'] . '"><div class="institute"><div class="institute-logo"><img src="' . $item['logoUrl'] . '" /></div><div class="invite-link">' . $item['providerName'] . '</div></div></a>');
             }
             ?>
         </div>

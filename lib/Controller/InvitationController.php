@@ -280,9 +280,8 @@ class InvitationController extends Controller
             $language = 'en'; // actually not used, the email itself is multi language
             $htmlText = $this->getMailBody($inviteLink, $recipientName, $message, 'html', $language);
             $mail->setHtmlBody($htmlText);
-            // TODO do we even need this ?
-            // $plainText = $this->getMailBody($inviteLink, $recipientName, $message, 'text', $language);
-            // $mail->setPlainBody($plainText);
+            $plainText = $this->getMailBody($inviteLink, $recipientName, $message, 'text', $language);
+            $mail->setPlainBody($plainText);
             $failedRecipients = $mailer->send($mail);
             if (sizeof($failedRecipients) > 0) {
                 $this->logger->error(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
