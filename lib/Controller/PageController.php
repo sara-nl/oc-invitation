@@ -90,8 +90,10 @@ class PageController extends Controller
                     $providerEndpointParam = MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT;
                     $link = "$serviceEndpoint/$handleInviteEndpoint?$tokenParam=$token&$providerEndpointParam=$providerEndpoint";
                     // discover url of institute logo
-                    $fragments = explode("/apps/invitation", $invitationServiceProvider->getEndpoint());
-                    $logoUrl = $fragments[0] . '/dashboard/images/logo.png';
+                    $url = parse_url($invitationServiceProvider->getEndpoint());
+                    $host = $url['host'];
+                    $scheme = $url['scheme'];
+                    $logoUrl = "$scheme://$host/dashboard/images/logo.png";
                     $wayfItems[$i] = [
                         "logoUrl" => $logoUrl,
                         "handleInviteUrl" => $link,
