@@ -7,7 +7,7 @@ RUN apt update \
 USER www-data
 RUN git clone -b ${branch} https://github.com/sara-nl/oc-invitation.git
 RUN cd /tmp/oc-invitation \
-    && composer install \
+    && composer install --no-dev \
     && make -e version=${version} buildapp
 
 FROM scratch AS export-stage
