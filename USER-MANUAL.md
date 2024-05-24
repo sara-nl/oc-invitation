@@ -133,24 +133,26 @@ This goes for Jimmie in his Research Drive environment as well.
 </p>
 
 ![Display the accepted invitation](img/rd-2-display-accepted-invitation.png "Display the accepted invitation")<br>
-Fig.13 - Display the accepted invitation.<br>
+Fig.12 - Display the accepted invitation.<br>
+<br>
 #### Removing an accepted invitation
 <p>
-Both sender and receiver can remove an accepted invitation by clicking the 'remove' button, however, an accepted invitation exists on both sender and receiver Research Drive environments and removing it on one environment does not affect the invitation on the other. If eg. the sender removes the accepted invitation this removes the cloud ID and information of the remote user (the receiver) from the Research Drive environment of the sender and for the sender account. The consequence is that the sender cannot search for the receiver anymore when creating a share. A federated share for the receiver can still be created by the sender but only by filling in the cloud ID 'by hand'.<br>
-Since the invitation also exists on the receiver's environment the receiver still sees an accepted invitation and still can search for the sender when creating shares. Also removing the invitation makes cloud ID and receiver information unavailable for the sender but not for any other users on the sender's environment that may possibly have their own accepted invitations with that same receiver.<br>
-Removing an accepted invitation by the receiver has exactly the same consequences but then the sender is the remote user that cannot be found anymore by the receiver.<br>
+Both sender and receiver can remove an accepted invitation by clicking the 'remove' button, however, an accepted invitation exists on both sender and receiver Research Drive environments and removing it on one environment does not affect the invitation on the other. If eg. the sender removes the accepted invitation this removes the cloud ID and information of the remote user (the receiver) from the Research Drive environment of the sender. The consequence is that the sender cannot search for the receiver anymore when creating a share. A federated share for the receiver can still be created by the sender but only by filling in the cloud ID 'by hand'.<br>
+Since the invitation always also exists on the receiver's environment he or she still sees the invitation as accepted and still can search for the sender when creating shares.<br>
+If the receiver also decides to remove the invitation the consequences are similar but then it's the sender that cannot be found anymore by the receiver.<br>
+It's important to note that removing invitations only impacts the invitation between the two users involved but not invitations they may have with other users.<br>
 <br>
-Please note that <b>no existing shares between the two users are affected when removing an invitation!</b><br>
+Please also note that <b>no existing shares are affected when removing an invitation!</b><br>
 </p>
 
-### Successfull exchange of cloud IDs and enhanced federated sharing support
+### Successful exchange of cloud IDs and enhanced federated sharing support
 <p>
 Lex has accepted the invitation and now Jimmie's cloud ID is known by the system, and vice versa.<br>
 Both Lex and Jimmie can now experience the enhanced support for federated sharing with each other.<br>
 By typing in name, email or institute name labels displaying matching users will appear. Clicking a label will create the share for that user.<br>
-Note that invited remote users are clearly distinguishable from local users. See figure 14 below.
+Note that invited remote users are clearly distinguishable from local users. See figure 13 below.
 </p>
 
 ![Jimmie shares a file with invited remote user Lex](img/rd-1-share-data-with-invited-user-lex.png "Jimmie shares a file with invited remote user Lex")<br>
-Fig.14 - Share a file with an invited remote user.<br>
+Fig.13 - Share a file with an invited remote user.<br>
 <br>
