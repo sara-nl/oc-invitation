@@ -96,4 +96,4 @@ The workflow starts off by sending an invitation via email to the remote counter
 Handling of the invitation is regulated by a _Mesh Registry Service_ that has knowledge of all systems between which user information may be exchanged.<br>
 <br>
 ![Invitation Workflow](img/invitation-flow-user-info-exchange.png "Invitation Workflow")<br>
-Fig.3 - The invitation workflow as it is implemented in the Invitation app.
+Fig.3 - The invitation workflow as implemented in the Invitation app.
