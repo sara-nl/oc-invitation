@@ -44,7 +44,6 @@ services:
             interval: 30s
             timeout: 10s
             retries: 5
-        # command: ["su", "-c", "/usr/bin/owncloud server", "www-data"]
         tty: true
         volumes:
           - files-oc-1:/mnt/data

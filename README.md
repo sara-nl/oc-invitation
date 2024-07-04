@@ -38,7 +38,7 @@ Finally the admin should activate the app. It should than be present as a menu e
 #### Activation
 To activate enhanced federated sharing (search and display invited remote users in the share dialog) the following configuration must be added to the `config.php` file of the Owncloud instance:
 ```
-sharing.remoteShareesSearch' => '\\OCA\\Invitation\\Service\\RemoteUserService
+'sharing.remoteShareesSearch' => '\\OCA\\Invitation\\Service\\RemoteUserService'
 ```
 
 ---
