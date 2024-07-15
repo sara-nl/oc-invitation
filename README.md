@@ -84,7 +84,7 @@ Add the key/value set to the db `appconfig` table to display the invite link aft
 
 | appid      | configkey   | configvalue      |
 |------------|-------------|------------------|
-| invitation | deploy_mode | deploy_mode-test |
+| invitation | deploy_mode | deploy_mode_test |
 
 <br>
 
