@@ -93,7 +93,7 @@ Add the key/value set to the db `appconfig` table to display the invite link aft
 ### Invitation Workflow
 The Invitation Workflow has been designed with sync-and-share systems in mind. It implements a controlled exchange of user information between sync-and-share systems. This can be particularly usefull in the case of federated sharing were some knowledge (eg. user id) of the remote user is required.<br>
 The workflow starts off by sending an invitation via email to the remote counterpart with the request to exchange user information (see figure 2 below).<br> The actual exchange of user information takes place in the final step of the invitation workflow. This step (`HTTP POST request /invite-accepted`) is part of the [Open Cloud Mesh specification](https://cs3org.github.io/OCM-API/docs.html?branch=v1.1.0&repo=OCM-API&user=cs3org#/paths/~1invite-accepted/post).<br>
-Handling of the invitation is regulated by a _Mesh Registry Service_ that has knowledge of all systems between which user information may be exchanged.<br>
+Handling of the invitation is regulated by a _Mesh Registry Service_ that has knowledge of all systems between which user information may be exchanged this way.<br>
 <br>
 ![Invitation Workflow](img/invitation-flow-user-info-exchange.png "Invitation Workflow")<br>
 Fig.3 - The invitation workflow as implemented in the Invitation app.
