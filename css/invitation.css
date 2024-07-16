@@ -315,3 +315,25 @@ div.oc-dialog div.oc-dialog-buttonrow {
     border-top: 1px solid lightgray;
     padding-top: .5em;
 }
+
+div.remote-user-container label {
+    display: inline-block;
+    width: 5em;
+    margin-right: 1em;
+    margin-top: 1em;
+    text-align: right;
+}
+
+div.remote-user-container p.cloud-id {
+    border-bottom: 1px solid lightgray;
+}
+
+div.remote-user-container input[type="text"] {
+    width: 20em;
+    height: 1em;
+}
+
+div.remote-user-container input.submit {
+    margin-left: 6em;
+    margin-top: .5em;
+}

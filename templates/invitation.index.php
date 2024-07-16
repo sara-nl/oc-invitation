@@ -6,8 +6,6 @@ $appName = InvitationApp::APP_NAME;
 script($appName, 'invitation-service');
 script($appName, 'invitation-actions');
 script($appName, 'invitation');
-style($appName, 'pure-min-css-3.0.0');
-style($appName, 'invitation');
 ?>
 <div id="<?php p($appName); ?>" class="invitation-index pure-g">
     <input type="hidden" value="<?php echo \OC::$server->getConfig()->getAppValue($appName, InvitationApp::CONFIG_DEPLOY_MODE, ''); ?>" />

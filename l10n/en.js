@@ -37,6 +37,7 @@ OC.L10N.register(
         "decline-invitation-confirmation-title": "Are you sure?",
         "decline-invitation-confirmation-message": "Decline this invitation",
         "revoke-invitation-confirmation-title": "Are you sure?",
-        "revoke-invitation-confirmation-message": "Revoke this invitation"
+        "revoke-invitation-confirmation-message": "Revoke this invitation",
+        "Remote User": "Remote User"
     },
     "nplurals=2; plural=(n != 1);");

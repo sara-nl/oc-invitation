@@ -40,6 +40,13 @@ if (
     $app = \OC::$server->query(\OCA\Invitation\AppInfo\InvitationApp::class);
     // this overrides the OC core sharedialogview.js file.
     Util::addScript(InvitationApp::APP_NAME, 'oc/sharedialogview');
+
+    $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {
+        \OCP\Util::addScript(InvitationApp::APP_NAME, 'remoteusertabview');
+        \OCP\Util::addScript(InvitationApp::APP_NAME, 'filesplugin');
+        \OCP\Util::addStyle(InvitationApp::APP_NAME, 'pure-min-css-3.0.0');
+        \OCP\Util::addStyle(InvitationApp::APP_NAME, 'invitation');
+    });
 } else {
     \OC::$server->getLogger()->error('Error: not installed. Invitations app requires: Federated File Sharing app, Notifications app', ['app' => InvitationApp::APP_NAME]);
     $eventDispatcher->addListener('OCA\Files::loadAdditionalScripts', function () {
