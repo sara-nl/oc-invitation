@@ -7,7 +7,7 @@
  * See the COPYING-README file.
  * 
  * This overrides the OC core sharedialogview.js file in order to make sure invited remote users are always displayed.
- * The relevant code modifications are at lines #283-285 and #390-402
+ * The relevant code modifications are at lines #279-285 and #386-402
  *
  */
 
@@ -387,15 +387,10 @@
 				 * required invitation app addition: 
 				 * (un)invited check and associated typeInfo
 				 */
-				if (item.value.shareWithAdditionalInfo) {
-					console.log('item.value.shareWithAdditionalInfo: ' + item.value.shareWithAdditionalInfo);
-				}
 				if (item.invited === true) {
 					typeInfo = item.value.typeInfo;
-					// item.value.shareWithAdditionalInfo = 'additional info (invited)';
 				} else if (item.uninvited === true) {
 					typeInfo = item.value.typeInfo;
-					// item.value.shareWithAdditionalInfo = 'additional info (uninvited)';
 				} else {
 					if (item.value.server) {
 						typeInfo = t('core', 'At {server}', {
