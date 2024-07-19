@@ -7,7 +7,7 @@
 return [
     'routes' => [
         // bespoke API - invitation
-        // unprotected endpoint /invitation
+        // unprotected endpoint /collaboration
         ['name' => 'invitation#invitation',                 'url' => '/invite/{token}', 'verb' => 'GET'],
         ['name' => 'invitation#invitation_form',            'url' => '/invitation-form', 'verb' => 'GET'],
         ['name' => 'invitation#generate_invite',            'url' => '/generate-invite', 'verb' => 'POST'],

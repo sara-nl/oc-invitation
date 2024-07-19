@@ -4,10 +4,10 @@
  * The invitation notifier
  */
 
-namespace OCA\Invitation\Service;
+namespace OCA\Collaboration\Service;
 
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
 use OCP\IL10N;
 use OCP\ILogger;
 use OCP\Notification\INotification;
@@ -29,13 +29,13 @@ class InvitationNotifier implements INotifier
      */
     public function prepare(INotification $notification, $languageCode)
     {
-        if ($notification->getApp() != InvitationApp::APP_NAME) {
+        if ($notification->getApp() != CollaborationApp::APP_NAME) {
             $this->logger->error("Notification has been given the wrong app name '" . $notification->getApp() . "'");
             throw new \InvalidArgumentException("Wrong app");
         }
 
         switch ($notification->getSubject()) {
-            case 'invitation':
+            case 'collaboration':
                 $notification->setParsedSubject(
                     (string) $this->il10n->t(
                         "notification",

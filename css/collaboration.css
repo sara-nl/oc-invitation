@@ -75,7 +75,7 @@ span.settings-error {
     color: red;
 }
 
-div.app-invitation div.error a {
+div.app-collaboration div.error a {
     color: darkblue !important;
 }
 
@@ -260,16 +260,16 @@ div.wayf div.institute-logo img {
     max-height: 2.5em;
 }
 
-div.app-invitation>div.oc-dialog {
+div.app-collaboration>div.oc-dialog {
     width: 50%;
     z-index: 10000;
 }
 
-div.app-invitation>div.oc-dialog h3.oc-dialog-title {
+div.app-collaboration>div.oc-dialog h3.oc-dialog-title {
     font-size: larger;
 }
 
-div.app-invitation>div.oc-dialog legend {
+div.app-collaboration>div.oc-dialog legend {
     font-weight: normal;
 }
 
@@ -295,15 +295,15 @@ div.invitation-form div.invitation-form-button-row {
     padding-top: .7em;
 }
 
-div.app-invitation div.oc-dialog {
+div.app-collaboration div.oc-dialog {
     z-index: 900;
 }
 
-div.app-invitation>div.oc-dialog-dim {
+div.app-collaboration>div.oc-dialog-dim {
     z-index: 899;
 }
 
-div.app-invitation>div.oc-dialog-dim.confirmation {
+div.app-collaboration>div.oc-dialog-dim.confirmation {
     z-index: 999;
 }
 

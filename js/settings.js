@@ -21,11 +21,11 @@
                         if (result.success == true) {
                             console.log('allow sharing with invited users only updated to "' + result.data + '"');
                         } else {
-                            document.getElementById('allow-sharing-with-invited-users-only-error').innerText = t('invitation', result.error_message);
+                            document.getElementById('allow-sharing-with-invited-users-only-error').innerText = t('collaboration', result.error_message);
                         }
                     },
                     (response) => {
-                        document.getElementById('allow-sharing-with-invited-users-only-error').innerText = t('invitation', 'SETTINGS_UPDATE_ERROR');
+                        document.getElementById('allow-sharing-with-invited-users-only-error').innerText = t('collaboration', 'SETTINGS_UPDATE_ERROR');
                         console.log(response.toString());
                     }
                 )
@@ -56,20 +56,20 @@
                                 $('[id="invitation-service-settings-success"]').text('saved');
                                 $('[id="invitation-service-settings-success"]').addClass('fade-out');
                             } else {
-                                document.getElementById('invitation-service-settings-error').innerText = t('invitation', result.error_message);
+                                document.getElementById('invitation-service-settings-error').innerText = t('collaboration', result.error_message);
                             }
                         },
                         (response) => {
-                            document.getElementById('invitation-service-settings-error').innerText = t('invitation', 'MESH_REGISTRY_UPDATE_PROVIDER_ERROR');
+                            document.getElementById('invitation-service-settings-error').innerText = t('collaboration', 'MESH_REGISTRY_UPDATE_PROVIDER_ERROR');
                             console.log(response.toString());
                         }
                     )
                 } else {
                     if (_endpoint === "") {
-                        document.getElementById('invitation-service-settings-endpoint-error').innerText = t('invitation', 'MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR');
+                        document.getElementById('invitation-service-settings-endpoint-error').innerText = t('collaboration', 'MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR');
                     }
                     if (_name === "") {
-                        document.getElementById('invitation-service-settings-name-error').innerText = t('invitation', "MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR");
+                        document.getElementById('invitation-service-settings-name-error').innerText = t('collaboration', "MESH_REGISTRY_UPDATE_PROVIDER_REQUIRED_FIELD_ERROR");
                     }
                 }
             }
@@ -98,11 +98,11 @@
                             }
                         });
                     } else {
-                        document.getElementById('invitation-remote-service-providers-error').innerText = t('invitation', result.error_message);
+                        document.getElementById('invitation-remote-service-providers-error').innerText = t('collaboration', result.error_message);
                     }
                 },
                 function (response) {
-                    document.getElementById('invitation-remote-service-providers-error').innerText = t('invitation', 'MESH_REGISTRY_GET_SERVICE_PROVIDERS_ERROR');
+                    document.getElementById('invitation-remote-service-providers-error').innerText = t('collaboration', 'MESH_REGISTRY_GET_SERVICE_PROVIDERS_ERROR');
                     console.log(response.toString());
                 }
             );
@@ -129,11 +129,11 @@
                                                 getAllProviders();
                                                 console.log('invitation service provider with endpoint ' + endpoint + ' deleted');
                                             } else {
-                                                errorElement.innerText = t('invitation', result.error_message);
+                                                errorElement.innerText = t('collaboration', result.error_message);
                                             }
                                         },
                                         (response) => {
-                                            errorElement.innerText = t('invitation', 'MESH_REGISTRY_DELETE_SERVICE_PROVIDER_ERROR');
+                                            errorElement.innerText = t('collaboration', 'MESH_REGISTRY_DELETE_SERVICE_PROVIDER_ERROR');
                                             console.log(response.toString());
                                         }
                                     )
@@ -174,15 +174,15 @@
                                 document.getElementById('invitation-add-remote-service-provider-endpoint').value = "";
                                 getAllProviders();
                             } else {
-                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('invitation', result.error_message);
+                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('collaboration', result.error_message);
                             }
                         },
                         (response) => {
                             console.log(response.toString());
                             if (response == "SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR") {
-                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('invitation', 'SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR');
+                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('collaboration', 'SETTINGS_ADD_PROVIDER_IS_NOT_REMOTE_ERROR');
                             } else {
-                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('invitation', 'MESH_REGISTRY_ADD_PROVIDER_ERROR');
+                                document.getElementById('invitation-remote-service-provider-save-error').innerText = t('collaboration', 'MESH_REGISTRY_ADD_PROVIDER_ERROR');
                             }
                         }
                     );

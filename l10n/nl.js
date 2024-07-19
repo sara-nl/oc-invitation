@@ -1,5 +1,5 @@
 OC.L10N.register(
-    "invitation",
+    "collaboration",
     {
         "Create Invitation": "Nieuwe Uitnodiging",
         "ERROR_UNSPECIFIED": "Er is iets misgegaan. Geen verdere informatie beschikbaar.",
@@ -32,7 +32,7 @@ OC.L10N.register(
         "revoke": "intrekken",
         "confirmation-header": "Let op, the volgende informatie zal worden gedeeld met de ontvanger van de uitnodiging:",
         "confirmation": "<p>Uw cloud ID: {cloudId}<br>Uw email: {email}<br>Uw naam: {name}<br><br></p>",
-        "explanation": "<h2>Een remote gebruiker uitnodigen om cloud IDs uit te wisselen.</h2>Om data te kunnen delen met een Research Drive gebruiker van een <b>ander instituut</b> heeft u het cloud ID van die gebruiker nodig.<br>U kunt middels een eenmalige uitnodiging deze remote gebruiker verzoeken uw cloud IDs uit te wisselen.<br>Wanneer die gebruiker de uitnodiging accepteert worden de cloud IDs automatisch uitgewisseld en opgeslagen in de Research Drive omgeving.<br>Vanaf dat moment kunt u bij het data delen elkaar vinden op basis van naam, email en naam van het instituut.",
+        "explanation": "<h2>Samenwerken met gebruikers van andere instituten.</h2>Om data te kunnen delen met een Research Drive gebruiker van een <b>ander instituut</b> heeft u het cloud ID van die gebruiker nodig.<br>U kunt middels een eenmalige uitnodiging deze remote gebruiker verzoeken uw cloud IDs uit te wisselen.<br>Wanneer die gebruiker de uitnodiging accepteert worden de cloud IDs automatisch uitgewisseld en opgeslagen in de Research Drive omgeving.<br>Vanaf dat moment kunt u bij het data delen elkaar vinden op basis van naam, email en naam van het instituut.",
         "MESH_REGISTRY_ADD_PROVIDER_ERROR": "Er is iets misgegaan. Kan geen provider toevoegen.",
         "MESH_REGISTRY_UPDATE_PROVIDER_ERROR": "Er is iets misgegaan. Kan provider niet aanpassen.",
         "SETTINGS_UPDATE_ERROR": "An error has occurred. Kon deze setting niet updaten.",

@@ -5,20 +5,20 @@
  *
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
 use DateTime;
 use Exception;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\AppInfo\AppError;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Federation\Invitation;
-use OCA\Invitation\HttpClient;
-use OCA\Invitation\Service\ApplicationConfigurationException;
-use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
-use OCA\Invitation\Service\NotFoundException;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\AppInfo\AppError;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Federation\Invitation;
+use OCA\Collaboration\HttpClient;
+use OCA\Collaboration\Service\ApplicationConfigurationException;
+use OCA\Collaboration\Service\InvitationService;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\Service\NotFoundException;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -84,7 +84,7 @@ class InvitationController extends Controller
             $data["remoteUserProviderName"] = $this->meshRegistryService->getName();
             $data["status"] = $invitation->getStatus();
         } catch (NotFoundException $e) {
-            $this->logger->debug($e->getMessage(), ["app" => InvitationApp::APP_NAME]);
+            $this->logger->debug($e->getMessage(), ["app" => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -93,7 +93,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         } catch (ServiceException $e) {
-            $this->logger->debug($e->getMessage(), ["app" => InvitationApp::APP_NAME]);
+            $this->logger->debug($e->getMessage(), ["app" => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     "success" => false
@@ -101,7 +101,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ["app" => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage(), ["app" => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     "success" => false
@@ -130,8 +130,8 @@ class InvitationController extends Controller
         if (strtolower(\OC::$server->getUserSession()->getUser()->getUID()) === strtolower($displayName)) {
             $displayName = '';
         }
-        $languageCode = \OC::$server->getL10NFactory()->findLanguage(InvitationApp::APP_NAME);
-        $tmpl = new Template(InvitationApp::APP_NAME, "invitation.form", '', false, $languageCode);
+        $languageCode = \OC::$server->getL10NFactory()->findLanguage(CollaborationApp::APP_NAME);
+        $tmpl = new Template(CollaborationApp::APP_NAME, "invitation.form", '', false, $languageCode);
         $tmpl->assign('senderName', $displayName);
         $tmpl->assign('cloudID', \OC::$server->getUserSession()->getUser()->getCloudId());
         return new DataResponse(
@@ -240,7 +240,7 @@ class InvitationController extends Controller
 
             $inviteLink = $this->meshRegistryService->inviteLink($params);
         } catch (ApplicationConfigurationException $e) {
-            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -249,7 +249,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("An error has occurred: " . $e->getMessage() . " Stacktrace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -274,7 +274,7 @@ class InvitationController extends Controller
         try {
             $mailer = \OC::$server->getMailer();
             $mail = $mailer->createMessage();
-            $mail->setSubject($this->il10n->t(InvitationApp::INVITATION_EMAIL_SUBJECT));
+            $mail->setSubject($this->il10n->t(CollaborationApp::INVITATION_EMAIL_SUBJECT));
             $mail->setFrom([$this->getEmailFromAddress('invitation-no-reply')]);
             $mail->setTo(array($email => $email));
             $language = 'en'; // actually not used, the email itself is multi language
@@ -284,10 +284,10 @@ class InvitationController extends Controller
             $mail->setPlainBody($plainText);
             $failedRecipients = $mailer->send($mail);
             if (sizeof($failedRecipients) > 0) {
-                $this->logger->error(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error(' - failed recipients: ' . print_r($failedRecipients, true), ['app' => CollaborationApp::APP_NAME]);
             }
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             // TODO Instead of failing, we could continue and still insert and display the invitation as failed in the list
             // this would probably work best with a modify and resend option
 
@@ -299,7 +299,7 @@ class InvitationController extends Controller
         try {
             $newInvitation = $this->invitationService->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error('An error occurred while generating the invite: ' . $e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('An error occurred while generating the invite: ' . $e->getMessage(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -354,7 +354,7 @@ class InvitationController extends Controller
      */
     private function getMailBody(string $inviteLink, string $recipientName, string $message, string $targetTemplate = 'html', string $languageCode = '')
     {
-        $tmpl = new Template('invitation', "mail/$targetTemplate", '', false, $languageCode);
+        $tmpl = new Template('collaboration', "mail/$targetTemplate", '', false, $languageCode);
         $tmpl->assign('recipientName', $recipientName);
         $tmpl->assign('fromName', \OC::$server->getUserSession()->getUser()->getDisplayName());
         $tmpl->assign('inviteLink', $inviteLink);
@@ -377,17 +377,17 @@ class InvitationController extends Controller
         $urlGenerator = \OC::$server->getURLGenerator();
 
         if ($token == '') {
-            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => CollaborationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
         if ($providerEndpoint == '') {
-            \OC::$server->getLogger()->error('Invite is missing the invitation service provider endpoint.', ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invite is missing the invitation service provider endpoint.', ['app' => CollaborationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerEndpoint)) {
-            \OC::$server->getLogger()->error('Invitation service provider endpoint is unknown.', ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            \OC::$server->getLogger()->error('Invitation service provider endpoint is unknown.', ['app' => CollaborationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         // check if invitation doesn't already exists
@@ -397,17 +397,17 @@ class InvitationController extends Controller
 
             if ($invitation->getStatus() === Invitation::STATUS_OPEN) {
                 // redirect to the open invitation
-                return new RedirectResponse($urlGenerator->linkToRoute('invitation.invitation.index'));
+                return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.index'));
             }
             if ($invitation->getStatus() === Invitation::STATUS_ACCEPTED) {
-                return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ALREADY_ACCEPTED, 'param1' => $invitation->getSenderName()]));
+                return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ALREADY_ACCEPTED, 'param1' => $invitation->getSenderName()]));
             }
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS, 'param1' => $this->il10n->t($invitation->getStatus())]));
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_EXISTS, 'param1' => $this->il10n->t($invitation->getStatus())]));
         } catch (NotFoundException $e) {
             // we're good to go
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            $this->logger->error($e->getMessage(), ['app' => CollaborationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         //retrieve the sender info
@@ -415,11 +415,11 @@ class InvitationController extends Controller
         $httpClient = new HttpClient();
         $response = $httpClient->curlGet($url);
         if ($response['success'] == false) {
-            $this->logger->error("Failed to retrieve the invitation with token $token from $providerEndpoint: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
-            $this->logger->error($e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Failed to retrieve the invitation with token $token from $providerEndpoint: " . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
+            $this->logger->error($e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
+                    CollaborationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::GET_INVITE_ERROR
                     ]
@@ -431,10 +431,10 @@ class InvitationController extends Controller
             $data['status'] !== Invitation::STATUS_OPEN
             || $data['token'] !== $token
         ) {
-            $this->logger->error("Unable to handle invitation. /invite response from sender seems invalid. Response: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Unable to handle invitation. /invite response from sender seems invalid. Response: " . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
+                    CollaborationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_INVALID_INVITELINK
                     ]
@@ -459,28 +459,28 @@ class InvitationController extends Controller
         try {
             $this->invitationService->insert($invitation);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
-            return new RedirectResponse($urlGenerator->linkToRoute(InvitationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
+            $this->logger->error($e->getMessage(), ['app' => CollaborationApp::APP_NAME]);
+            return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.error.invitation', ['message' => AppError::HANDLE_INVITATION_ERROR]));
         }
 
         $manager = \OC::$server->getNotificationManager();
         $notification = $manager->createNotification();
 
-        $notification->setApp(InvitationApp::APP_NAME)
+        $notification->setApp(CollaborationApp::APP_NAME)
             // the user that has received the invite is logged in at this point
             ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
             ->setDateTime(new DateTime())
             ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token)
-            ->setSubject('invitation', [
+            ->setSubject('collaboration', [
                 MeshRegistryService::PARAM_NAME_TOKEN => $token,
                 MeshRegistryService::PARAM_NAME_PROVIDER_ENDPOINT => $providerEndpoint,
                 MeshRegistryService::PARAM_NAME_NAME => $senderName,
             ])
-            ->setLink($urlGenerator->linkToRoute('invitation.invitation.index'));
+            ->setLink($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.invitation.index'));
 
         $manager->notify($notification);
 
-        return new RedirectResponse($urlGenerator->linkToRoute('invitation.invitation.index'));
+        return new RedirectResponse($urlGenerator->linkToRoute(CollaborationApp::APP_NAME . '.invitation.index'));
     }
 
     /**
@@ -497,7 +497,7 @@ class InvitationController extends Controller
     {
         try {
             if ($token == '') {
-                $this->logger->error('acceptInvite: missing parameter token.', ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error('acceptInvite: missing parameter token.', ['app' => CollaborationApp::APP_NAME]);
                 return new DataResponse(
                     ['success' => false, 'error_message' => AppError::REQUEST_MISSING_PARAMETER],
                     Http::STATUS_NOT_FOUND
@@ -508,7 +508,7 @@ class InvitationController extends Controller
             try {
                 $invitation = $this->invitationService->findByToken($token);
             } catch (NotFoundException $e) {
-                $this->logger->error("acceptInvite: invitation not found for token '$token'", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error("acceptInvite: invitation not found for token '$token'", ['app' => CollaborationApp::APP_NAME]);
                 return new DataResponse(
                     ['success' => false, 'error_message' => AppError::INVITATION_NOT_FOUND],
                     Http::STATUS_NOT_FOUND
@@ -538,7 +538,7 @@ class InvitationController extends Controller
             $response = $httpClient->curlPost($url, $params);
 
             if (isset($response['success']) && $response['success'] == false) {
-                $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error('Failed to accept the invitation: /invite-accepted failed with response: ' . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
                 return new DataResponse(
                     [
                         'success' => false,
@@ -549,7 +549,7 @@ class InvitationController extends Controller
             }
             // note: beware of the format of response of the OCM call, it has no 'data' field
             if ($this->verifiedInviteAcceptedResponse($response) == false) {
-                $this->logger->error('Failed to accept the invitation - returned fields not valid: ' . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error('Failed to accept the invitation - returned fields not valid: ' . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
                 return new DataResponse(
                     [
                         'success' => false,
@@ -573,7 +573,7 @@ class InvitationController extends Controller
             $existingInvitations = array_merge($existingInvitationsReceived, $existingInvitationsSent);
             if (count($existingInvitations) > 0) {
                 foreach ($existingInvitations as $existingInvitation) {
-                    $this->logger->debug("A previous invitation for remote user with name " . $response[MeshRegistryService::PARAM_NAME_NAME] . " was accepted already. Withdrawing that one", ['app' => InvitationApp::APP_NAME]);
+                    $this->logger->debug("A previous invitation for remote user with name " . $response[MeshRegistryService::PARAM_NAME_NAME] . " was accepted already. Withdrawing that one", ['app' => CollaborationApp::APP_NAME]);
                     $updateResult = $this->invitationService->update([
                         Schema::INVITATION_TOKEN => $existingInvitation->getToken(),
                         Schema::INVITATION_STATUS => Invitation::STATUS_WITHDRAWN,
@@ -602,7 +602,7 @@ class InvitationController extends Controller
                 true
             );
             if ($updateResult == false) {
-                $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error("Failed to handle /accept-invite (invitation with token '$token' could not be updated).", ['app' => CollaborationApp::APP_NAME]);
                 return new DataResponse(
                     [
                         'success' => false,
@@ -621,7 +621,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -725,7 +725,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error("declineInvite: invitation not found for token '$token'", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("declineInvite: invitation not found for token '$token'", ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -734,7 +734,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app]' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -758,12 +758,12 @@ class InvitationController extends Controller
             $manager = \OC::$server->getNotificationManager();
             $notification = $manager->createNotification();
             $notification
-                ->setApp(InvitationApp::APP_NAME)
+                ->setApp(CollaborationApp::APP_NAME)
                 ->setUser(\OC::$server->getUserSession()->getUser()->getUID())
                 ->setObject(MeshRegistryService::PARAM_NAME_TOKEN, $token);
             $manager->markProcessed($notification);
         } catch (Exception $e) {
-            $this->logger->error('Remove notification failed: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Remove notification failed: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw $e;
         }
     }
@@ -798,7 +798,7 @@ class InvitationController extends Controller
     public function find(int $id = null): DataResponse
     {
         if (!isset($id)) {
-            $this->logger->error("find() - missing parameter 'id'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("find() - missing parameter 'id'.", ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -816,7 +816,7 @@ class InvitationController extends Controller
                 ]
             );
         } catch (NotFoundException $e) {
-            $this->logger->error("invitation not found for id $id. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("invitation not found for id $id. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -828,7 +828,7 @@ class InvitationController extends Controller
     }
 
     /**
-     * example url: https://rd-1.nl/apps/invitation/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
+     * example url: https://rd-1.nl/apps/collaboration/find-all-invitations?fields=[{"status":"open"},{"status":"accepted"}]
      *
      * @NoAdminRequired
      * @NoCSRFRequired
@@ -836,7 +836,7 @@ class InvitationController extends Controller
     public function findAll(string $fields = null): DataResponse
     {
         if (!isset($fields)) {
-            $this->logger->error("findAll() - missing parameter 'fields'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("findAll() - missing parameter 'fields'.", ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -856,7 +856,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
-            $this->logger->error('invitations not found for fields: ' . print_r($fields, true) . 'Error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('invitations not found for fields: ' . print_r($fields, true) . 'Error: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -874,7 +874,7 @@ class InvitationController extends Controller
     public function findByToken(string $token = null): DataResponse
     {
         if (!isset($token)) {
-            $this->logger->error("findByToken() - missing parameter 'token'.", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("findByToken() - missing parameter 'token'.", ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -893,7 +893,7 @@ class InvitationController extends Controller
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -902,7 +902,7 @@ class InvitationController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("invitation not found for token '$token'. Error: " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

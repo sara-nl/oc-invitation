@@ -3,7 +3,6 @@
 namespace tests\integration;
 
 use Exception;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use tests\util\AppError;
@@ -12,9 +11,9 @@ use tests\util\Util;
 
 class InvitationTest extends TestCase
 {
-    private const OC_1_ENDPOINT = "https://admin:admin@oc-1.nl/ocs/v1.php/apps/invitation";
-    private const OC_1_INVITATION_SERVICE_ENDPOINT = "https://oc-1.nl/apps/invitation";
-    private const OC_2_ENDPOINT = "https://admin:admin@oc-2.nl/ocs/v1.php/apps/invitation";
+    private const OC_1_ENDPOINT = "https://admin:admin@oc-1.nl/ocs/v1.php/apps/collaboration";
+    private const OC_1_INVITATION_SERVICE_ENDPOINT = "https://oc-1.nl/apps/collaboration";
+    private const OC_2_ENDPOINT = "https://admin:admin@oc-2.nl/ocs/v1.php/apps/collaboration";
     private const PARAM_NAME_EMAIL = "email";
     private const PARAM_NAME_NAME = "name";
     private const PARAM_NAME_SENDER_NAME = "senderName";

@@ -1,11 +1,11 @@
 <?php
 
-use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Collaboration\AppInfo\CollaborationApp;
 
-$appName = InvitationApp::APP_NAME;
+$appName = CollaborationApp::APP_NAME;
 
 style($appName, 'pure-min-css-3.0.0');
-style($appName, 'invitation');
+style($appName, 'collaboration');
 
 $urlGenerator = \OC::$server->getURLGenerator();
 ?>

@@ -4,12 +4,12 @@
  * The invitation service provider mapper.
  */
 
-namespace OCA\Invitation\Federation;
+namespace OCA\Collaboration\Federation;
 
 use Exception;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Service\NotFoundException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;
@@ -44,7 +44,7 @@ class InvitationServiceProviderMapper extends Mapper
             }
             throw new NotFoundException("Error retrieving the invitation service provider with endpoint '$endpoint'");
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new NotFoundException("Error retrieving the endpoint provider with endpoint '$endpoint'");
         }
     }
@@ -63,7 +63,7 @@ class InvitationServiceProviderMapper extends Mapper
                 ->from(Schema::TABLE_INVITATION_SERVICE_PROVIDERS, 'dp');
             return $this->createInvitationServiceProviders($qb->execute()->fetchAllAssociative());
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new NotFoundException('Error retrieving all invitation service providers');
         }
     }
@@ -83,7 +83,7 @@ class InvitationServiceProviderMapper extends Mapper
             $invitationServiceProvider->setName($associativeArray[Schema::INVITATION_SERVICE_PROVIDER_NAME]);
             return $invitationServiceProvider;
         }
-        $this->logger->error('Unable to create a new InvitationServiceProvider from associative array: ' . print_r($associativeArray, true), ['app' => InvitationApp::APP_NAME]);
+        $this->logger->error('Unable to create a new InvitationServiceProvider from associative array: ' . print_r($associativeArray, true), ['app' => CollaborationApp::APP_NAME]);
         return null;
     }
 

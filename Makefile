@@ -1,4 +1,4 @@
-app_name=invitation
+app_name=collaboration
 # VERSION=please_set_version
 version=$(version)
 app_dir_name=$(notdir $(CURDIR))

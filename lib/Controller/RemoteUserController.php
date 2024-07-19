@@ -5,11 +5,11 @@
  *
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
 use Exception;
-use OCA\Invitation\Service\NotFoundException;
-use OCA\Invitation\Service\RemoteUserService;
+use OCA\Collaboration\Service\NotFoundException;
+use OCA\Collaboration\Service\RemoteUserService;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;

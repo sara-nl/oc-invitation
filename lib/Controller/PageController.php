@@ -4,13 +4,13 @@
  * Page controller
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
 use Exception;
-use OCA\Invitation\AppInfo\AppError;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\AppError;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\ILogger;
 use OCP\IRequest;
@@ -44,16 +44,16 @@ class PageController extends Controller
             if (sizeof($wayfItems) == 0) {
                 throw new ServiceException(AppError::WAYF_NO_PROVIDERS_FOUND);
             }
-            $l = \OC::$server->getL10NFactory()->findLanguage(InvitationApp::APP_NAME);
-            $tmpl = new Template('invitation', "wayf/wayf", '', false, $l);
+            $l = \OC::$server->getL10NFactory()->findLanguage(CollaborationApp::APP_NAME);
+            $tmpl = new Template('collaboration', "wayf/wayf", '', false, $l);
             $tmpl->assign('wayfItems', $wayfItems);
             echo $tmpl->fetchPage();
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             $html = '<div>' . $e->getMessage() . '</div></html>';
             echo $html;
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             $html = '<div>' . AppError::WAYF_ERROR . '</div></html>';
             echo $html;
         }
@@ -103,7 +103,7 @@ class PageController extends Controller
             }
             return $wayfItems;
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException(AppError::WAYF_ERROR);
         }
     }

@@ -5,18 +5,18 @@
  *
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
 use Exception;
-use OCA\Invitation\AppInfo\AppError;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Federation\InvitationServiceProvider;
-use OCA\Invitation\HttpClient;
-use OCA\Invitation\Service\ApplicationConfigurationException;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
-use OCA\Invitation\Service\NotFoundException;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\AppError;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Federation\InvitationServiceProvider;
+use OCA\Collaboration\HttpClient;
+use OCA\Collaboration\Service\ApplicationConfigurationException;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\Service\NotFoundException;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -54,10 +54,10 @@ class MeshRegistryController extends Controller
         $urlGenerator = \OC::$server->getURLGenerator();
 
         if ($token == '') {
-            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => InvitationApp::APP_NAME]);
+            \OC::$server->getLogger()->error('Invite is missing the token.', ['app' => CollaborationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
+                    CollaborationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_MISSING_TOKEN
                     ]
@@ -65,10 +65,10 @@ class MeshRegistryController extends Controller
             );
         }
         if ($providerEndpoint == '') {
-            \OC::$server->getLogger()->error('Invite is missing the invitation service provider endpoint.', ['app' => InvitationApp::APP_NAME]);
+            \OC::$server->getLogger()->error('Invite is missing the invitation service provider endpoint.', ['app' => CollaborationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
+                    CollaborationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_MISSING_PROVIDER_ENDPOINT
                     ]
@@ -76,10 +76,10 @@ class MeshRegistryController extends Controller
             );
         }
         if (!$this->meshRegistryService->isKnowInvitationServiceProvider($providerEndpoint)) {
-            \OC::$server->getLogger()->error("Invitation service provider endpoint '$providerEndpoint' is unknown.", ['app' => InvitationApp::APP_NAME]);
+            \OC::$server->getLogger()->error("Invitation service provider endpoint '$providerEndpoint' is unknown.", ['app' => CollaborationApp::APP_NAME]);
             return new RedirectResponse(
                 $urlGenerator->linkToRoute(
-                    InvitationApp::APP_NAME . '.error.invitation',
+                    CollaborationApp::APP_NAME . '.error.invitation',
                     [
                         'message' => AppError::HANDLE_INVITATION_PROVIDER_UNKNOWN
                     ]
@@ -116,7 +116,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -153,7 +153,7 @@ class MeshRegistryController extends Controller
             $httpClient = new HttpClient();
             $response = $httpClient->curlGet($url);
             if ($response['success'] == false) {
-                $this->logger->error('Failed to call ' . MeshRegistryService::ENDPOINT_INVITATION_SERVICE_PROVIDER . " on endpoint '$endpoint'. Response: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error('Failed to call ' . MeshRegistryService::ENDPOINT_INVITATION_SERVICE_PROVIDER . " on endpoint '$endpoint'. Response: " . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
                 throw new ServiceException("Failed to call endpoint '$endpoint'");
             }
 
@@ -167,7 +167,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -197,7 +197,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e, ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -256,7 +256,7 @@ class MeshRegistryController extends Controller
             $httpClient = new HttpClient();
             $response = $httpClient->curlGet($url);
             if ($response['success'] == false) {
-                $this->logger->error('Failed to call ' . MeshRegistryService::ENDPOINT_INVITATION_SERVICE_PROVIDER . " on endpoint '$endpoint'. Response: " . print_r($response, true), ['app' => InvitationApp::APP_NAME]);
+                $this->logger->error('Failed to call ' . MeshRegistryService::ENDPOINT_INVITATION_SERVICE_PROVIDER . " on endpoint '$endpoint'. Response: " . print_r($response, true), ['app' => CollaborationApp::APP_NAME]);
                 throw new ServiceException("Failed to call endpoint '$endpoint'");
             }
 
@@ -281,7 +281,7 @@ class MeshRegistryController extends Controller
 
             throw new ServiceException(AppError::MESH_REGISTRY_ENDPOINT_INVITATION_SERVICE_PROVIDER_RESPONSE_INVALID);
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             // try to delete the previously inserted new provider
             $this->meshRegistryService->deleteInvitationServiceProvider($endpoint);
             return new DataResponse(
@@ -292,7 +292,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_NOT_FOUND,
             );
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             // final effort trying to delete the previously inserted new provider
             $this->meshRegistryService->deleteInvitationServiceProvider($endpoint);
             return new DataResponse(
@@ -321,7 +321,7 @@ class MeshRegistryController extends Controller
         ) {
             return true;
         }
-        $this->logger->error('Could not validate the response fields. Fields: ' . print_r($params, true), ['app' => InvitationApp::APP_NAME]);
+        $this->logger->error('Could not validate the response fields. Fields: ' . print_r($params, true), ['app' => CollaborationApp::APP_NAME]);
         return false;
     }
 
@@ -344,7 +344,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e, ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e, ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -375,7 +375,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
-            $this->logger->error("Unable to set 'allow_sharing_with_invited_users_only' config param. " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Unable to set 'allow_sharing_with_invited_users_only' config param. " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -436,7 +436,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -497,7 +497,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK,
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -527,7 +527,7 @@ class MeshRegistryController extends Controller
                 Http::STATUS_OK
             );
         } catch (Exception $e) {
-            $this->logger->error("Unable to get 'allow_sharing_with_invited_users_only' config param. " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Unable to get 'allow_sharing_with_invited_users_only' config param. " . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

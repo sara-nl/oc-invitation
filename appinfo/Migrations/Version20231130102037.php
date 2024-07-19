@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\invitation\Migrations;
+namespace OCA\Collaboration\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
@@ -21,13 +21,13 @@ class Version20231130102037 implements ISchemaMigration
         $prefix = $options['tablePrefix'];
 
         try {
-            $schema->getTable("{$prefix}invitation_invitations");
+            $schema->getTable("{$prefix}collaboration_invitations");
         } catch (Exception $e) {
             if ($e->getCode() == SchemaException::TABLE_DOESNT_EXIST) {
                 //----------------------
                 // The invitations table
                 //----------------------
-                $table = $schema->createTable("{$prefix}invitation_invitations");
+                $table = $schema->createTable("{$prefix}collaboration_invitations");
                 $table->addColumn('id', Types::BIGINT, [
                     'autoincrement' => true,
                     'unsigned' => true,
@@ -100,13 +100,13 @@ class Version20231130102037 implements ISchemaMigration
             }
         }
         try {
-            $schema->getTable("{$prefix}invitation_invitation_service_providers");
+            $schema->getTable("{$prefix}collaboration_invitation_service_providers");
         } catch (Exception $e) {
             if ($e->getCode() == SchemaException::TABLE_DOESNT_EXIST) {
                 //---------------------------------------
                 // the invitation_service_providers table
                 //---------------------------------------
-                $table = $schema->createTable("{$prefix}invitation_invitation_service_providers");
+                $table = $schema->createTable("{$prefix}collaboration_invitation_service_providers");
                 $table->addColumn('id', Types::BIGINT, [
                     'autoincrement' => true,
                     'unsigned' => true,

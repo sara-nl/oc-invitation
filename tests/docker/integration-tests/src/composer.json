@@ -1,6 +1,6 @@
 {
     "name": "surf/oc-invitation-tests",
-    "description": "Testing the Invitation app",
+    "description": "Testing the Collaboration app",
     "type": "project",
     "license": "MIT",
     "config": {

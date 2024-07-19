@@ -32,8 +32,8 @@ WORKDIR /
 
 # - fixed paths because it's unclear to me what the correct user (context) is.
 # - we give OC some time to setup the database
-# RUN mkdir -p /tmp/apps/invitation/tests \
-#     && touch /tmp/apps/invitation/tests/run-test.sh \
-#     && echo '#!/bin/sh' >> /tmp/apps/invitation/tests/run-test.sh \
-#     && sed -i -e '$a echo sleeping 20s ... giving oc the time to setup db && sleep 20 && curl -vv https://oc-1.nl' /tmp/apps/invitation/tests/run-test.sh
-#     # && sed -i -e '$a curl -vv https://oc-1.nl/apps/invitation/registry/invitation-service-provider' /tmp/apps/invitation/tests/run-test.sh
+# RUN mkdir -p /tmp/apps/collaboration/tests \
+#     && touch /tmp/apps/collaboration/tests/run-test.sh \
+#     && echo '#!/bin/sh' >> /tmp/apps/collaboration/tests/run-test.sh \
+#     && sed -i -e '$a echo sleeping 20s ... giving oc the time to setup db && sleep 20 && curl -vv https://oc-1.nl' /tmp/apps/collaboration/tests/run-test.sh
+#     # && sed -i -e '$a curl -vv https://oc-1.nl/apps/collaboration/registry/invitation-service-provider' /tmp/apps/collaboration/tests/run-test.sh

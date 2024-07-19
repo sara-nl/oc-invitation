@@ -5,9 +5,9 @@
  *
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
-use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Collaboration\AppInfo\CollaborationApp;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
@@ -29,6 +29,6 @@ class ErrorController extends Controller
      */
     public function invitation(string $message, string $param1 = ""): TemplateResponse
     {
-        return new TemplateResponse(InvitationApp::APP_NAME, 'error', ['message' => $message, 'param1' => $param1]);
+        return new TemplateResponse(CollaborationApp::APP_NAME, 'error', ['message' => $message, 'param1' => $param1]);
     }
 }
