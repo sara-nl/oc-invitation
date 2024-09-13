@@ -2,7 +2,7 @@
 
 <head>
     <title><?php p($l->t("Select your institution to log in")); ?></title>
-    <link rel="stylesheet" href="/apps/collaboration/css/collaborationcss">
+    <link rel="stylesheet" href="/apps/collaboration/css/collaboration.css">
     <link rel="stylesheet" href="/apps/collaboration/css/pure-min-css-3.0.0.css">
 </head>
 
