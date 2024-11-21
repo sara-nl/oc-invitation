@@ -14,7 +14,7 @@ style($appName, 'invitation');
     <div class="pure-u-1-1 create">
         <div class="pure-g">
             <div class="pure-u-1-8">
-                <button id="open-invitation-form" type="submit" class="pure-button pure-button-primary"><?php p($l->t('Create invitation')); ?></button>
+                <button id="open-invitation-form" type="submit" class="pure-button pure-button-primary"><?php p($l->t('Exchange cloud ID')); ?></button>
             </div>
             <div class="pure-u-7-8">
                 <span class="information">

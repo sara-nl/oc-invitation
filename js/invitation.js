@@ -342,7 +342,7 @@
                                         close: function () {
                                             window.INVITATION.closeInvitationForm();
                                         },
-                                        title: t('collaboration', 'Create Invitation')
+                                        title: t('collaboration', 'Create invitation to exchange cloud ID')
                                     });
                                 }
                             } else {
