@@ -1,7 +1,8 @@
 OC.L10N.register(
     "collaboration",
     {
-        "Create Invitation": "Nieuwe Uitnodiging",
+        "Exchange cloud ID": "Cloud ID uitwisselen",
+        "Create invitation to exchange cloud ID":"Nieuwe uitnodiging voor het uitwisselen van cloud ID",
         "ERROR_UNSPECIFIED": "Er is iets misgegaan. Geen verdere informatie beschikbaar.",
         "APPLICATION_CONFIGURATION_EXCEPTION": "Er is iets misgegaan. De applicatie is incorrect geconfigureerd.",
         "GET_INVITATIONS_ERROR_UNSPECIFIED": "Foutmelding: kon geen {status} uitnodigingen ophalen.",
@@ -32,7 +33,7 @@ OC.L10N.register(
         "revoke": "intrekken",
         "confirmation-header": "Let op, the volgende informatie zal worden gedeeld met de ontvanger van de uitnodiging:",
         "confirmation": "<p>Uw cloud ID: {cloudId}<br>Uw email: {email}<br>Uw naam: {name}<br><br></p>",
-        "explanation": "<h2>Samenwerken met gebruikers van andere instituten.</h2>Om data te kunnen delen met een Research Drive gebruiker van een <b>ander instituut</b> heeft u het cloud ID van die gebruiker nodig.<br>U kunt middels een eenmalige uitnodiging deze remote gebruiker verzoeken uw cloud IDs uit te wisselen.<br>Wanneer die gebruiker de uitnodiging accepteert worden de cloud IDs automatisch uitgewisseld en opgeslagen in de Research Drive omgeving.<br>Vanaf dat moment kunt u bij het data delen elkaar vinden op basis van naam, email en naam van het instituut.",
+        "explanation": "<h2>Samenwerken met gebruikers tussen Research Drive omgevingen.</h2>Om data te kunnen delen met een Research Drive gebruiker van een ander instituut, welke op een andere Research Drive omgeving actief is, heeft u het cloud ID van deze gebruiker nodig.<br>Met het cloud id kunt u direct beginnen met het delen van bestand of map tussen Research Drive omgeving in.<br>Om het gefedereerd delen te vereenvoudigen, kunt u middels een eenmalige uitnodiging deze remote gebruiker verzoeken de cloud IDs uit te wisselen.<br>Wanneer die gebruiker de uitnodiging accepteert worden de cloud IDs automatisch uitgewisseld en opgeslagen.<br>Vanaf dat moment kunt u bij het data delen elkaar direct vinden op basis van naam, email en naam van het instituut.<br><br>Wilt u samenwerken met een externe gebruiker, dan kunt u deze uitnodigen voor een Research Drive account, ga hiervoor naar het <a target=\"_blank\" href=\"/dashboard/app/accounts\">Research Drive Dashboard</a>.",
         "MESH_REGISTRY_ADD_PROVIDER_ERROR": "Er is iets misgegaan. Kan geen provider toevoegen.",
         "MESH_REGISTRY_UPDATE_PROVIDER_ERROR": "Er is iets misgegaan. Kan provider niet aanpassen.",
         "SETTINGS_UPDATE_ERROR": "An error has occurred. Kon deze setting niet updaten.",
