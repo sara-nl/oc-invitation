@@ -1,14 +1,14 @@
 <?php
 
-use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Collaboration\AppInfo\CollaborationApp;
 
-$appName = InvitationApp::APP_NAME;
-$allowSharingWithInvitedUsersOnly = $_[InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY];
+$appName = CollaborationApp::APP_NAME;
+$allowSharingWithInvitedUsersOnly = $_[CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY];
 script($appName, 'invitation-service');
 script($appName, 'invitation-actions');
-script($appName, 'invitation');
+script($appName, 'collaboration');
 script($appName, 'settings');
-style($appName, 'invitation'); ?>
+style($appName, 'collaboration'); ?>
 
 <div class="section">
     <h2>Invitation Service</h2>

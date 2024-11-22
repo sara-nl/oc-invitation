@@ -4,12 +4,12 @@
  * Mapper for remote users.
  */
 
-namespace OCA\Invitation\Federation;
+namespace OCA\Collaboration\Federation;
 
 use Exception;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Service\NotFoundException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Service\NotFoundException;
 use OCP\AppFramework\Db\Mapper;
 use OCP\IDBConnection;
 use OCP\ILogger;
@@ -52,7 +52,7 @@ class RemoteUserMapper extends Mapper
         try {
             $remoteUsers = $this->createRemoteUsers($query->execute()->fetchAllAssociative());
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new Exception("Error searching for remote users with search string '$search'");
         }
         return $remoteUsers;
@@ -85,7 +85,7 @@ class RemoteUserMapper extends Mapper
             }
             return $remoteUser;
         } catch (Exception $e) {
-            $this->logger->error("Could not retrieve remote user with cloudID '$cloudID'. Stack trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Could not retrieve remote user with cloudID '$cloudID'. Stack trace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw $e;
         }
     }

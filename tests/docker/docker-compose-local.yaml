@@ -178,9 +178,6 @@ services:
         context: .
         dockerfile: nginx-proxy-1-2/Dockerfile
       container_name: nginx-proxy-1-2
-      volumes:
-        - ~/projects/rd-mesh-app/tests/docker/oc-1/oc-1.nl/certs:/etc/nginx/certs/oc-1
-        - ~/projects/rd-mesh-app/tests/docker/oc-2/oc-2.nl/certs:/etc/nginx/certs/oc-2
       depends_on:
         - oc-1
         - oc-2

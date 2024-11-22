@@ -14,7 +14,7 @@
                 if ($('input[value="deploy_mode_test"]').size() === 1) {
                     console.log(errorMessage);
                 }
-                OC.dialogs.alert(t('invitation', errorMessage), t('invitation', 'UPDATE_INVITATION_ERROR'));
+                OC.dialogs.alert(t('collaboration', errorMessage), t('collaboration', 'UPDATE_INVITATION_ERROR'));
             }
         );
     }
@@ -32,7 +32,7 @@
                 if ($('input[value="deploy_mode_test"]').size() === 1) {
                     console.log(errorMessage);
                 }
-                OC.dialogs.alert(t('invitation', errorMessage), t('invitation', 'ACCEPT_INVITATION_ERROR'));
+                OC.dialogs.alert(t('collaboration', errorMessage), t('collaboration', 'ACCEPT_INVITATION_ERROR'));
             }
 
         );
@@ -40,7 +40,7 @@
 
     let invitationButton = function (status, token, recipientCloudId, recipientName, recipientEmail) {
         if (status === 'accepted') {
-            var acceptButton = $('<a class="pure-button" data-recipientCloudId="' + recipientCloudId + '" data-recipientName="' + recipientName + '" data-recipientEmail="' + recipientEmail + '" href="#">' + t('invitation', 'accept') + '</a>');
+            var acceptButton = $('<a class="pure-button" data-recipientCloudId="' + recipientCloudId + '" data-recipientName="' + recipientName + '" data-recipientEmail="' + recipientEmail + '" href="#">' + t('collaboration', 'accept') + '</a>');
             acceptButton.on(
                 "click", function (event) {
                     event.preventDefault();
@@ -63,9 +63,9 @@
                     ).done(() => { // here we render the actual message which includes html
                         $('.' + dialogClass).empty().append(
                             '<p>'
-                            + t('invitation', 'Your cloud ID: {cloudId}', { "cloudId": recipientCloudId }) + '<br>'
-                            + t('invitation', 'Your name: {name}', { "name": recipientName }) + '<br>'
-                            + t('invitation', 'Your email: {email}', { "email": recipientEmail }) + '<br>'
+                            + t('collaboration', 'Your cloud ID: {cloudId}', { "cloudId": recipientCloudId }) + '<br>'
+                            + t('collaboration', 'Your name: {name}', { "name": recipientName }) + '<br>'
+                            + t('collaboration', 'Your email: {email}', { "email": recipientEmail }) + '<br>'
                             + '<br>'
                             + '</p>'
                         );
@@ -75,15 +75,15 @@
             return acceptButton;
         }
         if (status === 'declined') {
-            var declineButton = $('<a class="pure-button" href="#">' + t('invitation', 'decline') + '</a>');
+            var declineButton = $('<a class="pure-button" href="#">' + t('collaboration', 'decline') + '</a>');
             declineButton.on(
                 "click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
                     OC.dialogs.confirm(
-                        t('invitation', 'decline-invitation-confirmation-title'),
-                        t('invitation', 'decline-invitation-confirmation-message'),
+                        t('collaboration', 'decline-invitation-confirmation-title'),
+                        t('collaboration', 'decline-invitation-confirmation-message'),
                         function (declined) {
                             if (declined == true) {
                                 _updateInvite(token, 'declined');
@@ -96,15 +96,15 @@
             return declineButton;
         }
         if (status === 'revoked') {
-            var revokeButton = $('<a class="pure-button" href="#">' + t('invitation', 'revoke') + '</a>');
+            var revokeButton = $('<a class="pure-button" href="#">' + t('collaboration', 'revoke') + '</a>');
             revokeButton.on(
                 "click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
                     OC.dialogs.confirm(
-                        t('invitation', 'revoke-invitation-confirmation-title'),
-                        t('invitation', 'revoke-invitation-confirmation-message'),
+                        t('collaboration', 'revoke-invitation-confirmation-title'),
+                        t('collaboration', 'revoke-invitation-confirmation-message'),
                         function (revoked) {
                             if (revoked == true) {
                                 _updateInvite(token, 'revoked');
@@ -117,15 +117,15 @@
             return revokeButton;
         }
         if (status === 'withdrawn') {
-            var withdrawButton = $('<a class="pure-button" href="#">' + t('invitation', 'withdraw') + '</a>');
+            var withdrawButton = $('<a class="pure-button" href="#">' + t('collaboration', 'withdraw') + '</a>');
             withdrawButton.on(
                 "click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
                     $('div#invitation-index-message span.message').empty();
                     OC.dialogs.confirm(
-                        t('invitation', 'withdraw-invitation-confirmation-title'),
-                        t('invitation', 'withdraw-invitation-confirmation-message'),
+                        t('collaboration', 'withdraw-invitation-confirmation-title'),
+                        t('collaboration', 'withdraw-invitation-confirmation-message'),
                         function (withdraw) {
                             if (withdraw == true) {
                                 _updateInvite(token, 'withdrawn');
@@ -148,13 +148,13 @@
      */
     let validateInvitationFields = function (email, recipientName, senderName) {
         if (typeof recipientName !== "string" || recipientName.trim() === "") {
-            return t('invitation', "CREATE_INVITATION_NO_RECIPIENT_NAME")
+            return t('collaboration', "CREATE_INVITATION_NO_RECIPIENT_NAME")
         }
         if (typeof email !== "string" || email.trim() === "") {
-            return t('invitation', "CREATE_INVITATION_NO_RECIPIENT_EMAIL")
+            return t('collaboration', "CREATE_INVITATION_NO_RECIPIENT_EMAIL")
         }
         if (typeof senderName !== "string" || senderName.trim() === "") {
-            return t('invitation', "CREATE_INVITATION_NO_SENDER_NAME")
+            return t('collaboration', "CREATE_INVITATION_NO_SENDER_NAME")
         }
         return "";
     }
@@ -164,7 +164,7 @@
         table.empty();
         invitations.forEach((invitation) => {
             table.append(
-                '<tr><td>' + t('invitation', invitation.sentReceived)
+                '<tr><td>' + t('collaboration', invitation.sentReceived)
                 + '</td><td>' + invitation.remoteUserName
                 + '</td><td>' + invitation.remoteUserProviderName
                 + '</td><td>' + invitation.remoteUserEmail
@@ -186,7 +186,7 @@
         table.empty();
         invitations.forEach((invitation) => {
             table.append(
-                '<tr><td>' + t('invitation', invitation.sentReceived)
+                '<tr><td>' + t('collaboration', invitation.sentReceived)
                 + '</td><td>' + invitation.remoteUserName
                 + '</td><td>' + invitation.remoteUserProviderName
                 + '</td><td>' + invitation.remoteUserEmail
@@ -217,7 +217,7 @@
                     $('#invitation-message span.error').text("");
                     OC.dialogs.message(
                         '',
-                        t('invitation', 'confirmation-header'),
+                        t('collaboration', 'confirmation-header'),
                         '',
                         OCdialogs.YES_BUTTON,
                         function () {
@@ -230,7 +230,7 @@
                                     if ($('input[value="deploy_mode_test"]').size() === 1) {
                                         $('#invitation-index-message span.message').html(
                                             ' <div id="invitation-message-accordion">'
-                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
+                                            + '<h5>' + t('collaboration', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
                                             + '<div><p>Invite link: <a href="' + result.data.inviteLink + '">' + result.data.inviteLink + '</a></p></div>'
                                             + '</div>'
                                         );
@@ -238,7 +238,7 @@
                                     } else {
                                         $('#invitation-index-message span.message').html(
                                             ' <div">'
-                                            + '<h5>' + t('invitation', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
+                                            + '<h5>' + t('collaboration', 'Your invitation has been sent to', { recipientName: result.data.recipientName, recipientEmail: result.data.email }) + '</h5>'
                                             + '</div>'
                                         );
                                     }
@@ -246,7 +246,7 @@
                                     window.INVITATION.closeInvitationForm();
                                 },
                                 function (errorMessage) {
-                                    $('#invitation-message span.error').append(' ' + t('invitation', errorMessage));
+                                    $('#invitation-message span.error').append(' ' + t('collaboration', errorMessage));
                                 }
                             );
                         },
@@ -254,7 +254,7 @@
                         dialogClass
                     ).done(() => { // this prevents the message dialog to remove the html present in the translation
                         $('.' + dialogClass).empty().append(
-                            t('invitation', 'confirmation', { "cloudId": cloudId, "name": yourName, "email": email })
+                            t('collaboration', 'confirmation', { "cloudId": cloudId, "name": yourName, "email": email })
                         );
                         // to position the confirmation dialog overlay on top of the invitation form overlay 
                         $('div.oc-dialog-dim:last').addClass('confirmation');
@@ -284,8 +284,8 @@
                     console.log(errorMessage);
                 }
                 v = [];
-                status.forEach((e) => v.push(t('invitation', e.status)));
-                $('#invitation-index-message span.error').append(' ' + t('invitation', 'GET_INVITATIONS_ERROR_UNSPECIFIED', { status: v.join() }) + '<br>');
+                status.forEach((e) => v.push(t('collaboration', e.status)));
+                $('#invitation-index-message span.error').append(' ' + t('collaboration', 'GET_INVITATIONS_ERROR_UNSPECIFIED', { status: v.join() }) + '<br>');
             }
         );
     };
@@ -342,7 +342,7 @@
                                         close: function () {
                                             window.INVITATION.closeInvitationForm();
                                         },
-                                        title: t('invitation', 'Create Invitation')
+                                        title: t('collaboration', 'Create invitation to exchange cloud ID')
                                     });
                                 }
                             } else {
@@ -353,7 +353,7 @@
                             if ($('input[value="deploy_mode_test"]').size() === 1) {
                                 console.log(response.toString());
                             }
-                            $('#invitation-error span').text(t('invitation', 'ERROR_UNSPECIFIED'));
+                            $('#invitation-error span').text(t('collaboration', 'ERROR_UNSPECIFIED'));
                         }
                     );
                 }
@@ -363,6 +363,6 @@
         window.INVITATION.listInvitations([{ "status": "open" }], window.INVITATION.renderOpenInvitations);
         window.INVITATION.listInvitations([{ "status": "accepted" }], window.INVITATION.renderAcceptedInvitations);
 
-        $(".information").html(t('invitation', 'explanation'));
+        $(".information").html(t('collaboration', 'explanation'));
     });
 })(window, jQuery);

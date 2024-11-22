@@ -5,13 +5,13 @@
  *
  */
 
-namespace OCA\Invitation\Service;
+namespace OCA\Collaboration\Service;
 
 use Exception;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Federation\RemoteUser;
-use OCA\Invitation\Federation\RemoteUserMapper;
-use OCA\Invitation\Util;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Federation\RemoteUser;
+use OCA\Collaboration\Federation\RemoteUserMapper;
+use OCA\Collaboration\Util;
 use OCP\IConfig;
 use OCP\IL10N;
 use OCP\ILogger;
@@ -64,7 +64,7 @@ class RemoteUserService implements IRemoteShareesSearch
             // Consider potential results from the Open Cloud Mesh plugin
             $pluginClass = $this->config->getSystemValue('invitation.opencloudmeshRemoteShareesSearch', '\OCA\OpenCloudMesh\ShareeSearchPlugin');
             if (class_exists($pluginClass)) {
-                $this->logger->debug(" - opencloudmesh app is installed, found remote sharees search implementation: $pluginClass", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->debug(" - opencloudmesh app is installed, found remote sharees search implementation: $pluginClass", ['app' => CollaborationApp::APP_NAME]);
                 try {
                     $plugin = \OC::$server->query($pluginClass);
                     $opencloudmeshResult = $plugin->search($search);
@@ -78,10 +78,10 @@ class RemoteUserService implements IRemoteShareesSearch
                         $opencloudmeshResult = array_values($opencloudmeshResult);
                     }
                 } catch (Exception $e) {
-                    $this->logger->error("Error retrieving opencloudmesh sharee search results: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+                    $this->logger->error("Error retrieving opencloudmesh sharee search results: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
                 }
             } else {
-                $this->logger->debug(" - skipping opencloudmesh remote sharees search, opemcloudmesh remote sharees search implementation not found: $pluginClass", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->debug(" - skipping opencloudmesh remote sharees search, opemcloudmesh remote sharees search implementation not found: $pluginClass", ['app' => CollaborationApp::APP_NAME]);
             }
 
             $remoteUsers = $this->remoteUserMapper->search($search);
@@ -114,7 +114,7 @@ class RemoteUserService implements IRemoteShareesSearch
                 ]
             ];
             if (
-                Util::isTrue($this->config->getAppValue(InvitationApp::APP_NAME, InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === false
+                Util::isTrue($this->config->getAppValue(CollaborationApp::APP_NAME, CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === false
                 && strpos($search, '@') !== false
                 && count($remoteUsers) < 1
             ) {
@@ -124,7 +124,7 @@ class RemoteUserService implements IRemoteShareesSearch
             // and merge and return the results
             return array_merge($result, $opencloudmeshResult);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error searching for remote users.');
         }
     }
@@ -143,7 +143,7 @@ class RemoteUserService implements IRemoteShareesSearch
         } catch (NotFoundException $e) {
             throw $e;
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error retrieving remote user.');
         }
     }

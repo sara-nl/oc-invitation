@@ -1,6 +1,6 @@
 <?php
 
-namespace OCA\invitation\Migrations;
+namespace OCA\Collaboration\Migrations;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\SchemaException;
@@ -21,13 +21,13 @@ class Version20231130125300 implements ISchemaMigration
         $prefix = $options['tablePrefix'];
 
       //----------------------
-      // The invitations constants table
+      // The collaboration constants table
       //----------------------
         try {
-            $schema->getTable("{$prefix}invitation_constants");
+            $schema->getTable("{$prefix}collaboration_constants");
         } catch (Exception $e) {
             if ($e->getCode() == SchemaException::TABLE_DOESNT_EXIST) {
-                $table = $schema->createTable("{$prefix}invitation_constants");
+                $table = $schema->createTable("{$prefix}collaboration_constants");
                 $table->addColumn('name', Types::STRING, [
                 'length' => 255,
                 'notnull' => true,

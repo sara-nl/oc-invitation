@@ -1,4 +1,4 @@
-# Invitation app for Federated Sharing
+# Collaboration app for Federated Sharing
 
 ---
 ### Enhanced federated sharing between Owncloud instances.
@@ -27,18 +27,18 @@ Depends on the following Owncloud apps: _Federated File Sharing_, _Notifications
 ### Building and installation
 Clone the project. The app runs in Owncloud so have a local Owncloud instance running. To deploy the app in your local Owncloud instance build it by first running `composer` from the project root folder as you would for any php project. This will create the `vendor` dependencies folder.<br>
 Next build the project by executing the command: `make version={version_number} buildapp`<br>
-This will create the `invitation_version_number.tar.gz` file in the `build/artifacts/app` folder. After extracting you must place the resulting `invitation` folder in the `apps` folder of your local Owncloud instance. This should make Owncloud aware of the app.<br>
+This will create the `collaboration_version_number.tar.gz` file in the `build/artifacts/app` folder. After extracting you must place the resulting `collaboration` folder in the `apps` folder of your local Owncloud instance. This should make Owncloud aware of the app.<br>
 Now you can activate it and start experimenting. For a full experience you should setup 2 instances between which you can send invitations and create federated shares.
 
 #### Using (official) releases
 Use one of the [official releases](https://github.com/sara-nl/oc-invitation/releases) or build your own compressed archive as explained [here](release/README.md).<br>
-Deploy the app by copying the extracted `invitation` folder of the official release or your own custom build to the Owncloud `apps` folder.<br>
+Deploy the app by copying the extracted `collaboration` folder of the official release or your own custom build to the Owncloud `apps` folder.<br>
 Finally the admin should activate the app. It should than be present as a menu entrance for all users.
 
 #### Activation
 To activate enhanced federated sharing (search and display invited remote users in the share dialog) the following configuration must be added to the `config.php` file of the Owncloud instance:
 ```
-'sharing.remoteShareesSearch' => '\\OCA\\Invitation\\Service\\RemoteUserService'
+'sharing.remoteShareesSearch' => '\\OCA\\Collaboration\\Service\\RemoteUserService'
 ```
 
 ---
@@ -46,8 +46,8 @@ To activate enhanced federated sharing (search and display invited remote users 
 To be able to send invitations between Owncloud instances the app must be installed on each one of them.<br>
 Also you must configure the other (remote) instances you want to be able to send invitations to. This is done on the admin settings section of the app (Settings page -> Admin Sharing page -> Invitation Service section).<br>
 <br>
-![Invitation app settings page](img/invitation-app-settings-page.png "Invitation app settings page")<br>
-Fig.2 Invitation app settings page.<br>
+![Invitation Service settings page](img/invitation-app-settings-page.png "Invitation Service settings page")<br>
+Fig.2 Invitation Service settings page.<br>
 
 ##### checkbox - Allow federated sharing with invited users only
 * Enabling this option prevents owncloud from showing the label of an uninvited remote user when typing in a cloud ID in the share dialog. Only invited remote users' labels will be displayed to you (as shown in [figure 1](../#enhanced-federated-sharing-between-owncloud-instances)).<br>
@@ -55,7 +55,7 @@ Fig.2 Invitation app settings page.<br>
 
 ##### section - This Invitation Service Provider
  * Here you should specify the endpoint and name of this instance's Invitation Service Provider.<br>
- The endpoint structure is as follows: `https://[host]/[path]/apps/invitation`
+ The endpoint structure is as follows: `https://[host]/[path]/apps/collaboration`
 
 ##### section - Remote Invitation Service Providers
  * Here you should specify all Invitation Service Providers you want to enable exchanging cloud IDs via invitations with.<br>
@@ -79,12 +79,12 @@ Check the outcome of the tests and fix any issue.<br>
 * [Building a release .tar.gz file](release/README.md)
 
 #### Development options
-* Display the generated invite link:<br>
+* To display the generated invite link upon the creation of an invite:<br>
 Add the key/value set to the db `appconfig` table to display the invite link after an invitation has been created:
 
-| appid      | configkey   | configvalue      |
-|------------|-------------|------------------|
-| invitation | deploy_mode | deploy_mode_test |
+| appid         | configkey   | configvalue      |
+|---------------|-------------|------------------|
+| collaboration | deploy_mode | deploy_mode_test |
 
 <br>
 

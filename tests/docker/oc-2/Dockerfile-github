@@ -13,26 +13,26 @@ RUN echo 'rd-mesh/oc-1.pem' >> /etc/ca-certificates.conf \
     && update-ca-certificates \
     && export CURL_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt
 
-# Add the Invitation app from branch, includes using the make buildapp-test target to simulate an actual release version
+# Add the Collaboration app from branch, includes using the make buildapp-test target to simulate an actual release version
 # And install the data migration file required  for the tests
 # And install the pre start server script that activates the app
-RUN mkdir -p /tmp/invitation \
-    && git clone -b ${BRANCH} https://github.com/sara-nl/oc-invitation.git /tmp/invitation
+RUN mkdir -p /tmp/collaboration \
+    && git clone -b ${BRANCH} https://github.com/sara-nl/oc-invitation.git /tmp/collaboration
 
-RUN cd /tmp/invitation \
+RUN cd /tmp/collaboration \
     && make -e version=test buildapp-tests \
-    && tar -xvf /tmp/invitation/build/artifacts/app/invitation_test.tar.gz -C /var/www/owncloud/apps \
-    && cd /var/www/owncloud/apps/invitation \
+    && tar -xvf /tmp/collaboration/build/artifacts/app/collaboration_test.tar.gz -C /var/www/owncloud/apps \
+    && cd /var/www/owncloud/apps/collaboration \
     && composer install \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/Version20231130125302.php /var/www/owncloud/apps/invitation/appinfo/Migrations \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
-    && mv /var/www/owncloud/apps/invitation/appinfo/routes.php /var/www/owncloud/apps/invitation/appinfo/routes-main.php \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/src/tests/routes.php /var/www/owncloud/apps/invitation/appinfo/routes.php \
-    && cp /var/www/owncloud/apps/invitation/tests/docker/integration-tests/src/tests/ExternalApiRoute.php /var/www/owncloud/apps/invitation/lib/ExternalApiRoute.php
+    && cp /var/www/owncloud/apps/collaboration/tests/docker/integration-tests/Version20240718000002.php /var/www/owncloud/apps/collaboration/appinfo/Migrations \
+    && cp /var/www/owncloud/apps/collaboration/tests/docker/oc-1/10-collaboration-app.sh /etc/pre_server.d \
+    && mv /var/www/owncloud/apps/collaboration/appinfo/routes.php /var/www/owncloud/apps/collaboration/appinfo/routes-main.php \
+    && cp /var/www/owncloud/apps/collaboration/tests/docker/integration-tests/src/tests/routes.php /var/www/owncloud/apps/collaboration/appinfo/routes.php \
+    && cp /var/www/owncloud/apps/collaboration/tests/docker/integration-tests/src/tests/ExternalApiRoute.php /var/www/owncloud/apps/collaboration/lib/ExternalApiRoute.php
 
-# RUN chown -R www-data:root /var/www/owncloud/apps/invitation \
-# RUN cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/10-invitation-app.sh /etc/pre_server.d \
-#     && cp /var/www/owncloud/apps/invitation/tests/docker/oc-1/InvitationApp.php /var/www/owncloud/apps/invitation/lib/AppInfo/InvitationApp.php
+# RUN chown -R www-data:root /var/www/owncloud/apps/collaboration \
+# RUN cp /var/www/owncloud/apps/collaboration/tests/docker/oc-1/10-collaboration-app.sh /etc/pre_server.d \
+#     && cp /var/www/owncloud/apps/collaboration/tests/docker/oc-1/CollaborationApp.php /var/www/owncloud/apps/collaboration/lib/AppInfo/CollaborationApp.php
 # && chown -R www-data:root /etc/pre_server.d
 
 ENV DEBUG=true

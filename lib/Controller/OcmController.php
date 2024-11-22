@@ -4,15 +4,15 @@
  * OCM controller
  */
 
-namespace OCA\Invitation\Controller;
+namespace OCA\Collaboration\Controller;
 
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\AppInfo\AppError;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Federation\Invitation;
-use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Service\NotFoundException;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\AppInfo\AppError;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Federation\Invitation;
+use OCA\Collaboration\Service\InvitationService;
+use OCA\Collaboration\Service\NotFoundException;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http;
 use OCP\AppFramework\Http\DataResponse;
@@ -108,7 +108,7 @@ class OcmController extends Controller
         try {
             $invitation = $this->invitationService->findByToken($token, false);
         } catch (NotFoundException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -117,7 +117,7 @@ class OcmController extends Controller
                 Http::STATUS_NOT_FOUND
             );
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,
@@ -142,7 +142,7 @@ class OcmController extends Controller
         $existingInvitations = array_merge($existingInvitationsSent, $existingInvitationsReceived);
         if (count($existingInvitations) > 0) {
             foreach ($existingInvitations as $existingInvitation) {
-                $this->logger->debug("A previous established invitation relation exists. Withdrawing that one.", ['app' => InvitationApp::APP_NAME]);
+                $this->logger->debug("A previous established invitation relation exists. Withdrawing that one.", ['app' => CollaborationApp::APP_NAME]);
                 $updateResult = $this->invitationService->update([
                     Schema::INVITATION_TOKEN => $existingInvitation->getToken(),
                     Schema::INVITATION_STATUS => Invitation::STATUS_WITHDRAWN,
@@ -169,7 +169,7 @@ class OcmController extends Controller
             Schema::VINVITATION_STATUS => Invitation::STATUS_ACCEPTED,
         ], false);
         if ($updateResult == false) {
-            $this->logger->error("Update failed for invitation with token '$token'", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("Update failed for invitation with token '$token'", ['app' => CollaborationApp::APP_NAME]);
             return new DataResponse(
                 [
                     'success' => false,

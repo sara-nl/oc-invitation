@@ -5,17 +5,17 @@
  *
  */
 
-namespace OCA\Invitation\Service\MeshRegistry;
+namespace OCA\Collaboration\Service\MeshRegistry;
 
 use Exception;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Db\Schema;
-use OCA\Invitation\Federation\InvitationServiceProvider;
-use OCA\Invitation\Federation\InvitationServiceProviderMapper;
-use OCA\Invitation\Service\ApplicationConfigurationException;
-use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Service\NotFoundException;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Db\Schema;
+use OCA\Collaboration\Federation\InvitationServiceProvider;
+use OCA\Collaboration\Federation\InvitationServiceProviderMapper;
+use OCA\Collaboration\Service\ApplicationConfigurationException;
+use OCA\Collaboration\Service\InvitationService;
+use OCA\Collaboration\Service\NotFoundException;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\IConfig;
 use OCP\ILogger;
 
@@ -71,7 +71,7 @@ class MeshRegistryService
             $forwardInviteEndpoint = trim(self::ENDPOINT_FORWARD_INVITE, "/");
             return "$invitationServiceEndpoint/$forwardInviteEndpoint";
         } catch (ServiceException $e) {
-            $this->logger->error("getFullForwardInviteEndpoint failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("getFullForwardInviteEndpoint failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Could not retrieve full '/forward-invite' endpoint.");
         }
     }
@@ -99,7 +99,7 @@ class MeshRegistryService
             $acceptInviteEndpoint = trim(self::ENDPOINT_ACCEPT_INVITE, "/");
             return "$invitationServiceEndpoint/$acceptInviteEndpoint";
         } catch (ServiceException $e) {
-            $this->logger->error("getFullAcceptInviteEndpointURL failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error("getFullAcceptInviteEndpointURL failed with error: " . $e->getMessage() . " Trace: " . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Could not retrieve full '/accept-invite' endpoint.");
         }
     }
@@ -187,9 +187,9 @@ class MeshRegistryService
             $invitationServiceProvider->setEndpoint($endpoint);
             $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
         } catch (NotFoundException $e) {
-            $this->logger->info("A local invitation service provider does not exist (yet). Setting the endpoint to '$endpoint'", ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("A local invitation service provider does not exist (yet). Setting the endpoint to '$endpoint'", ['app' => CollaborationApp::APP_NAME]);
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Unable to set the endpoint to '$endpoint'.");
         }
         $this->setAppValue('endpoint', $endpoint);
@@ -239,7 +239,7 @@ class MeshRegistryService
         try {
             $invitationServiceProvider = $this->findInvitationServiceProvider($provider->getEndpoint());
         } catch (NotFoundException $e) {
-            $this->logger->info("Creating invitation service provider with endpoint " . $provider->getEndpoint(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->info("Creating invitation service provider with endpoint " . $provider->getEndpoint(), ['app' => CollaborationApp::APP_NAME]);
         }
         if (isset($invitationServiceProvider)) {
             return $invitationServiceProvider;
@@ -247,7 +247,7 @@ class MeshRegistryService
         try {
             return $this->invitationServiceProviderMapper->insert($provider);
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error inserting the invitation service provider.');
         }
     }
@@ -323,7 +323,7 @@ class MeshRegistryService
             $this->setAppValue('endpoint', $newEndpoint);
             return $invitationServiceProvider;
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Error updating invitation service provider with endpoint '$endpoint'");
         }
     }
@@ -345,10 +345,10 @@ class MeshRegistryService
             }
             return $deletedEntity;
         } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error deleting the invitation service provider: Not found.');
         } catch (Exception $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error deleting the invitation service provider.');
         }
     }
@@ -392,7 +392,7 @@ class MeshRegistryService
         try {
             return $this->invitationServiceProviderMapper->allInvitationServiceProviders();
         } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException('Error retrieving all invitation service providers.');
         }
     }
@@ -427,10 +427,10 @@ class MeshRegistryService
             $invitationServiceProvider = $this->invitationServiceProviderMapper->update($invitationServiceProvider);
             return $invitationServiceProvider->getName();
         } catch (NotFoundException $e) {
-            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error('Message: ' . $e->getMessage() . ' Trace: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Error updating invitation service provider: Not found");
         } catch (Exception $e) {
-            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage() . ' Stack: ' . $e->getTraceAsString(), ['app' => CollaborationApp::APP_NAME]);
             throw new ServiceException("Could not set name to '$name'.");
         }
     }
@@ -455,8 +455,8 @@ class MeshRegistryService
      */
     public function setAllowSharingWithInvitedUsersOnly(bool $allow): bool
     {
-        $this->setAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $allow ? 'yes' : 'no');
-        return $this->getAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY) === 'yes';
+        $this->setAppValue(CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $allow ? 'yes' : 'no');
+        return $this->getAppValue(CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY) === 'yes';
     }
 
     /**
@@ -466,7 +466,7 @@ class MeshRegistryService
      */
     public function getAllowSharingWithInvitedUsersOnly(): bool
     {
-        return strtolower($this->getAppValue(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === 'yes';
+        return strtolower($this->getAppValue(CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY)) === 'yes';
     }
 
     /**

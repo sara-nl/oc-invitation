@@ -1,11 +1,11 @@
 <?php
 
-namespace OCA\Invitation\Settings;
+namespace OCA\Collaboration\Settings;
 
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Service\ApplicationConfigurationException;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
-use OCA\Invitation\Service\NotFoundException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Service\ApplicationConfigurationException;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\Service\NotFoundException;
 use OCP\Settings\ISettings;
 use OCP\Template;
 
@@ -26,7 +26,7 @@ class Admin implements ISettings
      */
     public function getPanel()
     {
-        $template = new Template('invitation', 'settings/admin');
+        $template = new Template('collaboration', 'settings/admin');
         try {
             $invitationServiceProvider = $this->meshRegistryService->getInvitationServiceProvider();
             $template->assign('endpoint', $invitationServiceProvider->getEndpoint());
@@ -38,7 +38,7 @@ class Admin implements ISettings
             $template->assign('endpoint', '');
             $template->assign('name', '');
         }
-        $template->assign(InvitationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $this->meshRegistryService->getAllowSharingWithInvitedUsersOnly());
+        $template->assign(CollaborationApp::CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY, $this->meshRegistryService->getAllowSharingWithInvitedUsersOnly());
         return $template;
     }
 

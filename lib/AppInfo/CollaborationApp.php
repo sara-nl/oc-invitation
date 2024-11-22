@@ -4,19 +4,19 @@
  * Setup and wiring of the app.
  */
 
-namespace OCA\Invitation\AppInfo;
+namespace OCA\Collaboration\AppInfo;
 
-use OCA\Invitation\Federation\InvitationServiceProviderMapper;
-use OCA\Invitation\Federation\InvitationMapper;
-use OCA\Invitation\Service\InvitationNotifier;
-use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Service\MeshRegistry\MeshRegistryService;
+use OCA\Collaboration\Federation\InvitationServiceProviderMapper;
+use OCA\Collaboration\Federation\InvitationMapper;
+use OCA\Collaboration\Service\InvitationNotifier;
+use OCA\Collaboration\Service\InvitationService;
+use OCA\Collaboration\Service\MeshRegistry\MeshRegistryService;
 use OCP\AppFramework\App;
 use OCP\IContainer;
 
-class InvitationApp extends App
+class CollaborationApp extends App
 {
-    public const APP_NAME = 'invitation';
+    public const APP_NAME = 'collaboration';
 
     public const CONFIG_ALLOW_SHARING_WITH_INVITED_USERS_ONLY = 'allow_sharing_with_invited_users_only';
 
@@ -68,8 +68,8 @@ class InvitationApp extends App
             },
             function () {
                 return [
-                    'id' => 'invitation',
-                    'name' => 'Invitation app'
+                    'id' => 'collaboration',
+                    'name' => 'Collaboration app'
                 ];
             }
         );

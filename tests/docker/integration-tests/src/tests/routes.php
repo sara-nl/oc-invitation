@@ -7,21 +7,21 @@
  * and renaming the original routes file to routes-main.php
  */
 
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Controller\InvitationController;
-use OCA\Invitation\Controller\MeshRegistryController;
-use OCA\Invitation\ExternalApiRoute;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Controller\InvitationController;
+use OCA\Collaboration\Controller\MeshRegistryController;
+use OCA\Collaboration\ExternalApiRoute;
 
-$meshRegistryService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('MeshRegistryService');
+$meshRegistryService = \OC::$server->getAppContainer(CollaborationApp::APP_NAME)->query('MeshRegistryService');
 $meshRegistryController = new MeshRegistryController(
-    InvitationApp::APP_NAME,
+    CollaborationApp::APP_NAME,
     \OC::$server->getRequest(),
     $meshRegistryService
 );
-$invitationService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('InvitationService');
-$l10nService = \OC::$server->getAppContainer(InvitationApp::APP_NAME)->query('L10N');
+$invitationService = \OC::$server->getAppContainer(CollaborationApp::APP_NAME)->query('InvitationService');
+$l10nService = \OC::$server->getAppContainer(CollaborationApp::APP_NAME)->query('L10N');
 $invitationController = new InvitationController(
-    InvitationApp::APP_NAME,
+    CollaborationApp::APP_NAME,
     \OC::$server->getRequest(),
     $meshRegistryService,
     $invitationService,
@@ -31,40 +31,40 @@ $invitationController = new InvitationController(
 
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/registry/name',
+    '/apps/collaboration/registry/name',
     'getName',
     $meshRegistryController
 );
 
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/registry/endpoint',
+    '/apps/collaboration/registry/endpoint',
     'getEndpoint',
     $meshRegistryController
 );
 
 new ExternalApiRoute(
     'POST',
-    '/apps/invitation/generate-invite',
+    '/apps/collaboration/generate-invite',
     'generateInvite',
     $invitationController
 );
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/find-invitation-by-token',
+    '/apps/collaboration/find-invitation-by-token',
     'findByToken',
     $invitationController
 );
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/handle-invite',
+    '/apps/collaboration/handle-invite',
     'handleInvite',
     $invitationController,
     true
 );
 new ExternalApiRoute(
     'GET',
-    '/apps/invitation/find-invitation-by-token',
+    '/apps/collaboration/find-invitation-by-token',
     'findByToken',
     $invitationController
 );

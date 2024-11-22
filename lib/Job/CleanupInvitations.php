@@ -1,12 +1,12 @@
 <?php
 
-namespace OCA\Invitation\Job;
+namespace OCA\Collaboration\Job;
 
 use OC\BackgroundJob\TimedJob;
-use OCA\Invitation\AppInfo\InvitationApp;
-use OCA\Invitation\Federation\Invitation;
-use OCA\Invitation\Service\InvitationService;
-use OCA\Invitation\Service\ServiceException;
+use OCA\Collaboration\AppInfo\CollaborationApp;
+use OCA\Collaboration\Federation\Invitation;
+use OCA\Collaboration\Service\InvitationService;
+use OCA\Collaboration\Service\ServiceException;
 use OCP\ILogger;
 
 class CleanupInvitations extends TimedJob
@@ -31,7 +31,7 @@ class CleanupInvitations extends TimedJob
             // 2592000 seconds is 30 days
             $this->invitationService->deleteExpiredOpenInvitation(2592000);
         } catch (ServiceException $e) {
-            $this->logger->error($e->getMessage(), ['app' => InvitationApp::APP_NAME]);
+            $this->logger->error($e->getMessage(), ['app' => CollaborationApp::APP_NAME]);
         }
     }
 }

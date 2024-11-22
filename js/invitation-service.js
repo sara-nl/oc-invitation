@@ -61,7 +61,7 @@
      */
     let _call = function (route, method, paramsObject, successCallback, errorCallback) {
         var path = trimSlashes(route);
-        var endpoint = OC.generateUrl('/apps/invitation/' + path);
+        var endpoint = OC.generateUrl('/apps/collaboration/' + path);
         var options = {
             method: method,
             headers: {

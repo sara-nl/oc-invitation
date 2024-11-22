@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
 <info>
     <!-- Mandatory fields -->
-    <id>invitation</id>
-    <name>Invitation App</name>
-    <description>Invitation App</description>
+    <id>collaboration</id>
+    <name>Collaboration</name>
+    <description>Collaboration</description>
     <version>0.003</version>
     <!-- TODO: check licence-->
     <licence>mit</licence>
     <!-- <screenshot small-thumbnail="https://raw.githubusercontent.com/foo/yourapp/master/screenshots/thumb.png">https://raw.githubusercontent.com/foo/yourapp/master/screenshots/big.png</screenshot> -->
     <!-- Category values available at: https://marketplace.owncloud.com/ajax/categories -->
-    <category>Integration.</category>
+    <category>Collaboration</category>
     <summary>Enhances federated sharing between Owncloud instances by implementing an invitation workflow.</summary>
     <types>
     </types>
@@ -23,7 +23,7 @@
 
 
     <author>Antoon Prins</author>
-    <namespace>Invitation</namespace>
+    <namespace>Collaboration</namespace>
     <website>https://github.com/sara-nl/oc-invitation</website>
     <bugs>https://github.com/sara-nl/oc-invitation/issues</bugs>
     <repository type="git">https://github.com/sara-nl/oc-invitation.git</repository>
@@ -33,11 +33,11 @@
     </dependencies>
 
     <settings>
-        <admin>OCA\Invitation\Settings\Admin</admin>
+        <admin>OCA\Collaboration\Settings\Admin</admin>
     </settings>
 
 	<background-jobs>
-        <job>OCA\Invitation\Job\CleanupInvitations</job>
+        <job>OCA\Collaboration\Job\CleanupInvitations</job>
 	</background-jobs>
 
     <use-migrations>true</use-migrations>

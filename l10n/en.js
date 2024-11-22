@@ -1,5 +1,5 @@
 OC.L10N.register(
-    "invitation",
+    "collaboration",
     {
         "ERROR_UNSPECIFIED": "An error has occurred. No further information available.",
         "APPLICATION_CONFIGURATION_EXCEPTION": "An error has occurred. The application is not configured correctly.",
@@ -24,7 +24,7 @@ OC.L10N.register(
         "confirmation": "<p>Your cloud ID: {cloudId}<br>Your email: {email}<br>Your name: {name}<br><br></p>",
         "sent": "Sent to",
         "received": "Received from",
-        "explanation": "<h2>Invite a remote user to exchange cloud ID's.</h2>If you want to share data with a Research Drive user from a <b>different institute</b> you need that person's cloud ID.<br>You can obtain the cloud ID of the person you want to share with by sending a one time invitation.<br>When this person accepts the invitation your cloud IDs will be exchanged and saved in each others Research Drive environment.<br>From then on, when sharing, you can find that remote person by name, email or institute name.",
+        "explanation": "<h2>Collaborate with users between Research Drive environments.</h2>To share data with a Research Drive user from another institute, who is active on another Research Drive environment, you need the cloud ID of that user.<br>With the cloud ID, you can immediately start sharing a folder or file between Research Drive environments.<br>To simplify federated sharing, a one-time invitation allows you to request this remote user to exchange your cloud IDs.<br>When that user accepts the invitation, the cloud IDs are automatically exchanged and stored.<br>From then on, when sharing, you can find that remote person by name, email or institute name.<br><br>If you want to collaborate with an external user, you can invite them to a Research Drive account, go to <a target=\"_blank\" href=\"/dashboard/app/accounts\">Research Drive Dashboard</a>.",
         "MESH_REGISTRY_ADD_PROVIDER_ERROR": "An error has occurred. Could not add provider.",
         "MESH_REGISTRY_UPDATE_PROVIDER_ERROR": "An error has occurred. Could not update provider.",
         "SETTINGS_UPDATE_ERROR": "An error has occurred. Could not update this setting.",

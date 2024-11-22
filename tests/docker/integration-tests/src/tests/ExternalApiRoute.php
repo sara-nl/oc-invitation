@@ -1,8 +1,8 @@
 <?php
 
-namespace OCA\Invitation;
+namespace OCA\Collaboration;
 
-use OCA\Invitation\AppInfo\InvitationApp;
+use OCA\Collaboration\AppInfo\CollaborationApp;
 use OCP\AppFramework\Controller;
 
 /**
@@ -45,7 +45,7 @@ class ExternalApiRoute
                 $params = \OC::$server->getRequest()->getParams();
                 return new \OC\OCS\Result(call_user_func_array([$this->controller, $this->apiCall], $params)->getData());
             },
-            InvitationApp::APP_NAME
+            CollaborationApp::APP_NAME
         );
     }
 
@@ -58,7 +58,7 @@ class ExternalApiRoute
                 $params = \OC::$server->getRequest()->getParams();
                 return new \OC\OCS\Result(call_user_func_array([$this->controller, $this->apiCall], $params)->getStatus());
             },
-            InvitationApp::APP_NAME
+            CollaborationApp::APP_NAME
         );
     }
 }

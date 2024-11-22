@@ -1,8 +1,8 @@
 #!/bin/sh
 
 # start the actual tests
-echo Start Invitation app integration tests
-echo waiting for 60s ... giving owncloud time to startup && sleep 60 &&
+echo Start Collaboration app integration tests
+echo waiting for 60s ... giving owncloud time to startup && sleep 20 &&
 echo
 echo "Starting integration unit tests"
 cd /tmp/tests/src
